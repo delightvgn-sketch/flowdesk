@@ -22,7 +22,7 @@ import {
 const trimmed = (max = 200) => z.string().trim().max(max, `Must be ${max} characters or fewer`);
 const optionalText = (max = 200) =>
   trimmed(max)
-    .optional()
+    .nullish()
     .transform((v) => (v ? v : null));
 const required = (label: string, max = 200) => trimmed(max).min(1, `${label} is required`);
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date");

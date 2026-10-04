@@ -29,8 +29,11 @@ export function requireStorage(): SupabaseClient {
   return storage;
 }
 
+/** `fileName` forces a download with that name; an empty string serves inline. */
 export async function signedDownloadUrl(path: string, fileName: string, expiresIn = 60) {
-  const { data, error } = await requireStorage().storage.from(STORAGE_BUCKET).createSignedUrl(path, expiresIn, { download: fileName });
+  const { data, error } = await requireStorage()
+    .storage.from(STORAGE_BUCKET)
+    .createSignedUrl(path, expiresIn, fileName ? { download: fileName } : undefined);
   if (error || !data) throw error ?? new Error("Could not sign URL");
   return data.signedUrl;
 }

@@ -1,25 +1,18 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
 
 import { FormField } from "@/components/shared/form-field";
 import { SubmitButton } from "@/components/shared/misc";
 import { Input } from "@/components/ui/input";
 import { createWorkspace } from "@/features/onboarding/actions";
 import { applyFieldErrors, useAction } from "@/hooks/use-action";
+import { useZodForm } from "@/hooks/use-zod-form";
 import { onboardingSchema } from "@/lib/validation";
-
-type Values = z.input<typeof onboardingSchema>;
 
 export function OnboardingForm({ defaultName }: { defaultName: string }) {
   const router = useRouter();
-  const form = useForm<Values>({
-    resolver: zodResolver(onboardingSchema),
-    defaultValues: { workspaceName: "", fullName: defaultName },
-  });
+  const form = useZodForm(onboardingSchema, { workspaceName: "", fullName: defaultName });
   const { execute, pending } = useAction(createWorkspace, {
     success: "Workspace created. Welcome aboard!",
     onSuccess: () => router.push("/dashboard"),

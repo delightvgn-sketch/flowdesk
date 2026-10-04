@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useTransition } from "react";
-import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { toast } from "sonner";
 
 import type { ActionResult } from "@/lib/action-result";
@@ -51,7 +51,7 @@ export function useAction<I, R>(action: (input: I) => Promise<ActionResult<R>>, 
 
 /** Map server-side Zod field errors onto a react-hook-form instance. */
 export function applyFieldErrors<T extends FieldValues>(
-  form: UseFormReturn<T>,
+  form: { setError: UseFormSetError<T> },
   fieldErrors: Record<string, string[] | undefined> | undefined,
 ) {
   if (!fieldErrors) return;
