@@ -6,9 +6,11 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { PRIORITIES } from "@/lib/constants";
+import { todayISO } from "@/lib/dates";
 import { idSchema } from "@/lib/validation";
 import { createAction } from "@/server/actions/safe-action";
 import { aiModel, friendlyAiError } from "@/server/ai/model";
+import { loadClientSnapshot } from "@/server/ai/tools";
 import { aiConversations, projects, tasks } from "@/server/db/schema";
 import { NotFoundError, UserFacingError } from "@/server/errors";
 import { logActivity } from "@/server/services/activity";
@@ -171,3 +173,19 @@ export const deleteConversation = createAction({ schema: idSchema, permission: "
   revalidatePath("/ai");
 });
 
+
+/* ------------------------------ Client briefing ----------------------------- */
+
+export const summarizeClient = createAction({ schema: idSchema, permission: "client:view" }, async ({ id }, ctx) => {
+  const snapshot = await loadClientSnapshot(ctx, id, todayISO(ctx.workspace.timezone));
+  if ("error" in snapshot) throw new NotFoundError("Client");
+  return guarded(async () => {
+    const { text } = await generateText({
+      model: aiModel(),
+      system:
+        "You brief an agency owner on a client before a call. Use only the JSON provided. Markdown, max ~150 words: a one-line relationship summary, then bullets for work in flight, money (lifetime revenue, outstanding, anything overdue), and 1-3 suggested next actions.",
+      prompt: JSON.stringify(snapshot),
+    });
+    return { text };
+  });
+});
