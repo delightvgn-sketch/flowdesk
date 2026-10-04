@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# clerk keyless dev keys
+/.clerk/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/e2e/.auth/
+
+# supabase local
+supabase/.branches
+supabase/.temp
