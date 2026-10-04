@@ -1,26 +1,249 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * FlowDesk design tokens
+ * ----------------------
+ * Warm "paper" neutrals, a deep teal brand colour and four semantic tones.
+ * Every colour used in the app resolves to one of these variables, so the
+ * dark theme is a deliberate second palette rather than an inversion.
+ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 0.5rem;
+
+  --background: oklch(0.986 0.003 85);
+  --foreground: oklch(0.215 0.012 60);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+
+  --primary: oklch(0.47 0.085 178);
+  --primary-foreground: oklch(0.99 0.005 178);
+  --brand-soft: oklch(0.955 0.025 178);
+  --brand-strong: oklch(0.38 0.07 178);
+
+  --secondary: oklch(0.962 0.004 85);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.962 0.004 85);
+  --muted-foreground: oklch(0.505 0.012 60);
+  --subtle-foreground: oklch(0.62 0.01 60);
+  --accent: oklch(0.955 0.005 85);
+  --accent-foreground: var(--foreground);
+
+  --border: oklch(0.912 0.006 80);
+  --border-strong: oklch(0.85 0.008 80);
+  --input: oklch(0.885 0.007 80);
+  --ring: oklch(0.47 0.085 178);
+
+  --destructive: oklch(0.56 0.19 27);
+  --info: oklch(0.52 0.13 250);
+  --info-soft: oklch(0.955 0.025 250);
+  --success: oklch(0.52 0.12 152);
+  --success-soft: oklch(0.955 0.035 152);
+  --warning: oklch(0.6 0.13 70);
+  --warning-soft: oklch(0.965 0.045 85);
+  --danger: oklch(0.55 0.19 27);
+  --danger-soft: oklch(0.96 0.025 27);
+
+  --chart-1: oklch(0.5 0.085 178);
+  --chart-2: oklch(0.72 0.12 75);
+  --chart-3: oklch(0.55 0.12 255);
+  --chart-4: oklch(0.62 0.15 25);
+  --chart-5: oklch(0.6 0.1 320);
+  --chart-grid: oklch(0.93 0.004 85);
+
+  --sidebar: oklch(0.973 0.004 85);
+  --sidebar-foreground: oklch(0.36 0.012 60);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: oklch(0.935 0.006 85);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  --shadow-color: 30 20% 20%;
+}
+
+.dark {
+  --background: oklch(0.165 0.006 60);
+  --foreground: oklch(0.94 0.006 85);
+  --card: oklch(0.198 0.007 60);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.215 0.007 60);
+  --popover-foreground: var(--foreground);
+
+  --primary: oklch(0.74 0.1 178);
+  --primary-foreground: oklch(0.2 0.03 178);
+  --brand-soft: oklch(0.27 0.035 178);
+  --brand-strong: oklch(0.82 0.09 178);
+
+  --secondary: oklch(0.245 0.007 60);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.235 0.007 60);
+  --muted-foreground: oklch(0.7 0.01 70);
+  --subtle-foreground: oklch(0.58 0.01 70);
+  --accent: oklch(0.255 0.008 60);
+  --accent-foreground: var(--foreground);
+
+  --border: oklch(0.285 0.007 60);
+  --border-strong: oklch(0.35 0.008 60);
+  --input: oklch(0.33 0.008 60);
+  --ring: oklch(0.74 0.1 178);
+
+  --destructive: oklch(0.68 0.17 25);
+  --info: oklch(0.74 0.11 250);
+  --info-soft: oklch(0.28 0.045 250);
+  --success: oklch(0.74 0.12 152);
+  --success-soft: oklch(0.27 0.045 152);
+  --warning: oklch(0.8 0.12 80);
+  --warning-soft: oklch(0.29 0.045 75);
+  --danger: oklch(0.7 0.16 25);
+  --danger-soft: oklch(0.29 0.06 25);
+
+  --chart-1: oklch(0.72 0.1 178);
+  --chart-2: oklch(0.8 0.12 80);
+  --chart-3: oklch(0.7 0.12 255);
+  --chart-4: oklch(0.7 0.15 25);
+  --chart-5: oklch(0.72 0.1 320);
+  --chart-grid: oklch(0.26 0.006 60);
+
+  --sidebar: oklch(0.182 0.006 60);
+  --sidebar-foreground: oklch(0.78 0.008 80);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: oklch(0.25 0.008 60);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  --shadow-color: 0 0% 0%;
 }
 
 @theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-grid: var(--chart-grid);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --shadow-xs: 0 1px 2px 0 hsl(var(--shadow-color) / 0.05);
+  --shadow-sm: 0 1px 2px 0 hsl(var(--shadow-color) / 0.06), 0 1px 3px 0 hsl(var(--shadow-color) / 0.04);
+  --shadow-md: 0 4px 12px -2px hsl(var(--shadow-color) / 0.08), 0 2px 4px -2px hsl(var(--shadow-color) / 0.05);
+  --shadow-lg: 0 12px 32px -8px hsl(var(--shadow-color) / 0.16), 0 4px 8px -4px hsl(var(--shadow-color) / 0.06);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  input:focus-visible,
+  textarea:focus-visible,
+  [role="combobox"]:focus-visible,
+  button:focus-visible {
+    outline: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -3,13 +3,12 @@ import "server-only";
 import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 
+import type { ActionResult } from "@/lib/action-result";
 import { assertCan, type Permission } from "@/lib/permissions";
 import { getAppContext, type AppContext } from "@/server/auth/session";
 import { toUserMessage } from "@/server/errors";
 
-export type ActionResult<T = void> =
-  | { ok: true; data: T }
-  | { ok: false; error: string; fieldErrors?: Record<string, string[] | undefined> };
+export type { ActionResult };
 
 type Options<S extends z.ZodType> = {
   schema: S;
