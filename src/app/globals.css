@@ -50,11 +50,12 @@
   --danger: oklch(0.55 0.19 27);
   --danger-soft: oklch(0.96 0.025 27);
 
-  --chart-1: oklch(0.5 0.085 178);
-  --chart-2: oklch(0.72 0.12 75);
-  --chart-3: oklch(0.55 0.12 255);
-  --chart-4: oklch(0.62 0.15 25);
-  --chart-5: oklch(0.6 0.1 320);
+  /* Categorical order validated with the dataviz palette checker (light surface). */
+  --chart-1: oklch(0.57 0.115 182);
+  --chart-2: oklch(0.665 0.14 66);
+  --chart-3: oklch(0.55 0.15 258);
+  --chart-4: oklch(0.6 0.18 28);
+  --chart-5: oklch(0.5 0.15 305);
   --chart-grid: oklch(0.93 0.004 85);
 
   --sidebar: oklch(0.973 0.004 85);
@@ -105,11 +106,12 @@
   --danger: oklch(0.7 0.16 25);
   --danger-soft: oklch(0.29 0.06 25);
 
-  --chart-1: oklch(0.72 0.1 178);
-  --chart-2: oklch(0.8 0.12 80);
-  --chart-3: oklch(0.7 0.12 255);
-  --chart-4: oklch(0.7 0.15 25);
-  --chart-5: oklch(0.72 0.1 320);
+  /* Dark steps validated separately against the dark card surface. */
+  --chart-1: oklch(0.66 0.115 182);
+  --chart-2: oklch(0.665 0.13 70);
+  --chart-3: oklch(0.64 0.13 258);
+  --chart-4: oklch(0.64 0.16 28);
+  --chart-5: oklch(0.62 0.15 305);
   --chart-grid: oklch(0.26 0.006 60);
 
   --sidebar: oklch(0.182 0.006 60);
