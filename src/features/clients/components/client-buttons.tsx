@@ -1,8 +1,8 @@
 "use client";
 
 import { Archive, ArchiveRestore, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
@@ -15,22 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { deleteClient, setClientArchived } from "@/features/clients/actions";
 import { useAction } from "@/hooks/use-action";
+import { useQueryDialog } from "@/hooks/use-query-dialog";
 
 import { ClientFormDialog, type ClientFormValues } from "./client-form-dialog";
 
 /** "New client" button; also opens when the URL has ?new=1 (from ⌘K). */
 export function NewClientButton() {
-  const params = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (params.get("new") === "1") {
-      setOpen(true);
-      router.replace(pathname, { scroll: false });
-    }
-  }, [params, router, pathname]);
+  const { open, setOpen } = useQueryDialog();
 
   return (
     <>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { FormDialog, FormDialogBody, FormDialogFooter } from "@/components/shared/form-dialog";
 import { FormField } from "@/components/shared/form-field";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createTask } from "@/features/tasks/actions";
 import { applyFieldErrors, useAction } from "@/hooks/use-action";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { useZodForm } from "@/hooks/use-zod-form";
 import { PRIORITIES, PRIORITY_META, TASK_STATUSES, TASK_STATUS_META } from "@/lib/constants";
 import { taskSchema } from "@/lib/validation";
@@ -41,10 +42,9 @@ export function TaskFormDialog({
   defaults?: { status?: TaskStatus; projectId?: string | null; assigneeId?: string | null };
 }) {
   const router = useRouter();
-  const [labels, setLabels] = useState(options.labels);
+  const [labels, setLabels] = useSyncedState(options.labels);
   const form = useZodForm(taskSchema, { title: "", description: "", status: "TODO", priority: "MEDIUM", projectId: null, assigneeId: null, dueDate: "", labelIds: [] });
 
-  useEffect(() => setLabels(options.labels), [options.labels]);
   useEffect(() => {
     if (!open) return;
     form.reset({

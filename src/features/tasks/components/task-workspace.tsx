@@ -1,10 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useQueryDialog } from "@/hooks/use-query-dialog";
 import type { TaskStatus } from "@/server/db/schema";
 
 import type { BoardTask } from "../types";
@@ -54,17 +54,7 @@ export function TaskWorkspace({
 
 /** Header button; also opens for ?new=1 (⌘K "New task"). */
 export function NewTaskButton({ formOptions, defaultProjectId }: { formOptions: TaskFormOptions; defaultProjectId?: string }) {
-  const [open, setOpen] = useState(false);
-  const params = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (params.get("new") === "1") {
-      setOpen(true);
-      router.replace(pathname, { scroll: false });
-    }
-  }, [params, router, pathname]);
+  const { open, setOpen } = useQueryDialog();
 
   return (
     <>

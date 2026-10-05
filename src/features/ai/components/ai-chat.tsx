@@ -45,7 +45,8 @@ export function AiChat({
     messages: initialMessages.map<UIMessage>((m) => ({ id: m.id, role: m.role, parts: [{ type: "text", text: m.text }] })),
     transport: new DefaultChatTransport({
       api: "/api/ai/chat",
-      prepareSendMessagesRequest: ({ messages: all }) => ({ body: { conversationId: idRef.current, message: all[all.length - 1] } }),
+      // Only the newest message goes to the server; history is loaded from the database.
+      prepareSendMessagesRequest: ({ messages: all, body }) => ({ body: { ...body, message: all[all.length - 1] } }),
     }),
     onFinish: () => router.refresh(),
   });
@@ -70,7 +71,7 @@ export function AiChat({
       window.history.replaceState(null, "", `/ai?c=${created.data.id}`);
     }
     setInput("");
-    await sendMessage({ text: trimmed });
+    await sendMessage({ text: trimmed }, { body: { conversationId: idRef.current } });
   }
 
   return (

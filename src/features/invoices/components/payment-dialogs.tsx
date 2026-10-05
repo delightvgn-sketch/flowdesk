@@ -41,23 +41,25 @@ export function MarkPaidDialog({
   const [method, setMethod] = useState<PaymentMethod>("MPESA");
   const [paidOn, setPaidOn] = useState(today);
   const [reference, setReference] = useState("");
-  const { execute, pending } = useAction(markInvoicePaid, {
-    success: "Invoice marked as paid.",
-    onSuccess: () => {
-      onOpenChange(false);
-      router.refresh();
-    },
-  });
-  useEffect(() => {
-    if (open) {
+  // Reset the fields each time the dialog closes, so it reopens clean.
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
       setMethod("MPESA");
       setPaidOn(today);
       setReference("");
     }
-  }, [open, today]);
+    onOpenChange(next);
+  };
+  const { execute, pending } = useAction(markInvoicePaid, {
+    success: "Invoice marked as paid.",
+    onSuccess: () => {
+      handleOpenChange(false);
+      router.refresh();
+    },
+  });
 
   return (
-    <FormDialog open={open} onOpenChange={onOpenChange} title="Mark as paid" description={`Record a payment of ${formatMoney(balance, { currency, decimals: true })} for the full balance. ${NOTICE}`}>
+    <FormDialog open={open} onOpenChange={handleOpenChange} title="Mark as paid" description={`Record a payment of ${formatMoney(balance, { currency, decimals: true })} for the full balance. ${NOTICE}`}>
       <form
         className="flex min-h-0 flex-1 flex-col"
         onSubmit={(e) => {
@@ -79,7 +81,7 @@ export function MarkPaidDialog({
           </Field>
         </FormDialogBody>
         <FormDialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
+          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={pending}>
             Cancel
           </Button>
           <SubmitButton pending={pending} pendingLabel="Saving…">

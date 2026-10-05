@@ -39,7 +39,12 @@ export function AppShell({
   const groups = navForRole(workspace.role);
   const primary = NAV_GROUPS.flatMap((g) => g.items).filter((i) => i.primary && groups.some((g) => g.items.includes(i)));
 
-  useEffect(() => setMobileOpen(false), [pathname]);
+  // Close the mobile drawer after navigation (adjust-state-during-render pattern).
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setMobileOpen(false);
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

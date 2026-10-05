@@ -19,12 +19,13 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from "@dnd-kit/utilities";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { moveTask } from "@/features/tasks/actions";
 import { TASK_STATUSES, TASK_STATUS_META } from "@/lib/constants";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { cn } from "@/lib/utils";
 import type { TaskStatus } from "@/server/db/schema";
 
@@ -64,14 +65,13 @@ export function KanbanBoard({
   onCreate: (status: TaskStatus) => void;
 }) {
   const router = useRouter();
-  const [columns, setColumns] = useState<Columns>(() => group(tasks));
+  // Optimistic column state, re-derived whenever fresh tasks arrive from the server.
+  const grouped = useMemo(() => group(tasks), [tasks]);
+  const [columns, setColumns] = useSyncedState<Columns>(grouped);
   const [active, setActive] = useState<BoardTask | null>(null);
   const origin = useRef<TaskStatus | null>(null);
   // Stable id keeps dnd-kit's generated aria ids identical on server and client.
   const dndId = useId();
-
-  // Re-sync when the server sends fresh data (after refresh / filters).
-  useEffect(() => setColumns(group(tasks)), [tasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),

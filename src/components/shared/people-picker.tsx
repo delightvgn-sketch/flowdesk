@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -29,6 +29,7 @@ export function PeoplePicker({
   "aria-describedby"?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const listId = useId();
   const selected = people.filter((p) => value.includes(p.id));
 
   return (
@@ -39,6 +40,7 @@ export function PeoplePicker({
           type="button"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           className="flex h-9 w-full items-center gap-2 rounded-md border border-input bg-card px-3 text-left text-sm shadow-xs focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           {...aria}
         >
@@ -53,7 +55,7 @@ export function PeoplePicker({
           <ChevronsUpDown className="ml-auto size-4 text-subtle-foreground" aria-hidden />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+      <PopoverContent id={listId} className="w-(--radix-popover-trigger-width) p-0" align="start">
         <Command>
           <CommandInput placeholder="Search people…" />
           <CommandList>

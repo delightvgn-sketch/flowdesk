@@ -5,9 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import type { WorkspaceRole } from "@/server/db/schema";
 
-export function SettingsNav({ role: _role }: { role: WorkspaceRole }) {
+export function SettingsNav() {
   const pathname = usePathname();
   const items = [
     { href: "/settings/profile", label: "Profile", icon: User },

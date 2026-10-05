@@ -73,7 +73,7 @@ export function MessageThread({
     send.execute({ body, projectId: projectId ?? null, clientId: projectId ? null : (clientId ?? null), internal: canPostInternal && hasClientAudience && internal });
   }
 
-  let lastDay = "";
+  const dayOf = (iso: string) => formatDate(iso, "EEEE d MMMM");
   return (
     <div className={cn("flex min-h-0 flex-col", className)}>
       <div ref={scroller} className="flex-1 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite">
@@ -81,10 +81,9 @@ export function MessageThread({
           <EmptyState icon={MessagesSquare} title={emptyText} compact className="border-0" />
         ) : (
           <ol className="space-y-4">
-            {messages.map((m) => {
-              const day = formatDate(m.createdAt, "EEEE d MMMM");
-              const showDay = day !== lastDay;
-              lastDay = day;
+            {messages.map((m, i) => {
+              const day = dayOf(m.createdAt);
+              const showDay = i === 0 || day !== dayOf(messages[i - 1].createdAt);
               const mine = m.authorId === currentProfileId;
               return (
                 <li key={m.id}>

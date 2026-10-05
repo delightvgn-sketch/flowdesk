@@ -4,7 +4,7 @@ import { UserProfile } from "@clerk/nextjs";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Field, FormField } from "@/components/shared/form-field";
@@ -99,8 +99,12 @@ export function NotificationPrefsForm({ prefs }: { prefs: NotificationPrefs }) {
 
 export function ThemePicker() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // The theme is only known on the client; avoid a hydration mismatch.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const options = [
     { value: "light", label: "Light", icon: Sun },
     { value: "dark", label: "Dark", icon: Moon },

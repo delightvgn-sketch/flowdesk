@@ -1,8 +1,8 @@
 "use client";
 
 import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
@@ -10,25 +10,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { deleteProject, setProjectStatus } from "@/features/projects/actions";
 import { useAction } from "@/hooks/use-action";
+import { useQueryDialog } from "@/hooks/use-query-dialog";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { PROJECT_STATUSES, PROJECT_STATUS_META } from "@/lib/constants";
 import type { ProjectStatus } from "@/server/db/schema";
 
 import { ProjectFormDialog, type ProjectFormOptions, type ProjectFormValues } from "./project-form-dialog";
 
 export function NewProjectButton({ options, label = "New project", variant = "default" }: { options: ProjectFormOptions; label?: string; variant?: "default" | "outline" }) {
-  const params = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [clientId, setClientId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (params.get("new") === "1") {
-      setClientId(params.get("client"));
-      setOpen(true);
-      router.replace(pathname, { scroll: false });
-    }
-  }, [params, router, pathname]);
+  const { open, setOpen, fromQuery, params } = useQueryDialog("new", ["client"]);
+  const clientId = fromQuery ? params.get("client") : null;
 
   return (
     <>
@@ -87,13 +78,12 @@ export function ProjectActions({ project, options }: { project: ProjectFormValue
 /** Inline status control, usable by staffed members. */
 export function ProjectStatusSelect({ id, status }: { id: string; status: ProjectStatus }) {
   const router = useRouter();
-  const [value, setValue] = useState(status);
+  const [value, setValue] = useSyncedState(status);
   const { execute, pending } = useAction(setProjectStatus, {
-    success: (/* data */) => "Project status updated.",
+    success: "Project status updated.",
     onSuccess: () => router.refresh(),
     onError: () => setValue(status),
   });
-  useEffect(() => setValue(status), [status]);
 
   return (
     <Select

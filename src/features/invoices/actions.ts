@@ -307,7 +307,15 @@ export const duplicateInvoice = createAction({ schema: idSchema, permission: "in
       })
       .returning();
     if (items.length) {
-      await tx.insert(invoiceItems).values(items.map(({ id: _id, invoiceId: _inv, ...item }) => ({ ...item, invoiceId: row.id })));
+      await tx.insert(invoiceItems).values(items.map((item) => ({
+          workspaceId: item.workspaceId,
+          invoiceId: row.id,
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          amount: item.amount,
+          position: item.position,
+        })));
     }
     await logActivity(tx, ctx, { action: "invoice.created", entityType: "invoice", entityId: row.id, entityLabel: number, clientId: row.clientId, projectId: row.projectId });
     return row;

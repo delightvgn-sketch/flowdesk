@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { listNotifications, markAllNotificationsRead, markNotificationRead } from "@/features/workspace/actions";
 import { timeAgo } from "@/lib/dates";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { cn } from "@/lib/utils";
 
 type Item = { id: string; title: string; body: string | null; href: string | null; readAt: Date | null; createdAt: Date };
@@ -17,10 +18,8 @@ export function NotificationBell({ initialUnread, allHref = "/notifications" }: 
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Item[] | null>(null);
-  const [unread, setUnread] = useState(initialUnread);
+  const [unread, setUnread] = useSyncedState(initialUnread);
   const [loading, startLoading] = useTransition();
-
-  useEffect(() => setUnread(initialUnread), [initialUnread]);
 
   useEffect(() => {
     if (!open) return;

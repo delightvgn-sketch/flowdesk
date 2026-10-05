@@ -47,10 +47,7 @@ export function CommandPalette({
   useEffect(() => {
     const q = query.trim();
     latest.current = q;
-    if (!q) {
-      setResults([]);
-      return;
-    }
+    if (!q) return;
     const timer = setTimeout(() => {
       startTransition(async () => {
         const res = await searchWorkspace({ q });
@@ -60,17 +57,23 @@ export function CommandPalette({
     return () => clearTimeout(timer);
   }, [query]);
 
-  useEffect(() => {
-    if (!open) setQuery("");
-  }, [open]);
-
-  const go = (href: string) => {
-    onOpenChange(false);
-    router.push(href);
+  // Reset the search whenever the palette closes.
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
+      setQuery("");
+      setResults([]);
+    }
+    onOpenChange(next);
   };
 
+  const go = (href: string) => {
+    handleOpenChange(false);
+    router.push(href);
+  };
+  const visible = query.trim() ? results : [];
+
   const grouped = Object.entries(TYPE_META)
-    .map(([type, meta]) => ({ type, meta, items: results.filter((r) => r.type === type) }))
+    .map(([type, meta]) => ({ type, meta, items: visible.filter((r) => r.type === type) }))
     .filter((g) => g.items.length > 0);
 
   const quickActions = [
@@ -83,7 +86,7 @@ export function CommandPalette({
   return (
     <CommandDialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
       title="Search FlowDesk"
       description="Search clients, projects, tasks, invoices and files"
       shouldFilter={false}
@@ -92,7 +95,7 @@ export function CommandPalette({
       <CommandList>
         {query.trim() ? (
           <>
-            {pending && results.length === 0 ? (
+            {pending && visible.length === 0 ? (
               <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
                 <Loader2 className="size-4 animate-spin" /> Searching…
               </div>

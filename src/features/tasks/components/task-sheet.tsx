@@ -74,8 +74,9 @@ export function TaskSheet({ options }: { options: TaskSheetOptions }) {
 
   useEffect(() => {
     if (taskId) load(taskId);
-    else setTask(null);
   }, [taskId, load]);
+  // Only show the loaded task if it matches the URL (avoids a stale flash).
+  const current = task && task.id === taskId ? task : null;
 
   const refresh = () => {
     if (taskId) load(taskId);
@@ -85,7 +86,7 @@ export function TaskSheet({ options }: { options: TaskSheetOptions }) {
   return (
     <Sheet open={!!taskId} onOpenChange={(open) => !open && closeTaskUrl()}>
       <SheetContent className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl">
-        {!task ? (
+        {!current ? (
           <div className="space-y-4 p-6">
             <SheetHeader className="p-0">
               <SheetTitle>{error ? "Task unavailable" : "Loading task…"}</SheetTitle>
@@ -100,7 +101,7 @@ export function TaskSheet({ options }: { options: TaskSheetOptions }) {
             )}
           </div>
         ) : (
-          <TaskEditor key={task.id} task={task} options={options} onChanged={refresh} loading={loading} />
+          <TaskEditor key={current.id} task={current} options={options} onChanged={refresh} loading={loading} />
         )}
       </SheetContent>
     </Sheet>
