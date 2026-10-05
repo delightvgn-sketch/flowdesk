@@ -23,6 +23,9 @@ export function DemoPersonaButton({
   blurb: string;
 }) {
   const clerk = useClerk();
+  // Clerk must be loaded before a ticket can be exchanged; until then the
+  // button stays disabled (it also isn't interactive before hydration).
+  const ready = clerk.loaded;
   const { signIn } = useSignIn();
   const [pending, setPending] = useState(false);
 
@@ -58,7 +61,8 @@ export function DemoPersonaButton({
     <button
       type="button"
       onClick={start}
-      disabled={pending}
+      disabled={pending || !ready}
+      aria-busy={pending || !ready}
       className="group flex w-full items-center gap-4 rounded-xl border bg-card p-4 text-left shadow-xs transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-70"
     >
       <UserAvatar name={name} size="lg" />
