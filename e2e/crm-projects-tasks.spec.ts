@@ -24,7 +24,8 @@ test.describe("owner workflows", () => {
     await page.getByRole("dialog").getByLabel("Phone").fill("+254 711 000 111");
     await page.getByRole("dialog").getByRole("button", { name: "Save changes" }).click();
     await expectToast(page, "Client updated.");
-    await expect(page.getByText("+254 711 000 111")).toBeVisible();
+    // Shown in Details and on the synced primary contact.
+    await expect(page.getByText("+254 711 000 111").first()).toBeVisible();
 
     await page.goto("/clients");
     await page.getByRole("searchbox", { name: "Search clients…" }).fill(company.split(" ").pop()!);
