@@ -11,27 +11,41 @@ export type Database = PostgresJsDatabase<typeof schema>;
 /** A transaction handle — what every data-access function receives. */
 export type Tx = Parameters<Parameters<Database["transaction"]>[0]>[0];
 
-const globalForDb = globalThis as unknown as { pgClient?: ReturnType<typeof postgres> };
+const globalForDb = globalThis as unknown as { pgClient?: ReturnType<typeof postgres>; db?: Database };
 
-function createClient() {
-  return postgres(env.databaseUrl(), {
-    // Supabase's transaction pooler (port 6543) does not support prepared statements.
-    prepare: false,
-    max: process.env.NODE_ENV === "production" ? 5 : 10,
-    idle_timeout: 20,
-  });
+/**
+ * The connection is created lazily on first use, so importing this module
+ * (e.g. while `next build` collects route config) never needs DATABASE_URL.
+ */
+function getDb(): Database {
+  if (globalForDb.db) return globalForDb.db;
+  const client =
+    globalForDb.pgClient ??
+    postgres(env.databaseUrl(), {
+      // Supabase's transaction pooler (port 6543) does not support prepared statements.
+      prepare: false,
+      max: process.env.NODE_ENV === "production" ? 5 : 10,
+      idle_timeout: 20,
+    });
+  const db = drizzle(client, { schema });
+  if (process.env.NODE_ENV !== "production") globalForDb.pgClient = client;
+  globalForDb.db = db;
+  return db;
 }
-
-const client = globalForDb.pgClient ?? createClient();
-if (process.env.NODE_ENV !== "production") globalForDb.pgClient = client;
 
 /**
  * Privileged connection. It bypasses row level security, so it is only used for
  * the handful of operations that cannot be expressed as the signed-in user:
  * linking a Clerk identity to a profile, creating a workspace, accepting an
- * invitation, rendering a public share link and seeding demo data.
+ * invitation, rendering a public share link, the daily cron and seeding demo data.
  */
-export const adminDb: Database = drizzle(client, { schema });
+export const adminDb: Database = new Proxy({} as Database, {
+  get(_target, prop) {
+    const db = getDb();
+    const value = Reflect.get(db, prop, db);
+    return typeof value === "function" ? value.bind(db) : value;
+  },
+});
 
 /**
  * Run `fn` inside a transaction that Postgres treats as the given Clerk user.
