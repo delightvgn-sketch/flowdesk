@@ -23,10 +23,15 @@ export default async function PortalProjectsPage() {
         <ul className="divide-y overflow-hidden rounded-xl border bg-card shadow-xs">
           {projects.map((p) => (
             <li key={p.id}>
-              <Link href={`/portal/projects/${p.id}`} className="flex flex-col gap-2 px-5 py-4 hover:bg-muted/40 sm:flex-row sm:items-center sm:gap-6">
+              <Link
+                href={`/portal/projects/${p.id}`}
+                className="flex flex-col gap-2 px-5 py-4 hover:bg-muted/40 sm:flex-row sm:items-center sm:gap-6"
+              >
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium">{p.name}</span>
-                  <span className="block text-xs text-muted-foreground">{p.dueDate ? `Target ${formatDate(p.dueDate)}` : "No target date"}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {p.dueDate ? `Target ${formatDate(p.dueDate)}` : "No target date"}
+                  </span>
                 </span>
                 <span className="flex w-full items-center gap-2 sm:w-48">
                   <ProgressBar value={p.progress} label={`${p.name} progress`} />

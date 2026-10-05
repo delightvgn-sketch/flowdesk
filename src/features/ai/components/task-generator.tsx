@@ -14,7 +14,15 @@ import { addGeneratedTasks, generateProjectTasks, type GeneratedTask } from "@/f
 import { useAction } from "@/hooks/use-action";
 
 /** "Break this project into tasks" — review AI suggestions, then add the ones you want. */
-export function AiTaskGenerator({ projectId, projectName, projects }: { projectId?: string; projectName?: string; projects?: { id: string; label: string }[] }) {
+export function AiTaskGenerator({
+  projectId,
+  projectName,
+  projects,
+}: {
+  projectId?: string;
+  projectName?: string;
+  projects?: { id: string; label: string }[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState(projectId ?? projects?.[0]?.id ?? "");
@@ -38,12 +46,13 @@ export function AiTaskGenerator({ projectId, projectName, projects }: { projectI
     },
   });
 
-  const toggle = (i: number) => setSelected((s) => {
-    const next = new Set(s);
-    if (next.has(i)) next.delete(i);
-    else next.add(i);
-    return next;
-  });
+  const toggle = (i: number) =>
+    setSelected((s) => {
+      const next = new Set(s);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
 
   return (
     <>
@@ -61,16 +70,31 @@ export function AiTaskGenerator({ projectId, projectName, projects }: { projectI
           {projects && !projectId && (
             <Field label="Project" required>
               {(p) => (
-                <select {...p} value={target} onChange={(e) => setTarget(e.target.value)} className="h-9 rounded-md border border-input bg-card px-3 text-sm shadow-xs">
+                <select
+                  {...p}
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  className="h-9 rounded-md border border-input bg-card px-3 text-sm shadow-xs"
+                >
                   {projects.map((pr) => (
-                    <option key={pr.id} value={pr.id}>{pr.label}</option>
+                    <option key={pr.id} value={pr.id}>
+                      {pr.label}
+                    </option>
                   ))}
                 </select>
               )}
             </Field>
           )}
           <Field label="Extra context (optional)" description="Scope, tech stack, constraints — anything that helps.">
-            {(p) => <Textarea {...p} rows={3} value={brief} onChange={(e) => setBrief(e.target.value)} placeholder="e.g. Next.js storefront, M-Pesa checkout, CMS for banners. Launch in 6 weeks." />}
+            {(p) => (
+              <Textarea
+                {...p}
+                rows={3}
+                value={brief}
+                onChange={(e) => setBrief(e.target.value)}
+                placeholder="e.g. Next.js storefront, M-Pesa checkout, CMS for banners. Launch in 6 weeks."
+              />
+            )}
           </Field>
 
           {suggestions && (
@@ -82,7 +106,12 @@ export function AiTaskGenerator({ projectId, projectName, projects }: { projectI
                 {suggestions.map((t, i) => (
                   <li key={i}>
                     <label className="flex cursor-pointer gap-3 px-3 py-2.5 hover:bg-muted/40">
-                      <Checkbox checked={selected.has(i)} onCheckedChange={() => toggle(i)} className="mt-0.5" aria-label={`Include ${t.title}`} />
+                      <Checkbox
+                        checked={selected.has(i)}
+                        onCheckedChange={() => toggle(i)}
+                        className="mt-0.5"
+                        aria-label={`Include ${t.title}`}
+                      />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2 text-sm font-medium">
                           {t.title}
@@ -112,7 +141,9 @@ export function AiTaskGenerator({ projectId, projectName, projects }: { projectI
               onClick={() =>
                 add.execute({
                   projectId: projectId ?? target,
-                  tasks: suggestions.filter((_, i) => selected.has(i)).map((t) => ({ title: t.title, description: t.description, priority: t.priority })),
+                  tasks: suggestions
+                    .filter((_, i) => selected.has(i))
+                    .map((t) => ({ title: t.title, description: t.description, priority: t.priority })),
                 })
               }
               disabled={add.pending || selected.size === 0}

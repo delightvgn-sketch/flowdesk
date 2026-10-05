@@ -108,7 +108,17 @@ export function TaskSheet({ options }: { options: TaskSheetOptions }) {
   );
 }
 
-function TaskEditor({ task, options, onChanged, loading }: { task: TaskDetail; options: TaskSheetOptions; onChanged: () => void; loading: boolean }) {
+function TaskEditor({
+  task,
+  options,
+  onChanged,
+  loading,
+}: {
+  task: TaskDetail;
+  options: TaskSheetOptions;
+  onChanged: () => void;
+  loading: boolean;
+}) {
   const [labels, setLabels] = useState(options.labels);
   const [draft, setDraft] = useState({
     title: task.title,
@@ -167,10 +177,26 @@ function TaskEditor({ task, options, onChanged, loading }: { task: TaskDetail; o
 
       <div className="grid gap-4 border-b px-5 py-5 sm:grid-cols-2 sm:px-6">
         <Field label="Status">
-          {(p) => <EnumSelect {...p} values={TASK_STATUSES} labels={TASK_STATUS_META} value={draft.status} onChange={(v: TaskStatus) => commit({ status: v }, v === "DONE" ? "Task completed." : undefined)} />}
+          {(p) => (
+            <EnumSelect
+              {...p}
+              values={TASK_STATUSES}
+              labels={TASK_STATUS_META}
+              value={draft.status}
+              onChange={(v: TaskStatus) => commit({ status: v }, v === "DONE" ? "Task completed." : undefined)}
+            />
+          )}
         </Field>
         <Field label="Priority">
-          {(p) => <EnumSelect {...p} values={PRIORITIES} labels={PRIORITY_META} value={draft.priority} onChange={(v) => commit({ priority: v })} />}
+          {(p) => (
+            <EnumSelect
+              {...p}
+              values={PRIORITIES}
+              labels={PRIORITY_META}
+              value={draft.priority}
+              onChange={(v) => commit({ priority: v })}
+            />
+          )}
         </Field>
         <Field label="Assignee">
           {(p) => (
@@ -198,7 +224,15 @@ function TaskEditor({ task, options, onChanged, loading }: { task: TaskDetail; o
           )}
         </Field>
         <Field label="Labels">
-          {(p) => <LabelPicker id={p.id} labels={labels} value={draft.labelIds} onChange={(ids) => commit({ labelIds: ids })} onLabelCreated={(l) => setLabels((ls) => [...ls, l])} />}
+          {(p) => (
+            <LabelPicker
+              id={p.id}
+              labels={labels}
+              value={draft.labelIds}
+              onChange={(ids) => commit({ labelIds: ids })}
+              onLabelCreated={(l) => setLabels((ls) => [...ls, l])}
+            />
+          )}
         </Field>
         <Field label="Description" className="sm:col-span-2">
           {(p) => (
@@ -222,13 +256,24 @@ function TaskEditor({ task, options, onChanged, loading }: { task: TaskDetail; o
           <FileUploader links={{ taskId: task.id }} label="Attach" size="sm" variant="outline" />
         </div>
         {task.attachments.length > 0 ? (
-          <FileList files={task.attachments.map((a) => ({ ...a, sharedWithClient: false }))} currentProfileId={options.currentProfileId} canOrganize={false} canDeleteAny={options.canDeleteAny} showProject={false} />
+          <FileList
+            files={task.attachments.map((a) => ({ ...a, sharedWithClient: false }))}
+            currentProfileId={options.currentProfileId}
+            canOrganize={false}
+            canDeleteAny={options.canDeleteAny}
+            showProject={false}
+          />
         ) : (
           <p className="text-sm text-muted-foreground">No attachments yet.</p>
         )}
       </section>
 
-      <Comments task={task} currentProfileId={options.currentProfileId} canDeleteAny={options.canDeleteAny} onChanged={onChanged} />
+      <Comments
+        task={task}
+        currentProfileId={options.currentProfileId}
+        canDeleteAny={options.canDeleteAny}
+        onChanged={onChanged}
+      />
 
       <section className="px-5 py-5 sm:px-6" aria-labelledby="task-activity-heading">
         <h3 id="task-activity-heading" className="mb-3 text-sm font-semibold">
@@ -237,7 +282,8 @@ function TaskEditor({ task, options, onChanged, loading }: { task: TaskDetail; o
         <ul className="space-y-2 text-xs text-muted-foreground">
           {task.activity.map((a) => (
             <li key={a.id}>
-              <span className="font-medium text-foreground">{a.actorName ?? "Someone"}</span> {activityVerb(a.action, a.metadata)} · {timeAgo(a.createdAt)}
+              <span className="font-medium text-foreground">{a.actorName ?? "Someone"}</span> {activityVerb(a.action, a.metadata)}{" "}
+              · {timeAgo(a.createdAt)}
             </li>
           ))}
           <li>
@@ -283,7 +329,17 @@ function activityVerb(action: string, metadata: Record<string, string | number |
   }
 }
 
-function Comments({ task, currentProfileId, canDeleteAny, onChanged }: { task: TaskDetail; currentProfileId: string; canDeleteAny: boolean; onChanged: () => void }) {
+function Comments({
+  task,
+  currentProfileId,
+  canDeleteAny,
+  onChanged,
+}: {
+  task: TaskDetail;
+  currentProfileId: string;
+  canDeleteAny: boolean;
+  onChanged: () => void;
+}) {
   const [body, setBody] = useState("");
   const post = useAction(addComment, {
     onSuccess: () => {

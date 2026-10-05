@@ -10,7 +10,13 @@ export type PersonOption = { id: string; fullName: string; avatarUrl: string | n
 /** Staff (non-client) members, for assignee and team pickers. */
 export async function staffOptions(tx: Tx, workspaceId: string): Promise<PersonOption[]> {
   return tx
-    .select({ id: profiles.id, fullName: profiles.fullName, avatarUrl: profiles.avatarUrl, role: workspaceMembers.role, title: workspaceMembers.title })
+    .select({
+      id: profiles.id,
+      fullName: profiles.fullName,
+      avatarUrl: profiles.avatarUrl,
+      role: workspaceMembers.role,
+      title: workspaceMembers.title,
+    })
     .from(workspaceMembers)
     .innerJoin(profiles, eq(profiles.id, workspaceMembers.profileId))
     .where(and(eq(workspaceMembers.workspaceId, workspaceId), inArray(workspaceMembers.role, ["OWNER", "ADMIN", "MEMBER"])))

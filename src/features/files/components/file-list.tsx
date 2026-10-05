@@ -129,7 +129,10 @@ function FileRowItem({
         </p>
       </div>
       {showProject && file.projectName && file.projectId && (
-        <Link href={`/projects/${file.projectId}?tab=files`} className="hidden max-w-44 truncate text-xs text-muted-foreground hover:text-foreground lg:block">
+        <Link
+          href={`/projects/${file.projectId}?tab=files`}
+          className="hidden max-w-44 truncate text-xs text-muted-foreground hover:text-foreground lg:block"
+        >
           {file.projectName}
         </Link>
       )}
@@ -161,11 +164,7 @@ function FileRowItem({
           {canOrganize && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() =>
-                  update.execute({ id: file.id, sharedWithClient: !file.sharedWithClient })
-                }
-              >
+              <DropdownMenuItem onSelect={() => update.execute({ id: file.id, sharedWithClient: !file.sharedWithClient })}>
                 {file.sharedWithClient ? <EyeOff /> : <Eye />}
                 {file.sharedWithClient ? "Hide from client" : "Share with client"}
               </DropdownMenuItem>
@@ -175,7 +174,9 @@ function FileRowItem({
                     <FolderInput /> Move to folder
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem onSelect={() => update.execute({ id: file.id, folderId: null })}>All files (root)</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => update.execute({ id: file.id, folderId: null })}>
+                      All files (root)
+                    </DropdownMenuItem>
                     {folders.map((f) => (
                       <DropdownMenuItem key={f.id} onSelect={() => update.execute({ id: file.id, folderId: f.id })}>
                         {f.name}

@@ -52,7 +52,9 @@ export function WorkspaceSwitcher({ current, workspaces }: { current: ShellWorks
             onSelect={() => ws.id !== current.id && execute({ workspaceId: ws.id })}
             className="gap-2"
           >
-            <span className="flex size-6 items-center justify-center rounded bg-muted text-[10px] font-semibold">{initials(ws.name)}</span>
+            <span className="flex size-6 items-center justify-center rounded bg-muted text-[10px] font-semibold">
+              {initials(ws.name)}
+            </span>
             <span className="flex-1 truncate">{ws.name}</span>
             {ws.role === "CLIENT" && <Badge tone="warning">Portal</Badge>}
             {ws.id === current.id && <Check className="size-4 text-primary" />}

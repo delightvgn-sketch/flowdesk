@@ -41,7 +41,12 @@ export function TagInput({
       {value.map((tag) => (
         <span key={tag} className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
           {tag}
-          <button type="button" onClick={() => onChange(value.filter((t) => t !== tag))} aria-label={`Remove tag ${tag}`} className="rounded-sm text-muted-foreground hover:text-foreground">
+          <button
+            type="button"
+            onClick={() => onChange(value.filter((t) => t !== tag))}
+            aria-label={`Remove tag ${tag}`}
+            className="rounded-sm text-muted-foreground hover:text-foreground"
+          >
             <X className="size-3" />
           </button>
         </span>

@@ -32,12 +32,15 @@ export function formatMoney(amount: number | null | undefined, opts: FormatOptio
   const value = amount ?? 0;
   const hasFraction = Math.round(value * 100) % 100 !== 0;
 
-  const formatter = new Intl.NumberFormat("en-KE", opts.compact
-    ? { notation: "compact", maximumFractionDigits: 1 }
-    : {
-        minimumFractionDigits: opts.decimals || hasFraction ? 2 : 0,
-        maximumFractionDigits: 2,
-      });
+  const formatter = new Intl.NumberFormat(
+    "en-KE",
+    opts.compact
+      ? { notation: "compact", maximumFractionDigits: 1 }
+      : {
+          minimumFractionDigits: opts.decimals || hasFraction ? 2 : 0,
+          maximumFractionDigits: 2,
+        },
+  );
 
   const sign = value < 0 ? "-" : "";
   return `${sign}${symbol} ${formatter.format(Math.abs(value))}`;

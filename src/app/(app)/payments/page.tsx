@@ -40,7 +40,9 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
     from: period ? addDaysISO(today, -Number(period.value)) : undefined,
     page: parsePage(sp.page),
   };
-  const [{ rows, total, byMethod }, unpaid] = await ctx.db((tx) => Promise.all([listPayments(tx, ctx.workspace.id, filters), unpaidInvoiceOptions(tx, ctx.workspace.id)]));
+  const [{ rows, total, byMethod }, unpaid] = await ctx.db((tx) =>
+    Promise.all([listPayments(tx, ctx.workspace.id, filters), unpaidInvoiceOptions(tx, ctx.workspace.id)]),
+  );
   const collected = byMethod.reduce((s, m) => s + m.amount, 0);
 
   return (
@@ -54,22 +56,34 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
       <div className="mb-6 flex items-start gap-3 rounded-lg border border-info/20 bg-info-soft/60 px-4 py-3 text-sm">
         <Info className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
         <p>
-          These are <strong>payment records</strong>. FlowDesk doesn&apos;t connect to M-Pesa, banks or card processors — you record payments
-          you&apos;ve received, and invoice balances and statuses update automatically.
+          These are <strong>payment records</strong>. FlowDesk doesn&apos;t connect to M-Pesa, banks or card processors — you
+          record payments you&apos;ve received, and invoice balances and statuses update automatically.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
         <div>
           <Toolbar>
-            <FilterSelect param="method" label="Method" options={PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_METHOD_LABEL[m] }))} />
-            <FilterSelect param="status" label="Status" options={PAYMENT_STATUSES.map((s) => ({ value: s, label: PAYMENT_STATUS_META[s].label }))} />
+            <FilterSelect
+              param="method"
+              label="Method"
+              options={PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_METHOD_LABEL[m] }))}
+            />
+            <FilterSelect
+              param="status"
+              label="Status"
+              options={PAYMENT_STATUSES.map((s) => ({ value: s, label: PAYMENT_STATUS_META[s].label }))}
+            />
             <FilterSelect param="period" label="Period" options={PERIODS} allLabel="All time" />
             <ClearFilters keys={["method", "status", "period"]} />
           </Toolbar>
 
           {rows.length === 0 ? (
-            <EmptyState icon={CreditCard} title="No payments recorded" description="When a client pays, record it here or use “Mark as paid” on the invoice." />
+            <EmptyState
+              icon={CreditCard}
+              title="No payments recorded"
+              description="When a client pays, record it here or use “Mark as paid” on the invoice."
+            />
           ) : (
             <>
               <div className="overflow-x-auto rounded-xl border bg-card shadow-xs">
@@ -96,8 +110,12 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
                         </TableCell>
                         <TableCell>{PAYMENT_METHOD_LABEL[p.method]}</TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">{p.reference ?? "—"}</TableCell>
-                        <TableCell><StatusBadge kind="payment" value={p.status} /></TableCell>
-                        <TableCell className="tabular pr-4 text-right font-medium">{formatMoney(p.amount, { currency: p.currency })}</TableCell>
+                        <TableCell>
+                          <StatusBadge kind="payment" value={p.status} />
+                        </TableCell>
+                        <TableCell className="tabular pr-4 text-right font-medium">
+                          {formatMoney(p.amount, { currency: p.currency })}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -109,12 +127,20 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
         </div>
 
         <Panel>
-          <PanelHeader title="By method" description={`${formatMoney(collected, { currency: ctx.workspace.currency })} completed`} />
+          <PanelHeader
+            title="By method"
+            description={`${formatMoney(collected, { currency: ctx.workspace.currency })} completed`}
+          />
           <div className="p-4 sm:p-5">
             <BarList
               items={[...byMethod]
                 .sort((a, b) => b.amount - a.amount)
-                .map((m) => ({ label: PAYMENT_METHOD_LABEL[m.method], value: m.amount, display: formatMoney(m.amount, { currency: ctx.workspace.currency, compact: m.amount >= 1_000_000 }), hint: `· ${m.n}` }))}
+                .map((m) => ({
+                  label: PAYMENT_METHOD_LABEL[m.method],
+                  value: m.amount,
+                  display: formatMoney(m.amount, { currency: ctx.workspace.currency, compact: m.amount >= 1_000_000 }),
+                  hint: `· ${m.n}`,
+                }))}
               emptyLabel="No completed payments in this period."
             />
           </div>

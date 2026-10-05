@@ -15,7 +15,13 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -92,7 +98,8 @@ export function KanbanBoard({
     () => ({
       onDragStart: ({ active: a }) => `Picked up ${titleOf(a.id)}. Use arrow keys to move, Space to drop, Escape to cancel.`,
       onDragOver: ({ active: a, over }) => (over ? `${titleOf(a.id)} is over ${columnOf(over.id)}.` : undefined),
-      onDragEnd: ({ active: a, over }) => (over ? `${titleOf(a.id)} dropped in ${columnOf(over.id)}.` : `${titleOf(a.id)} dropped.`),
+      onDragEnd: ({ active: a, over }) =>
+        over ? `${titleOf(a.id)} dropped in ${columnOf(over.id)}.` : `${titleOf(a.id)} dropped.`,
       onDragCancel: ({ active: a }) => `Moving ${titleOf(a.id)} was cancelled.`,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,7 +148,12 @@ export function KanbanBoard({
     const index = list.findIndex((t) => t.id === a.id);
     if (startedIn === column && index === tasks.filter((t) => t.status === column).findIndex((t) => t.id === a.id)) return;
 
-    const result = await moveTask({ id: String(a.id), status: column, beforeId: list[index - 1]?.id ?? null, afterId: list[index + 1]?.id ?? null });
+    const result = await moveTask({
+      id: String(a.id),
+      status: column,
+      beforeId: list[index - 1]?.id ?? null,
+      afterId: list[index + 1]?.id ?? null,
+    });
     if (!result.ok) {
       toast.error(result.error);
       setColumns(group(tasks));
@@ -163,11 +175,24 @@ export function KanbanBoard({
         setActive(null);
         setColumns(group(tasks));
       }}
-      accessibility={{ announcements, screenReaderInstructions: { draggable: "To move a task, press Space, then use the arrow keys. Press Space again to drop it, or Escape to cancel. Press Enter to open the task." } }}
+      accessibility={{
+        announcements,
+        screenReaderInstructions: {
+          draggable:
+            "To move a task, press Space, then use the arrow keys. Press Space again to drop it, or Escape to cancel. Press Enter to open the task.",
+        },
+      }}
     >
-      <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 xl:grid-cols-4">
+      <div className="-mx-4 flex snap-x snap-mandatory scrollbar-none gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-0 xl:grid-cols-4">
         {TASK_STATUSES.map((status) => (
-          <Column key={status} status={status} tasks={columns[status]} today={today} canCreate={canCreate} onCreate={() => onCreate(status)} />
+          <Column
+            key={status}
+            status={status}
+            tasks={columns[status]}
+            today={today}
+            canCreate={canCreate}
+            onCreate={() => onCreate(status)}
+          />
         ))}
       </div>
       <DragOverlay dropAnimation={{ duration: 180 }}>
@@ -208,7 +233,13 @@ function Column({
         </h2>
         <span className="tabular text-xs text-muted-foreground">{tasks.length}</span>
         {canCreate && (
-          <Button variant="ghost" size="icon-xs" className="ml-auto" onClick={onCreate} aria-label={`Add task to ${TASK_STATUS_META[status].label}`}>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="ml-auto"
+            onClick={onCreate}
+            aria-label={`Add task to ${TASK_STATUS_META[status].label}`}
+          >
             <Plus />
           </Button>
         )}
@@ -219,7 +250,9 @@ function Column({
             <SortableTask key={task.id} task={task} today={today} />
           ))}
           {tasks.length === 0 && (
-            <li className="flex flex-1 items-center justify-center rounded-lg border border-dashed py-6 text-xs text-muted-foreground">Drop tasks here</li>
+            <li className="flex flex-1 items-center justify-center rounded-lg border border-dashed py-6 text-xs text-muted-foreground">
+              Drop tasks here
+            </li>
           )}
         </ul>
       </SortableContext>

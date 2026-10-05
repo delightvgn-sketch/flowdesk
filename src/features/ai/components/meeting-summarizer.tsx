@@ -25,7 +25,13 @@ export function MeetingSummarizer() {
   function copy() {
     if (!result) return;
     const text = [
-      "Summary", result.summary, "", "Decisions", ...result.decisions.map((d) => `- ${d}`), "", "Action items",
+      "Summary",
+      result.summary,
+      "",
+      "Decisions",
+      ...result.decisions.map((d) => `- ${d}`),
+      "",
+      "Action items",
       ...result.actionItems.map((a) => `- ${a.task}${a.owner ? ` (${a.owner})` : ""}${a.due ? ` — ${a.due}` : ""}`),
     ].join("\n");
     void navigator.clipboard.writeText(text).then(() => toast.success("Copied to clipboard."));
@@ -35,7 +41,16 @@ export function MeetingSummarizer() {
     <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-2">
       <div className="space-y-3">
         <Field label="Meeting notes" description="Paste raw notes or a transcript. Nothing is stored.">
-          {(p) => <Textarea {...p} rows={14} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Paste your notes here…" className="font-mono text-xs" />}
+          {(p) => (
+            <Textarea
+              {...p}
+              rows={14}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Paste your notes here…"
+              className="font-mono text-xs"
+            />
+          )}
         </Field>
         <div className="flex gap-2">
           <Button onClick={() => execute({ notes })} disabled={pending || notes.trim().length < 20}>
@@ -62,7 +77,11 @@ export function MeetingSummarizer() {
             <div>
               <h3 className="mb-2 text-sm font-semibold">Decisions</h3>
               {result.decisions.length ? (
-                <ul className="list-disc space-y-1 pl-5 text-sm">{result.decisions.map((d, i) => <li key={i}>{d}</li>)}</ul>
+                <ul className="list-disc space-y-1 pl-5 text-sm">
+                  {result.decisions.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">No decisions recorded.</p>
               )}
@@ -75,7 +94,11 @@ export function MeetingSummarizer() {
                     <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                     <span>
                       {a.task}
-                      {(a.owner || a.due) && <span className="block text-xs text-muted-foreground">{[a.owner, a.due].filter(Boolean).join(" · ")}</span>}
+                      {(a.owner || a.due) && (
+                        <span className="block text-xs text-muted-foreground">
+                          {[a.owner, a.due].filter(Boolean).join(" · ")}
+                        </span>
+                      )}
                     </span>
                   </li>
                 ))}

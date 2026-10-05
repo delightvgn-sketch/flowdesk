@@ -70,7 +70,12 @@ export function MessageThread({
 
   function submit() {
     if (!body.trim() || send.pending) return;
-    send.execute({ body, projectId: projectId ?? null, clientId: projectId ? null : (clientId ?? null), internal: canPostInternal && hasClientAudience && internal });
+    send.execute({
+      body,
+      projectId: projectId ?? null,
+      clientId: projectId ? null : (clientId ?? null),
+      internal: canPostInternal && hasClientAudience && internal,
+    });
   }
 
   const dayOf = (iso: string) => formatDate(iso, "EEEE d MMMM");
@@ -107,7 +112,14 @@ export function MessageThread({
                           {formatDate(m.createdAt, "HH:mm")}
                         </time>
                       </p>
-                      <p className={cn("mt-1 rounded-lg text-sm whitespace-pre-wrap", m.internal && "border-l-2 border-warning/50 bg-warning-soft/40 py-1.5 pr-2 pl-3")}>{m.body}</p>
+                      <p
+                        className={cn(
+                          "mt-1 rounded-lg text-sm whitespace-pre-wrap",
+                          m.internal && "border-l-2 border-warning/50 bg-warning-soft/40 py-1.5 pr-2 pl-3",
+                        )}
+                      >
+                        {m.body}
+                      </p>
                     </div>
                     {(mine || canModerate) && (
                       <Button
@@ -147,7 +159,11 @@ export function MessageThread({
                 submit();
               }
             }}
-            placeholder={internal ? "Internal note — only your team will see this" : "Write a message… (Enter to send, Shift+Enter for a new line)"}
+            placeholder={
+              internal
+                ? "Internal note — only your team will see this"
+                : "Write a message… (Enter to send, Shift+Enter for a new line)"
+            }
             className={cn("min-h-14 resize-none", internal && "border-warning/50 bg-warning-soft/30")}
             maxLength={5000}
           />

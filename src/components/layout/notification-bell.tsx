@@ -48,7 +48,12 @@ export function NotificationBell({ initialUnread, allHref = "/notifications" }: 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="relative" aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="relative"
+          aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+        >
           <Bell />
           {unread > 0 && (
             <span className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] leading-4 font-semibold text-primary-foreground">

@@ -77,17 +77,20 @@ export function FormField<T extends FieldValues, N extends FieldPath<T>>({
   description?: string;
   required?: boolean;
   className?: string;
-  render: (args: {
-    field: ControllerRenderProps<T, N>;
-    props: RenderProps;
-  }) => React.ReactNode;
+  render: (args: { field: ControllerRenderProps<T, N>; props: RenderProps }) => React.ReactNode;
 }) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <Field label={label} description={description} error={fieldState.error?.message} required={required} className={className}>
+        <Field
+          label={label}
+          description={description}
+          error={fieldState.error?.message}
+          required={required}
+          className={className}
+        >
           {(props) => render({ field, props })}
         </Field>
       )}

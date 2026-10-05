@@ -45,7 +45,11 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
 
   const [{ rows, total }, summary, clients] = await ctx.db(async (tx) => {
     await syncOverdueInvoices(tx, ctx.workspace.id, today);
-    return Promise.all([listInvoices(tx, ctx.workspace.id, filters), invoiceSummary(tx, ctx.workspace.id, today), clientOptions(tx, ctx.workspace.id)]);
+    return Promise.all([
+      listInvoices(tx, ctx.workspace.id, filters),
+      invoiceSummary(tx, ctx.workspace.id, today),
+      clientOptions(tx, ctx.workspace.id),
+    ]);
   });
   const filtered = !!(filters.q || filters.status || filters.clientId || filters.from);
   const money = (n: number) => formatMoney(n, { currency: ctx.workspace.currency });
@@ -66,14 +70,23 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
 
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Outstanding" value={money(summary.outstanding)} href="/invoices?status=SENT" />
-        <StatCard label="Overdue" value={money(summary.overdue)} tone={summary.overdue ? "danger" : "default"} href="/invoices?status=OVERDUE" />
+        <StatCard
+          label="Overdue"
+          value={money(summary.overdue)}
+          tone={summary.overdue ? "danger" : "default"}
+          href="/invoices?status=OVERDUE"
+        />
         <StatCard label="Collected, last 30 days" value={money(summary.paid30)} href="/payments" />
         <StatCard label="Drafts" value={summary.drafts} href="/invoices?status=DRAFT" />
       </div>
 
       <Toolbar>
         <SearchInput placeholder="Search invoices or clients…" />
-        <FilterSelect param="status" label="Status" options={INVOICE_STATUSES.map((s) => ({ value: s, label: INVOICE_STATUS_META[s].label }))} />
+        <FilterSelect
+          param="status"
+          label="Status"
+          options={INVOICE_STATUSES.map((s) => ({ value: s, label: INVOICE_STATUS_META[s].label }))}
+        />
         <FilterSelect param="client" label="Client" options={clients.map((c) => ({ value: c.id, label: c.label }))} />
         <FilterSelect param="period" label="Issued" options={PERIODS} allLabel="Any time" />
         <ClearFilters keys={["q", "status", "client", "period"]} />
@@ -81,7 +94,11 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
 
       {rows.length === 0 ? (
         filtered ? (
-          <EmptyState icon={FileText} title="No invoices match your filters" description="Try a different search or clear the filters." />
+          <EmptyState
+            icon={FileText}
+            title="No invoices match your filters"
+            description="Try a different search or clear the filters."
+          />
         ) : (
           <EmptyState
             icon={FileText}
@@ -119,19 +136,28 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
                   return (
                     <TableRow key={inv.id} className="group relative">
                       <TableCell className="pl-4">
-                        <Link href={`/invoices/${inv.id}`} className="tabular font-medium after:absolute after:inset-0 group-hover:underline">
+                        <Link
+                          href={`/invoices/${inv.id}`}
+                          className="tabular font-medium group-hover:underline after:absolute after:inset-0"
+                        >
                           {inv.number}
                         </Link>
-                        {inv.projectName && <span className="block max-w-48 truncate text-xs text-muted-foreground">{inv.projectName}</span>}
+                        {inv.projectName && (
+                          <span className="block max-w-48 truncate text-xs text-muted-foreground">{inv.projectName}</span>
+                        )}
                       </TableCell>
                       <TableCell className="max-w-56 truncate">{inv.clientName}</TableCell>
-                      <TableCell><StatusBadge kind="invoice" value={inv.status} /></TableCell>
+                      <TableCell>
+                        <StatusBadge kind="invoice" value={inv.status} />
+                      </TableCell>
                       <TableCell className="text-muted-foreground">{formatDate(inv.issueDate)}</TableCell>
                       <TableCell className={cn(isOpen && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
                         {isOpen ? due.text : formatDate(inv.dueDate)}
                       </TableCell>
                       <TableCell className="tabular text-right">{formatMoney(inv.total, { currency: inv.currency })}</TableCell>
-                      <TableCell className="tabular pr-4 text-right font-medium">{isOpen ? formatMoney(balance, { currency: inv.currency }) : "—"}</TableCell>
+                      <TableCell className="tabular pr-4 text-right font-medium">
+                        {isOpen ? formatMoney(balance, { currency: inv.currency }) : "—"}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -141,10 +167,15 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
           <ul className="grid gap-2 md:hidden">
             {rows.map((inv) => (
               <li key={inv.id}>
-                <Link href={`/invoices/${inv.id}`} className="flex items-center justify-between gap-3 rounded-xl border bg-card p-3 shadow-xs active:bg-muted/50">
+                <Link
+                  href={`/invoices/${inv.id}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border bg-card p-3 shadow-xs active:bg-muted/50"
+                >
                   <span className="min-w-0">
                     <span className="tabular block font-medium">{inv.number}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{inv.clientName} · due {formatDate(inv.dueDate, "d MMM")}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {inv.clientName} · due {formatDate(inv.dueDate, "d MMM")}
+                    </span>
                   </span>
                   <span className="flex flex-col items-end gap-1">
                     <span className="tabular text-sm font-semibold">{formatMoney(inv.total, { currency: inv.currency })}</span>

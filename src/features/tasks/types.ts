@@ -24,7 +24,20 @@ export type TaskDetail = BoardTask & {
   completedAt: string | null;
   createdById: string | null;
   createdByName: string | null;
-  comments: { id: string; body: string; createdAt: string; authorId: string | null; authorName: string | null; authorAvatar: string | null }[];
+  comments: {
+    id: string;
+    body: string;
+    createdAt: string;
+    authorId: string | null;
+    authorName: string | null;
+    authorAvatar: string | null;
+  }[];
   attachments: { id: string; name: string; sizeBytes: number; mimeType: string; createdAt: string }[];
-  activity: { id: string; action: string; actorName: string | null; createdAt: string; metadata: Record<string, string | number | boolean | null> | null }[];
+  activity: {
+    id: string;
+    action: string;
+    actorName: string | null;
+    createdAt: string;
+    metadata: Record<string, string | number | boolean | null> | null;
+  }[];
 };

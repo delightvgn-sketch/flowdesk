@@ -28,9 +28,18 @@ export async function nextInvoiceNumber(tx: Tx, workspaceId: string): Promise<st
 export async function refreshInvoicePaymentState(tx: Tx, invoiceId: string, today: string) {
   const invoice = await tx.query.invoices.findFirst({ where: eq(invoices.id, invoiceId) });
   if (!invoice) return null;
-  const rows = await tx.select({ amount: payments.amount, status: payments.status, paidOn: payments.paidOn }).from(payments).where(eq(payments.invoiceId, invoiceId));
+  const rows = await tx
+    .select({ amount: payments.amount, status: payments.status, paidOn: payments.paidOn })
+    .from(payments)
+    .where(eq(payments.invoiceId, invoiceId));
   const amountPaid = sumCompletedPayments(rows);
-  const status = deriveInvoiceStatus({ current: invoice.status, total: invoice.total, amountPaid, dueDate: invoice.dueDate, today });
+  const status = deriveInvoiceStatus({
+    current: invoice.status,
+    total: invoice.total,
+    amountPaid,
+    dueDate: invoice.dueDate,
+    today,
+  });
   const [updated] = await tx
     .update(invoices)
     .set({

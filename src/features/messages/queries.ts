@@ -43,7 +43,16 @@ export async function listMessages(tx: Tx, workspaceId: string, key: ThreadKey, 
   return rows.reverse().map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }));
 }
 
-export type Thread = { key: string; kind: "general" | "project" | "client"; id: string | null; title: string; subtitle: string | null; lastAt: string | null; lastBody: string | null; count: number };
+export type Thread = {
+  key: string;
+  kind: "general" | "project" | "client";
+  id: string | null;
+  title: string;
+  subtitle: string | null;
+  lastAt: string | null;
+  lastBody: string | null;
+  count: number;
+};
 
 /** Conversations the user can see, most recent first. RLS filters projects/clients. */
 export async function listThreads(tx: Tx, workspaceId: string, includeGeneral: boolean): Promise<Thread[]> {
@@ -58,7 +67,11 @@ export async function listThreads(tx: Tx, workspaceId: string, includeGeneral: b
       .where(and(eq(projects.workspaceId, workspaceId), sql`${projects.status} not in ('CANCELLED')`))
       .orderBy(asc(projects.name)),
     tx
-      .select({ id: clients.id, name: sql<string>`coalesce(${clients.company}, ${clients.name})`, last: last(sql`m.client_id = "clients"."id" and m.project_id is null`) })
+      .select({
+        id: clients.id,
+        name: sql<string>`coalesce(${clients.company}, ${clients.name})`,
+        last: last(sql`m.client_id = "clients"."id" and m.project_id is null`),
+      })
       .from(clients)
       .where(and(eq(clients.workspaceId, workspaceId), sql`${clients.status} <> 'ARCHIVED'`)),
     includeGeneral
@@ -72,15 +85,42 @@ export async function listThreads(tx: Tx, workspaceId: string, includeGeneral: b
   const threads: Thread[] = [];
   if (includeGeneral) {
     const g = general[0];
-    threads.push({ key: "general", kind: "general", id: null, title: "General", subtitle: "Team only", lastAt: g?.at ?? null, lastBody: g?.body ?? null, count: Number(g?.count ?? 0) });
+    threads.push({
+      key: "general",
+      kind: "general",
+      id: null,
+      title: "General",
+      subtitle: "Team only",
+      lastAt: g?.at ?? null,
+      lastBody: g?.body ?? null,
+      count: Number(g?.count ?? 0),
+    });
   }
   for (const p of projectRows) {
     const l = p.last as Last;
-    threads.push({ key: `project:${p.id}`, kind: "project", id: p.id, title: p.name, subtitle: p.client, lastAt: l?.at ?? null, lastBody: l?.body ?? null, count: l?.count ?? 0 });
+    threads.push({
+      key: `project:${p.id}`,
+      kind: "project",
+      id: p.id,
+      title: p.name,
+      subtitle: p.client,
+      lastAt: l?.at ?? null,
+      lastBody: l?.body ?? null,
+      count: l?.count ?? 0,
+    });
   }
   for (const c of clientRows) {
     const l = c.last as Last;
-    threads.push({ key: `client:${c.id}`, kind: "client", id: c.id, title: c.name, subtitle: "Client conversation", lastAt: l?.at ?? null, lastBody: l?.body ?? null, count: l?.count ?? 0 });
+    threads.push({
+      key: `client:${c.id}`,
+      kind: "client",
+      id: c.id,
+      title: c.name,
+      subtitle: "Client conversation",
+      lastAt: l?.at ?? null,
+      lastBody: l?.body ?? null,
+      count: l?.count ?? 0,
+    });
   }
   return threads;
 }

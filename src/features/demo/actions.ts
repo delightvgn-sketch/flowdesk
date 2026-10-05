@@ -59,7 +59,12 @@ export async function startDemoSession(raw: string): Promise<ActionResult<{ tick
     const token = await clerk.signInTokens.createSignInToken({ userId: user.id, expiresInSeconds: 120 });
 
     if (workspace) {
-      (await cookies()).set(WORKSPACE_COOKIE, workspace.id, { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
+      (await cookies()).set(WORKSPACE_COOKIE, workspace.id, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
     }
 
     return { ok: true, data: { ticket: token.token, redirectTo: person.role === "CLIENT" ? "/portal" : "/dashboard" } };

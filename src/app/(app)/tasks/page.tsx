@@ -34,7 +34,12 @@ export default async function TasksPage({ searchParams }: PageProps<"/tasks">) {
   };
 
   const [tasks, projects, people, labels] = await ctx.db((tx) =>
-    Promise.all([listBoardTasks(tx, ctx.workspace.id, filters), projectOptions(tx, ctx.workspace.id), staffOptions(tx, ctx.workspace.id), listLabels(tx, ctx.workspace.id)]),
+    Promise.all([
+      listBoardTasks(tx, ctx.workspace.id, filters),
+      projectOptions(tx, ctx.workspace.id),
+      staffOptions(tx, ctx.workspace.id),
+      listLabels(tx, ctx.workspace.id),
+    ]),
   );
   const manager = isManagerRole(ctx.role);
   const formOptions = { projects, people, labels, allowNoProject: true };
@@ -42,7 +47,9 @@ export default async function TasksPage({ searchParams }: PageProps<"/tasks">) {
   const today = todayISO(ctx.workspace.timezone);
 
   const viewHref = (v: string) => {
-    const next = new URLSearchParams(Object.entries(sp).filter((e): e is [string, string] => typeof e[1] === "string" && e[0] !== "task"));
+    const next = new URLSearchParams(
+      Object.entries(sp).filter((e): e is [string, string] => typeof e[1] === "string" && e[0] !== "task"),
+    );
     if (v === "list") next.set("view", "list");
     else next.delete("view");
     const qs = next.toString();
@@ -81,10 +88,25 @@ export default async function TasksPage({ searchParams }: PageProps<"/tasks">) {
 
       <Toolbar>
         <SearchInput placeholder="Search tasks…" />
-        <FilterSelect param="assignee" label="Assignee" options={[{ value: "me", label: "Me" }, ...people.map((p) => ({ value: p.id, label: p.fullName }))]} allLabel="Anyone" />
-        <FilterSelect param="project" label="Project" options={[{ value: "none", label: "No project" }, ...projects.map((p) => ({ value: p.id, label: p.label }))]} />
-        <FilterSelect param="priority" label="Priority" options={PRIORITIES.map((p) => ({ value: p, label: PRIORITY_META[p].label }))} />
-        {labels.length > 0 && <FilterSelect param="label" label="Label" options={labels.map((l) => ({ value: l.id, label: l.name }))} />}
+        <FilterSelect
+          param="assignee"
+          label="Assignee"
+          options={[{ value: "me", label: "Me" }, ...people.map((p) => ({ value: p.id, label: p.fullName }))]}
+          allLabel="Anyone"
+        />
+        <FilterSelect
+          param="project"
+          label="Project"
+          options={[{ value: "none", label: "No project" }, ...projects.map((p) => ({ value: p.id, label: p.label }))]}
+        />
+        <FilterSelect
+          param="priority"
+          label="Priority"
+          options={PRIORITIES.map((p) => ({ value: p, label: PRIORITY_META[p].label }))}
+        />
+        {labels.length > 0 && (
+          <FilterSelect param="label" label="Label" options={labels.map((l) => ({ value: l.id, label: l.name }))} />
+        )}
         <ClearFilters keys={["q", "assignee", "project", "priority", "label"]} />
       </Toolbar>
 

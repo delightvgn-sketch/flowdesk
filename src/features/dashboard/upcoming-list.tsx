@@ -22,7 +22,12 @@ export function UpcomingList({ items, today }: { items: UpcomingItem[]; today: s
   if (items.length === 0) {
     return (
       <div className="p-5">
-        <EmptyState icon={CalendarCheck2} title="Nothing coming up" description="No meetings, deadlines or overdue invoices in the next two weeks." compact />
+        <EmptyState
+          icon={CalendarCheck2}
+          title="Nothing coming up"
+          description="No meetings, deadlines or overdue invoices in the next two weeks."
+          compact
+        />
       </div>
     );
   }
@@ -51,7 +56,9 @@ export function UpcomingList({ items, today }: { items: UpcomingItem[]; today: s
                 <span className="block truncate text-sm font-medium">{item.title}</span>
                 {item.subtitle && <span className="block truncate text-xs text-muted-foreground">{item.subtitle}</span>}
               </span>
-              <span className={cn("shrink-0 text-right text-xs", item.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
+              <span
+                className={cn("shrink-0 text-right text-xs", item.overdue ? "font-medium text-danger" : "text-muted-foreground")}
+              >
                 {item.overdue && item.kind !== "invoice" ? "Overdue" : relativeDay(item.date, today)}
                 {item.time && <span className="block text-subtle-foreground">{item.time}</span>}
               </span>

@@ -27,9 +27,25 @@ const s = StyleSheet.create({
   colAmount: { width: 92, textAlign: "right" },
   totals: { marginTop: 16, marginLeft: "auto", width: 230 },
   totalRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 3 },
-  grand: { flexDirection: "row", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: ink, marginTop: 6, paddingTop: 8 },
+  grand: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: ink,
+    marginTop: 6,
+    paddingTop: 8,
+  },
   grandText: { fontSize: 12, fontFamily: "Helvetica-Bold" },
-  badge: { marginTop: 8, alignSelf: "flex-end", paddingVertical: 3, paddingHorizontal: 8, borderRadius: 3, fontSize: 8, fontFamily: "Helvetica-Bold", letterSpacing: 1 },
+  badge: {
+    marginTop: 8,
+    alignSelf: "flex-end",
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 3,
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    letterSpacing: 1,
+  },
   footer: { position: "absolute", bottom: 32, left: 48, right: 48, fontSize: 7.5, color: muted, textAlign: "center" },
 });
 
@@ -60,7 +76,9 @@ export function InvoicePdf({ data }: { data: InvoiceDocumentData }) {
               </Svg>
               <Text style={s.brandName}>{data.from.name}</Text>
             </View>
-            <Text style={[s.muted, { marginTop: 10 }]}>{[data.from.address, data.from.email, data.from.phone].filter(Boolean).join("\n")}</Text>
+            <Text style={[s.muted, { marginTop: 10 }]}>
+              {[data.from.address, data.from.email, data.from.phone].filter(Boolean).join("\n")}
+            </Text>
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={s.label}>Invoice</Text>
@@ -82,7 +100,9 @@ export function InvoicePdf({ data }: { data: InvoiceDocumentData }) {
             <Text style={s.label}>Bill to</Text>
             <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 11, marginTop: 6 }}>{data.to.company ?? data.to.name}</Text>
             <Text style={[s.muted, { marginTop: 2 }]}>
-              {[data.to.company ? `Attn: ${data.to.name}` : null, data.to.address, data.to.email, data.to.phone].filter(Boolean).join("\n")}
+              {[data.to.company ? `Attn: ${data.to.name}` : null, data.to.address, data.to.email, data.to.phone]
+                .filter(Boolean)
+                .join("\n")}
             </Text>
           </View>
           {data.projectName && (
@@ -150,7 +170,13 @@ export function InvoicePdf({ data }: { data: InvoiceDocumentData }) {
           </View>
         )}
 
-        <Text style={s.footer} fixed render={({ pageNumber, totalPages }) => `${data.from.name} · Invoice ${data.number} · Page ${pageNumber} of ${totalPages}`} />
+        <Text
+          style={s.footer}
+          fixed
+          render={({ pageNumber, totalPages }) =>
+            `${data.from.name} · Invoice ${data.number} · Page ${pageNumber} of ${totalPages}`
+          }
+        />
       </Page>
     </Document>
   );

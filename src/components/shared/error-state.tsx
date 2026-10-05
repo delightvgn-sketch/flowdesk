@@ -7,7 +7,15 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 /** Shared body for route error boundaries. Never shows raw error details. */
-export function ErrorState({ error, reset, homeHref = "/dashboard" }: { error: Error & { digest?: string }; reset: () => void; homeHref?: string }) {
+export function ErrorState({
+  error,
+  reset,
+  homeHref = "/dashboard",
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+  homeHref?: string;
+}) {
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -19,7 +27,8 @@ export function ErrorState({ error, reset, homeHref = "/dashboard" }: { error: E
       </span>
       <h1 className="mt-4 text-xl font-semibold tracking-tight">Something went wrong</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        We couldn&apos;t load this page. It&apos;s probably temporary — try again, and if it keeps happening, head back and retry in a moment.
+        We couldn&apos;t load this page. It&apos;s probably temporary — try again, and if it keeps happening, head back and retry
+        in a moment.
       </p>
       {error.digest && <p className="mt-2 font-mono text-xs text-subtle-foreground">Reference: {error.digest}</p>}
       <div className="mt-6 flex gap-2">

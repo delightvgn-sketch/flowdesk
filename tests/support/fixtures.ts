@@ -73,10 +73,42 @@ export async function createRlsFixture() {
   const [invDraft, invSent, invOther] = await adminDb
     .insert(s.invoices)
     .values([
-      { workspaceId: wsA.id, clientId: c1.id, number: "INV-0001", status: "DRAFT", issueDate: "2026-10-01", dueDate: "2026-10-15", total: 1000 },
-      { workspaceId: wsA.id, clientId: c1.id, number: "INV-0002", status: "SENT", issueDate: "2026-10-01", dueDate: "2026-10-15", total: 2000 },
-      { workspaceId: wsA.id, clientId: c2.id, number: "INV-0003", status: "SENT", issueDate: "2026-10-01", dueDate: "2026-10-15", total: 3000 },
-      { workspaceId: wsB.id, clientId: cB.id, number: "INV-0001", status: "SENT", issueDate: "2026-10-01", dueDate: "2026-10-15", total: 4000 },
+      {
+        workspaceId: wsA.id,
+        clientId: c1.id,
+        number: "INV-0001",
+        status: "DRAFT",
+        issueDate: "2026-10-01",
+        dueDate: "2026-10-15",
+        total: 1000,
+      },
+      {
+        workspaceId: wsA.id,
+        clientId: c1.id,
+        number: "INV-0002",
+        status: "SENT",
+        issueDate: "2026-10-01",
+        dueDate: "2026-10-15",
+        total: 2000,
+      },
+      {
+        workspaceId: wsA.id,
+        clientId: c2.id,
+        number: "INV-0003",
+        status: "SENT",
+        issueDate: "2026-10-01",
+        dueDate: "2026-10-15",
+        total: 3000,
+      },
+      {
+        workspaceId: wsB.id,
+        clientId: cB.id,
+        number: "INV-0001",
+        status: "SENT",
+        issueDate: "2026-10-01",
+        dueDate: "2026-10-15",
+        total: 4000,
+      },
     ])
     .returning();
 
@@ -89,11 +121,13 @@ export async function createRlsFixture() {
     uploadedById: p.owner.id,
     ...extra,
   });
-  await adminDb.insert(s.files).values([
-    fileRow("shared-p1.txt", { projectId: p1.id, clientId: c1.id, sharedWithClient: true }),
-    fileRow("internal-p1.txt", { projectId: p1.id, clientId: c1.id, sharedWithClient: false }),
-    fileRow("shared-p2.txt", { projectId: p2.id, clientId: c2.id, sharedWithClient: true }),
-  ]);
+  await adminDb
+    .insert(s.files)
+    .values([
+      fileRow("shared-p1.txt", { projectId: p1.id, clientId: c1.id, sharedWithClient: true }),
+      fileRow("internal-p1.txt", { projectId: p1.id, clientId: c1.id, sharedWithClient: false }),
+      fileRow("shared-p2.txt", { projectId: p2.id, clientId: c2.id, sharedWithClient: true }),
+    ]);
 
   await adminDb.insert(s.messages).values([
     { workspaceId: wsA.id, projectId: p1.id, authorId: p.owner.id, body: "visible to client one" },

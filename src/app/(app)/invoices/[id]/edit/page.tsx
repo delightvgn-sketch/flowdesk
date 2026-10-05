@@ -22,7 +22,11 @@ export default async function EditInvoicePage({ params }: PageProps<"/invoices/[
     if (!details) return null;
     const [clients, projectRows] = await Promise.all([
       clientOptions(tx, ctx.workspace.id),
-      tx.select({ id: projects.id, label: projects.name, clientId: projects.clientId }).from(projects).where(eq(projects.workspaceId, ctx.workspace.id)).orderBy(asc(projects.name)),
+      tx
+        .select({ id: projects.id, label: projects.name, clientId: projects.clientId })
+        .from(projects)
+        .where(eq(projects.workspaceId, ctx.workspace.id))
+        .orderBy(asc(projects.name)),
     ]);
     return { details, clients, projectRows };
   });
@@ -32,7 +36,14 @@ export default async function EditInvoicePage({ params }: PageProps<"/invoices/[
 
   return (
     <>
-      <PageHeader title={`Edit ${invoice.number}`} breadcrumbs={[{ label: "Invoices", href: "/invoices" }, { label: invoice.number, href: `/invoices/${id}` }, { label: "Edit" }]} />
+      <PageHeader
+        title={`Edit ${invoice.number}`}
+        breadcrumbs={[
+          { label: "Invoices", href: "/invoices" },
+          { label: invoice.number, href: `/invoices/${id}` },
+          { label: "Edit" },
+        ]}
+      />
       <InvoiceEditor
         invoiceId={id}
         clients={data.clients}

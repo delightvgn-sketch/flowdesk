@@ -265,7 +265,10 @@ export const inviteSchema = z
     role: z.enum(["ADMIN", "MEMBER", "CLIENT"]),
     clientId: optionalUuid,
   })
-  .refine((v) => v.role !== "CLIENT" || !!v.clientId, { message: "Choose the client this person represents", path: ["clientId"] });
+  .refine((v) => v.role !== "CLIENT" || !!v.clientId, {
+    message: "Choose the client this person represents",
+    path: ["clientId"],
+  });
 
 export const memberRoleSchema = z.object({
   memberId: z.uuid(),
@@ -302,11 +305,7 @@ export const ALLOWED_MIME_TYPES = [
 export const fileUploadSchema = z.object({
   name: required("File name", 200).refine((n) => !/[\\/]/.test(n), "File name can't contain slashes"),
   mimeType: z.enum(ALLOWED_MIME_TYPES, { error: "This file type isn't supported" }),
-  sizeBytes: z
-    .number()
-    .int()
-    .positive("File is empty")
-    .max(MAX_UPLOAD_BYTES, "Files must be 25 MB or smaller"),
+  sizeBytes: z.number().int().positive("File is empty").max(MAX_UPLOAD_BYTES, "Files must be 25 MB or smaller"),
   folderId: optionalUuid,
   clientId: optionalUuid,
   projectId: optionalUuid,

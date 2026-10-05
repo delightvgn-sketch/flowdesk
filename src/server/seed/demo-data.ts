@@ -274,31 +274,99 @@ export const DEMO_PROJECTS: ProjectSeed[] = [
     budget: 850000,
     team: ["brian", "aisha", "david"],
     milestones: [
-      { title: "Discovery", status: "COMPLETED", dueOffset: -50, approval: "APPROVED", description: "Stakeholder interviews, analytics review and sitemap." },
-      { title: "Design", status: "COMPLETED", dueOffset: -30, approval: "APPROVED", description: "Design system and high-fidelity screens for all key flows." },
-      { title: "Development", status: "COMPLETED", dueOffset: -6, approval: "NOT_REQUIRED", description: "Storefront, checkout and CMS build." },
-      { title: "Testing", status: "CURRENT", dueOffset: 9, approval: "PENDING", description: "UAT on staging with the Northstar team. Sign-off required before launch." },
+      {
+        title: "Discovery",
+        status: "COMPLETED",
+        dueOffset: -50,
+        approval: "APPROVED",
+        description: "Stakeholder interviews, analytics review and sitemap.",
+      },
+      {
+        title: "Design",
+        status: "COMPLETED",
+        dueOffset: -30,
+        approval: "APPROVED",
+        description: "Design system and high-fidelity screens for all key flows.",
+      },
+      {
+        title: "Development",
+        status: "COMPLETED",
+        dueOffset: -6,
+        approval: "NOT_REQUIRED",
+        description: "Storefront, checkout and CMS build.",
+      },
+      {
+        title: "Testing",
+        status: "CURRENT",
+        dueOffset: 9,
+        approval: "PENDING",
+        description: "UAT on staging with the Northstar team. Sign-off required before launch.",
+      },
       { title: "Launch", status: "UPCOMING", dueOffset: 24, description: "DNS cut-over, monitoring and handover." },
     ],
     tasks: [
       { title: "Run stakeholder interviews", status: "DONE", assignee: "aisha", dueOffset: -55, labels: ["Design"] },
       { title: "Audit current analytics funnel", status: "DONE", assignee: "brian", dueOffset: -52 },
-      { title: "Design system: colours, type and components", status: "DONE", assignee: "aisha", dueOffset: -38, labels: ["Design"] },
+      {
+        title: "Design system: colours, type and components",
+        status: "DONE",
+        assignee: "aisha",
+        dueOffset: -38,
+        labels: ["Design"],
+      },
       { title: "High-fidelity product page designs", status: "DONE", assignee: "aisha", dueOffset: -32, labels: ["Design"] },
       { title: "Set up Next.js storefront and CI", status: "DONE", assignee: "brian", dueOffset: -28, labels: ["DevOps"] },
       { title: "Build product listing with filters", status: "DONE", assignee: "david", dueOffset: -20, labels: ["Frontend"] },
-      { title: "Integrate M-Pesa STK push at checkout", status: "DONE", priority: "URGENT", assignee: "brian", dueOffset: -12, labels: ["Backend"],
+      {
+        title: "Integrate M-Pesa STK push at checkout",
+        status: "DONE",
+        priority: "URGENT",
+        assignee: "brian",
+        dueOffset: -12,
+        labels: ["Backend"],
         description: "Use Daraja sandbox first. Callback must be idempotent; store the CheckoutRequestID against the order.",
         comments: [
-          { author: "brian", body: "Callback handler is idempotent now — duplicate callbacks from Safaricom are ignored.", hoursAgo: 300 },
-          { author: "sarah", body: "Great. Can we get a short note in the handover doc on how to rotate the passkey?", hoursAgo: 290 },
-        ] },
+          {
+            author: "brian",
+            body: "Callback handler is idempotent now — duplicate callbacks from Safaricom are ignored.",
+            hoursAgo: 300,
+          },
+          {
+            author: "sarah",
+            body: "Great. Can we get a short note in the handover doc on how to rotate the passkey?",
+            hoursAgo: 290,
+          },
+        ],
+      },
       { title: "CMS for homepage banners", status: "DONE", assignee: "david", dueOffset: -8, labels: ["Frontend"] },
-      { title: "Cross-browser QA on staging", status: "IN_PROGRESS", priority: "HIGH", assignee: "david", dueOffset: 3, labels: ["QA"],
-        comments: [{ author: "david", body: "Safari 17 has a sticky header glitch on the cart drawer — fixing today.", hoursAgo: 20 }] },
-      { title: "Fix cart total rounding on discounts", status: "REVIEW", priority: "URGENT", assignee: "brian", dueOffset: 1, labels: ["Bug", "Backend"],
-        description: "Percentage discounts on bundles round each line separately, leaving the total off by up to KSh 2." },
-      { title: "Performance pass: images and fonts", status: "TODO", priority: "MEDIUM", assignee: "david", dueOffset: 12, labels: ["Frontend"] },
+      {
+        title: "Cross-browser QA on staging",
+        status: "IN_PROGRESS",
+        priority: "HIGH",
+        assignee: "david",
+        dueOffset: 3,
+        labels: ["QA"],
+        comments: [
+          { author: "david", body: "Safari 17 has a sticky header glitch on the cart drawer — fixing today.", hoursAgo: 20 },
+        ],
+      },
+      {
+        title: "Fix cart total rounding on discounts",
+        status: "REVIEW",
+        priority: "URGENT",
+        assignee: "brian",
+        dueOffset: 1,
+        labels: ["Bug", "Backend"],
+        description: "Percentage discounts on bundles round each line separately, leaving the total off by up to KSh 2.",
+      },
+      {
+        title: "Performance pass: images and fonts",
+        status: "TODO",
+        priority: "MEDIUM",
+        assignee: "david",
+        dueOffset: 12,
+        labels: ["Frontend"],
+      },
       { title: "Write launch checklist and rollback plan", status: "TODO", assignee: "brian", dueOffset: 18, labels: ["DevOps"] },
     ],
   },
@@ -323,9 +391,29 @@ export const DEMO_PROJECTS: ProjectSeed[] = [
       { title: "Menu data model with modifiers", status: "DONE", assignee: "brian", dueOffset: -30, labels: ["Backend"] },
       { title: "Ordering flow UI", status: "DONE", assignee: "david", dueOffset: -22, labels: ["Frontend"] },
       { title: "Branch selection and opening hours", status: "DONE", assignee: "david", dueOffset: -15, labels: ["Frontend"] },
-      { title: "Kitchen display real-time updates", status: "IN_PROGRESS", priority: "URGENT", assignee: "brian", dueOffset: -1, labels: ["Backend"],
-        comments: [{ author: "brian", body: "Switched to server-sent events; the kitchen tablets kept dropping websockets on the café Wi-Fi.", hoursAgo: 6 }] },
-      { title: "Delivery fee calculation by zone", status: "TODO", priority: "HIGH", assignee: "brian", dueOffset: 4, labels: ["Backend"] },
+      {
+        title: "Kitchen display real-time updates",
+        status: "IN_PROGRESS",
+        priority: "URGENT",
+        assignee: "brian",
+        dueOffset: -1,
+        labels: ["Backend"],
+        comments: [
+          {
+            author: "brian",
+            body: "Switched to server-sent events; the kitchen tablets kept dropping websockets on the café Wi-Fi.",
+            hoursAgo: 6,
+          },
+        ],
+      },
+      {
+        title: "Delivery fee calculation by zone",
+        status: "TODO",
+        priority: "HIGH",
+        assignee: "brian",
+        dueOffset: 4,
+        labels: ["Backend"],
+      },
       { title: "Print receipts on Epson TM-T20", status: "TODO", assignee: "david", dueOffset: 6 },
       { title: "Staff training session", status: "TODO", priority: "LOW", dueOffset: 8, labels: ["Content"] },
     ],
@@ -351,9 +439,23 @@ export const DEMO_PROJECTS: ProjectSeed[] = [
       { title: "Case study page template", status: "DONE", assignee: "aisha", dueOffset: -30, labels: ["Design"] },
       { title: "Build lookbook gallery", status: "DONE", assignee: "david", dueOffset: -14, labels: ["Frontend"] },
       { title: "Consultation booking form", status: "DONE", assignee: "david", dueOffset: -9, labels: ["Frontend"] },
-      { title: "Replace placeholder photography", status: "REVIEW", priority: "HIGH", assignee: "aisha", dueOffset: -4, labels: ["Content"],
-        description: "Final photos from the Lavington shoot arrived. Needs colour-matching before upload." },
-      { title: "Apply client feedback on About page", status: "IN_PROGRESS", priority: "HIGH", assignee: "david", dueOffset: -2, labels: ["Frontend"] },
+      {
+        title: "Replace placeholder photography",
+        status: "REVIEW",
+        priority: "HIGH",
+        assignee: "aisha",
+        dueOffset: -4,
+        labels: ["Content"],
+        description: "Final photos from the Lavington shoot arrived. Needs colour-matching before upload.",
+      },
+      {
+        title: "Apply client feedback on About page",
+        status: "IN_PROGRESS",
+        priority: "HIGH",
+        assignee: "david",
+        dueOffset: -2,
+        labels: ["Frontend"],
+      },
     ],
   },
   {
@@ -392,7 +494,14 @@ export const DEMO_PROJECTS: ProjectSeed[] = [
     tasks: [
       { title: "Define KPI formulas with Kibo finance", status: "DONE", assignee: "brian", dueOffset: -16 },
       { title: "Dashboard wireframes", status: "DONE", assignee: "aisha", dueOffset: -10, labels: ["Design"] },
-      { title: "Data pipeline from loan ledger", status: "IN_PROGRESS", priority: "HIGH", assignee: "brian", dueOffset: 10, labels: ["Backend"] },
+      {
+        title: "Data pipeline from loan ledger",
+        status: "IN_PROGRESS",
+        priority: "HIGH",
+        assignee: "brian",
+        dueOffset: 10,
+        labels: ["Backend"],
+      },
       { title: "Cohort retention chart", status: "TODO", assignee: "brian", dueOffset: 20, labels: ["Frontend"] },
       { title: "Visual design for charts", status: "IN_PROGRESS", assignee: "aisha", dueOffset: 7, labels: ["Design"] },
       { title: "Role-based access for investors", status: "TODO", priority: "HIGH", dueOffset: 30, labels: ["Backend"] },
@@ -417,22 +526,44 @@ export const DEMO_PROJECTS: ProjectSeed[] = [
     tasks: [
       { title: "Channel manager sync (NightsBridge)", status: "DONE", assignee: "brian", dueOffset: -45, labels: ["Backend"] },
       { title: "Availability calendar UI", status: "DONE", assignee: "david", dueOffset: -35, labels: ["Frontend"] },
-      { title: "Second channel manager integration", status: "IN_PROGRESS", priority: "URGENT", assignee: "brian", dueOffset: -8, labels: ["Backend"],
+      {
+        title: "Second channel manager integration",
+        status: "IN_PROGRESS",
+        priority: "URGENT",
+        assignee: "brian",
+        dueOffset: -8,
+        labels: ["Backend"],
         description: "Their API rate limits are much stricter than documented. Need a queue with back-off.",
         comments: [
           { author: "victor", body: "Joseph is asking for a revised date. What's realistic?", hoursAgo: 30 },
           { author: "brian", body: "About 10 more working days once their sandbox stops throwing 429s.", hoursAgo: 26 },
-        ] },
-      { title: "Deposit payments with card + M-Pesa", status: "REVIEW", priority: "HIGH", assignee: "brian", dueOffset: -5, labels: ["Backend"] },
+        ],
+      },
+      {
+        title: "Deposit payments with card + M-Pesa",
+        status: "REVIEW",
+        priority: "HIGH",
+        assignee: "brian",
+        dueOffset: -5,
+        labels: ["Backend"],
+      },
       { title: "Booking confirmation emails", status: "TODO", assignee: "david", dueOffset: -2, labels: ["Frontend"] },
-      { title: "Lodge photography gallery", status: "TODO", priority: "LOW", assignee: "aisha", dueOffset: 5, labels: ["Design"] },
+      {
+        title: "Lodge photography gallery",
+        status: "TODO",
+        priority: "LOW",
+        assignee: "aisha",
+        dueOffset: 5,
+        labels: ["Design"],
+      },
     ],
   },
   {
     key: "audit",
     client: "tujenge",
     name: "Loan Portal UX Audit",
-    description: "Heuristic review and usability testing of the Tujenge loan application portal, with prioritised recommendations.",
+    description:
+      "Heuristic review and usability testing of the Tujenge loan application portal, with prioritised recommendations.",
     status: "COMPLETED",
     priority: "MEDIUM",
     startOffset: -120,
@@ -527,7 +658,13 @@ export const DEMO_INTERNAL_TASKS: TaskSeed[] = [
   { title: "Prepare Q4 pipeline review", status: "TODO", priority: "MEDIUM", assignee: "victor", dueOffset: 5 },
   { title: "Renew Figma and Vercel subscriptions", status: "TODO", priority: "LOW", assignee: "sarah", dueOffset: 2 },
   { title: "Send proposal to Baraka Health", status: "IN_PROGRESS", priority: "HIGH", assignee: "victor", dueOffset: 1 },
-  { title: "Update studio portfolio with Kibo case study", status: "TODO", assignee: "aisha", dueOffset: 14, labels: ["Content"] },
+  {
+    title: "Update studio portfolio with Kibo case study",
+    status: "TODO",
+    assignee: "aisha",
+    dueOffset: 14,
+    labels: ["Content"],
+  },
   { title: "Chase overdue Savannah Safaris invoice", status: "TODO", priority: "HIGH", assignee: "sarah", dueOffset: -1 },
 ];
 
@@ -545,110 +682,384 @@ type InvoiceSeed = {
 };
 
 export const DEMO_INVOICES: InvoiceSeed[] = [
-  { client: "mara", issueOffset: -232, termsDays: 14, status: "PAID", items: [{ description: "Fleet tracking dashboard — final milestone", quantity: 1, unitPrice: 260000 }],
-    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24081599K2", daysAfterIssue: 12 }] },
-  { client: "pwani", project: "pwani-inventory", issueOffset: -205, termsDays: 14, status: "PAID", items: [{ description: "Warehouse process mapping workshop", quantity: 2, unitPrice: 45000 }],
-    payments: [{ amountFraction: 1, method: "MPESA", reference: "QHK2L8M1TZ", daysAfterIssue: 6 }] },
-  { client: "northstar", issueOffset: -180, termsDays: 14, status: "PAID", items: [{ description: "Monthly design & development retainer", quantity: 1, unitPrice: 150000 }],
-    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24092201NS", daysAfterIssue: 9 }] },
-  { client: "kibo", project: "kibo-landing", issueOffset: -150, termsDays: 14, status: "PAID", items: [
+  {
+    client: "mara",
+    issueOffset: -232,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Fleet tracking dashboard — final milestone", quantity: 1, unitPrice: 260000 }],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24081599K2", daysAfterIssue: 12 }],
+  },
+  {
+    client: "pwani",
+    project: "pwani-inventory",
+    issueOffset: -205,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Warehouse process mapping workshop", quantity: 2, unitPrice: 45000 }],
+    payments: [{ amountFraction: 1, method: "MPESA", reference: "QHK2L8M1TZ", daysAfterIssue: 6 }],
+  },
+  {
+    client: "northstar",
+    issueOffset: -180,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Monthly design & development retainer", quantity: 1, unitPrice: 150000 }],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24092201NS", daysAfterIssue: 9 }],
+  },
+  {
+    client: "kibo",
+    project: "kibo-landing",
+    issueOffset: -150,
+    termsDays: 14,
+    status: "PAID",
+    items: [
       { description: "Landing page design", quantity: 1, unitPrice: 60000 },
       { description: "Landing page build & deployment", quantity: 1, unitPrice: 75000 },
-    ], payments: [{ amountFraction: 1, method: "CARD", reference: "ch_3PkL92Kibo", daysAfterIssue: 4 }] },
-  { client: "northstar", issueOffset: -150, termsDays: 14, status: "PAID", items: [{ description: "Monthly design & development retainer", quantity: 1, unitPrice: 150000 }],
-    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24102208NS", daysAfterIssue: 11 }] },
-  { client: "tujenge", project: "audit", issueOffset: -118, termsDays: 30, status: "PAID", items: [
+    ],
+    payments: [{ amountFraction: 1, method: "CARD", reference: "ch_3PkL92Kibo", daysAfterIssue: 4 }],
+  },
+  {
+    client: "northstar",
+    issueOffset: -150,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Monthly design & development retainer", quantity: 1, unitPrice: 150000 }],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24102208NS", daysAfterIssue: 11 }],
+  },
+  {
+    client: "tujenge",
+    project: "audit",
+    issueOffset: -118,
+    termsDays: 30,
+    status: "PAID",
+    items: [
       { description: "Heuristic evaluation", quantity: 1, unitPrice: 60000 },
       { description: "Moderated usability sessions", quantity: 6, unitPrice: 12500 },
       { description: "Findings report & workshop", quantity: 1, unitPrice: 45000 },
-    ], payments: [
+    ],
+    payments: [
       { amountFraction: 0.5, method: "MPESA", reference: "QJA4K7P2WX", daysAfterIssue: 3 },
       { amountFraction: 0.5, method: "MPESA", reference: "QJF8R2N6YB", daysAfterIssue: 28 },
-    ] },
-  { client: "savannah", project: "booking", issueOffset: -110, termsDays: 14, status: "PAID", items: [{ description: "Booking platform — 30% deposit", quantity: 1, unitPrice: 285000 }],
-    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24111877SV", daysAfterIssue: 7 }] },
-  { client: "northstar", project: "ecommerce", issueOffset: -90, termsDays: 14, status: "PAID", items: [
-      { description: "E-commerce redesign — discovery phase", quantity: 1, unitPrice: 170000 },
-    ], payments: [{ amountFraction: 1, method: "BANK", reference: "FT24120344NS", daysAfterIssue: 10 }] },
-  { client: "greenline", project: "ordering", issueOffset: -75, termsDays: 14, status: "PAID", discount: { type: "PERCENT", value: 5 }, items: [
-      { description: "Ordering system — 40% deposit", quantity: 1, unitPrice: 248000 },
-    ], payments: [{ amountFraction: 1, method: "MPESA", reference: "QKC1T9D4LM", daysAfterIssue: 2 }] },
-  { client: "zuri", project: "zuri-migration", issueOffset: -62, termsDays: 14, status: "PAID", items: [
-      { description: "Store migration — discovery & catalogue export", quantity: 1, unitPrice: 120000 },
-    ], payments: [{ amountFraction: 1, method: "MPESA", reference: "QKM5Z3H8RE", daysAfterIssue: 5 }] },
-  { client: "northstar", project: "ecommerce", issueOffset: -58, termsDays: 14, status: "PAID", items: [
+    ],
+  },
+  {
+    client: "savannah",
+    project: "booking",
+    issueOffset: -110,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Booking platform — 30% deposit", quantity: 1, unitPrice: 285000 }],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24111877SV", daysAfterIssue: 7 }],
+  },
+  {
+    client: "northstar",
+    project: "ecommerce",
+    issueOffset: -90,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "E-commerce redesign — discovery phase", quantity: 1, unitPrice: 170000 }],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT24120344NS", daysAfterIssue: 10 }],
+  },
+  {
+    client: "greenline",
+    project: "ordering",
+    issueOffset: -75,
+    termsDays: 14,
+    status: "PAID",
+    discount: { type: "PERCENT", value: 5 },
+    items: [{ description: "Ordering system — 40% deposit", quantity: 1, unitPrice: 248000 }],
+    payments: [{ amountFraction: 1, method: "MPESA", reference: "QKC1T9D4LM", daysAfterIssue: 2 }],
+  },
+  {
+    client: "zuri",
+    project: "zuri-migration",
+    issueOffset: -62,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Store migration — discovery & catalogue export", quantity: 1, unitPrice: 120000 }],
+    payments: [{ amountFraction: 1, method: "MPESA", reference: "QKM5Z3H8RE", daysAfterIssue: 5 }],
+  },
+  {
+    client: "northstar",
+    project: "ecommerce",
+    issueOffset: -58,
+    termsDays: 14,
+    status: "PAID",
+    items: [
       { description: "Design system & high-fidelity screens", quantity: 1, unitPrice: 210000 },
       { description: "Usability testing round", quantity: 1, unitPrice: 40000 },
-    ], payments: [{ amountFraction: 1, method: "BANK", reference: "FT25010917NS", daysAfterIssue: 13 }] },
-  { client: "kibo", project: "kibo-dashboard", issueOffset: -40, termsDays: 14, status: "PAID", items: [
-      { description: "Investor dashboard — metrics definition sprint", quantity: 1, unitPrice: 240000 },
-    ], payments: [{ amountFraction: 1, method: "CARD", reference: "ch_3QmT11Kibo", daysAfterIssue: 1 }] },
-  { client: "nova", project: "nova-site", issueOffset: -38, termsDays: 14, status: "PAID", items: [
-      { description: "Brand website — design phase", quantity: 1, unitPrice: 112000 },
-    ], payments: [{ amountFraction: 1, method: "MPESA", reference: "QLB7W2K9PA", daysAfterIssue: 8 }] },
-  { client: "savannah", project: "booking", issueOffset: -34, termsDays: 14, status: "OVERDUE", items: [
-      { description: "Booking platform — availability engine milestone", quantity: 1, unitPrice: 330000 },
-    ], notes: "Second reminder sent. Joseph confirmed payment is with their finance team." },
-  { client: "northstar", project: "ecommerce", issueOffset: -26, termsDays: 14, status: "PAID", items: [
+    ],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT25010917NS", daysAfterIssue: 13 }],
+  },
+  {
+    client: "kibo",
+    project: "kibo-dashboard",
+    issueOffset: -40,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Investor dashboard — metrics definition sprint", quantity: 1, unitPrice: 240000 }],
+    payments: [{ amountFraction: 1, method: "CARD", reference: "ch_3QmT11Kibo", daysAfterIssue: 1 }],
+  },
+  {
+    client: "nova",
+    project: "nova-site",
+    issueOffset: -38,
+    termsDays: 14,
+    status: "PAID",
+    items: [{ description: "Brand website — design phase", quantity: 1, unitPrice: 112000 }],
+    payments: [{ amountFraction: 1, method: "MPESA", reference: "QLB7W2K9PA", daysAfterIssue: 8 }],
+  },
+  {
+    client: "savannah",
+    project: "booking",
+    issueOffset: -34,
+    termsDays: 14,
+    status: "OVERDUE",
+    items: [{ description: "Booking platform — availability engine milestone", quantity: 1, unitPrice: 330000 }],
+    notes: "Second reminder sent. Joseph confirmed payment is with their finance team.",
+  },
+  {
+    client: "northstar",
+    project: "ecommerce",
+    issueOffset: -26,
+    termsDays: 14,
+    status: "PAID",
+    items: [
       { description: "Storefront development sprint 1", quantity: 80, unitPrice: 3500 },
       { description: "M-Pesa checkout integration", quantity: 1, unitPrice: 65000 },
-    ], payments: [{ amountFraction: 1, method: "BANK", reference: "FT25020611NS", daysAfterIssue: 12 }] },
-  { client: "greenline", project: "ordering", issueOffset: -20, termsDays: 14, status: "OVERDUE", items: [
+    ],
+    payments: [{ amountFraction: 1, method: "BANK", reference: "FT25020611NS", daysAfterIssue: 12 }],
+  },
+  {
+    client: "greenline",
+    project: "ordering",
+    issueOffset: -20,
+    termsDays: 14,
+    status: "OVERDUE",
+    items: [
       { description: "Ordering system — ordering flow milestone", quantity: 1, unitPrice: 186000 },
       { description: "Additional branch configuration", quantity: 2, unitPrice: 15000 },
-    ], payments: [{ amountFraction: 0.4, method: "MPESA", reference: "QMD2P5X7CJ", daysAfterIssue: 10 }] },
-  { client: "tujenge", issueOffset: -12, termsDays: 30, status: "SENT", items: [
-      { description: "Mobile money integration — technical proposal", quantity: 1, unitPrice: 54000 },
-    ] },
-  { client: "nova", project: "nova-site", issueOffset: -9, termsDays: 14, status: "SENT", items: [
+    ],
+    payments: [{ amountFraction: 0.4, method: "MPESA", reference: "QMD2P5X7CJ", daysAfterIssue: 10 }],
+  },
+  {
+    client: "tujenge",
+    issueOffset: -12,
+    termsDays: 30,
+    status: "SENT",
+    items: [{ description: "Mobile money integration — technical proposal", quantity: 1, unitPrice: 54000 }],
+  },
+  {
+    client: "nova",
+    project: "nova-site",
+    issueOffset: -9,
+    termsDays: 14,
+    status: "SENT",
+    items: [
       { description: "Brand website — build phase", quantity: 1, unitPrice: 112000 },
       { description: "Lookbook photography retouching", quantity: 24, unitPrice: 1500 },
-    ] },
-  { client: "northstar", project: "ecommerce", issueOffset: -4, termsDays: 14, status: "SENT", items: [
+    ],
+  },
+  {
+    client: "northstar",
+    project: "ecommerce",
+    issueOffset: -4,
+    termsDays: 14,
+    status: "SENT",
+    items: [
       { description: "Storefront development sprint 2", quantity: 72, unitPrice: 3500 },
       { description: "CMS configuration & training", quantity: 1, unitPrice: 35000 },
-    ] },
-  { client: "kibo", project: "kibo-dashboard", issueOffset: -1, termsDays: 14, status: "DRAFT", items: [
-      { description: "Investor dashboard — data pipeline sprint", quantity: 1, unitPrice: 320000 },
-    ] },
-  { client: "baraka", issueOffset: 0, termsDays: 7, status: "DRAFT", taxRate: 0, items: [
-      { description: "Discovery workshop (half day)", quantity: 1, unitPrice: 35000 },
-    ], notes: "Billed only if the proposal is accepted." },
-  { client: "zuri", project: "zuri-migration", issueOffset: -16, termsDays: 14, status: "CANCELLED", items: [
-      { description: "Theme customisation — deposit", quantity: 1, unitPrice: 80000 },
-    ], notes: "Cancelled while the project is on hold." },
+    ],
+  },
+  {
+    client: "kibo",
+    project: "kibo-dashboard",
+    issueOffset: -1,
+    termsDays: 14,
+    status: "DRAFT",
+    items: [{ description: "Investor dashboard — data pipeline sprint", quantity: 1, unitPrice: 320000 }],
+  },
+  {
+    client: "baraka",
+    issueOffset: 0,
+    termsDays: 7,
+    status: "DRAFT",
+    taxRate: 0,
+    items: [{ description: "Discovery workshop (half day)", quantity: 1, unitPrice: 35000 }],
+    notes: "Billed only if the proposal is accepted.",
+  },
+  {
+    client: "zuri",
+    project: "zuri-migration",
+    issueOffset: -16,
+    termsDays: 14,
+    status: "CANCELLED",
+    items: [{ description: "Theme customisation — deposit", quantity: 1, unitPrice: 80000 }],
+    notes: "Cancelled while the project is on hold.",
+  },
 ];
 
-type MessageSeed = { project?: string; client?: string; author: DemoPersonKey; body: string; hoursAgo: number; internal?: boolean };
+type MessageSeed = {
+  project?: string;
+  client?: string;
+  author: DemoPersonKey;
+  body: string;
+  hoursAgo: number;
+  internal?: boolean;
+};
 
 export const DEMO_MESSAGES: MessageSeed[] = [
-  { project: "ecommerce", author: "grace", body: "Hi team — the staging link works well on my phone. The new checkout feels so much faster!", hoursAgo: 52 },
-  { project: "ecommerce", author: "victor", body: "Thanks Grace! Testing is underway. We'll share a UAT checklist by Friday so your team can sign off.", hoursAgo: 50 },
-  { project: "ecommerce", author: "brian", body: "Heads up: cart rounding fix is in review. Should be on staging tomorrow morning.", hoursAgo: 22, internal: true },
-  { project: "ecommerce", author: "grace", body: "Could we also move the newsletter sign-up above the footer on mobile?", hoursAgo: 8 },
+  {
+    project: "ecommerce",
+    author: "grace",
+    body: "Hi team — the staging link works well on my phone. The new checkout feels so much faster!",
+    hoursAgo: 52,
+  },
+  {
+    project: "ecommerce",
+    author: "victor",
+    body: "Thanks Grace! Testing is underway. We'll share a UAT checklist by Friday so your team can sign off.",
+    hoursAgo: 50,
+  },
+  {
+    project: "ecommerce",
+    author: "brian",
+    body: "Heads up: cart rounding fix is in review. Should be on staging tomorrow morning.",
+    hoursAgo: 22,
+    internal: true,
+  },
+  {
+    project: "ecommerce",
+    author: "grace",
+    body: "Could we also move the newsletter sign-up above the footer on mobile?",
+    hoursAgo: 8,
+  },
   { project: "ecommerce", author: "aisha", body: "Yes — I'll mock that up and drop it in the files tab today.", hoursAgo: 6 },
-  { project: "ordering", author: "sarah", body: "Peter confirmed the Kilimani pilot date. Kitchen display needs to be stable by then.", hoursAgo: 30, internal: true },
+  {
+    project: "ordering",
+    author: "sarah",
+    body: "Peter confirmed the Kilimani pilot date. Kitchen display needs to be stable by then.",
+    hoursAgo: 30,
+    internal: true,
+  },
   { project: "ordering", author: "brian", body: "On it. SSE fallback is working on the test tablets.", hoursAgo: 5 },
-  { project: "booking", author: "victor", body: "Let's keep Joseph updated twice a week until the second integration is done.", hoursAgo: 28, internal: true },
-  { client: "northstar", author: "sarah", body: "Hi Grace, a quick reminder that invoice for sprint 2 has been sent. Let me know if Michael needs anything else.", hoursAgo: 70 },
-  { client: "northstar", author: "grace", body: "Received, thank you Sarah. Michael will process it with this week's payments.", hoursAgo: 64 },
+  {
+    project: "booking",
+    author: "victor",
+    body: "Let's keep Joseph updated twice a week until the second integration is done.",
+    hoursAgo: 28,
+    internal: true,
+  },
+  {
+    client: "northstar",
+    author: "sarah",
+    body: "Hi Grace, a quick reminder that invoice for sprint 2 has been sent. Let me know if Michael needs anything else.",
+    hoursAgo: 70,
+  },
+  {
+    client: "northstar",
+    author: "grace",
+    body: "Received, thank you Sarah. Michael will process it with this week's payments.",
+    hoursAgo: 64,
+  },
   { author: "victor", body: "Team lunch on Friday at Java House Westgate — 1pm. 🎉", hoursAgo: 26 },
   { author: "sarah", body: "Reminder: please log your hours for September by end of day tomorrow.", hoursAgo: 4 },
 ];
 
-type EventSeed = { title: string; type: EventType; dayOffset: number; time?: string; durationMin?: number; project?: string; client?: string; location?: string; description?: string };
+type EventSeed = {
+  title: string;
+  type: EventType;
+  dayOffset: number;
+  time?: string;
+  durationMin?: number;
+  project?: string;
+  client?: string;
+  location?: string;
+  description?: string;
+};
 
 export const DEMO_EVENTS: EventSeed[] = [
-  { title: "Northstar weekly sync", type: "MEETING", dayOffset: 1, time: "10:00", durationMin: 45, project: "ecommerce", client: "northstar", location: "Google Meet" },
-  { title: "Greenline kitchen display demo", type: "MEETING", dayOffset: 2, time: "14:30", durationMin: 60, project: "ordering", client: "greenline", location: "Greenline Kilimani" },
-  { title: "Baraka Health proposal call", type: "MEETING", dayOffset: 3, time: "11:00", durationMin: 30, client: "baraka", location: "Phone" },
+  {
+    title: "Northstar weekly sync",
+    type: "MEETING",
+    dayOffset: 1,
+    time: "10:00",
+    durationMin: 45,
+    project: "ecommerce",
+    client: "northstar",
+    location: "Google Meet",
+  },
+  {
+    title: "Greenline kitchen display demo",
+    type: "MEETING",
+    dayOffset: 2,
+    time: "14:30",
+    durationMin: 60,
+    project: "ordering",
+    client: "greenline",
+    location: "Greenline Kilimani",
+  },
+  {
+    title: "Baraka Health proposal call",
+    type: "MEETING",
+    dayOffset: 3,
+    time: "11:00",
+    durationMin: 30,
+    client: "baraka",
+    location: "Phone",
+  },
   { title: "Studio planning", type: "MEETING", dayOffset: 4, time: "09:00", durationMin: 60, location: "Studio" },
-  { title: "Kibo dashboard design review", type: "MEETING", dayOffset: 6, time: "15:00", durationMin: 45, project: "kibo-dashboard", client: "kibo", location: "Zoom" },
-  { title: "Amani Legal intro call", type: "MEETING", dayOffset: 8, time: "12:00", durationMin: 30, client: "amani", location: "Google Meet" },
-  { title: "Northstar weekly sync", type: "MEETING", dayOffset: 8, time: "10:00", durationMin: 45, project: "ecommerce", client: "northstar", location: "Google Meet" },
+  {
+    title: "Kibo dashboard design review",
+    type: "MEETING",
+    dayOffset: 6,
+    time: "15:00",
+    durationMin: 45,
+    project: "kibo-dashboard",
+    client: "kibo",
+    location: "Zoom",
+  },
+  {
+    title: "Amani Legal intro call",
+    type: "MEETING",
+    dayOffset: 8,
+    time: "12:00",
+    durationMin: 30,
+    client: "amani",
+    location: "Google Meet",
+  },
+  {
+    title: "Northstar weekly sync",
+    type: "MEETING",
+    dayOffset: 8,
+    time: "10:00",
+    durationMin: 45,
+    project: "ecommerce",
+    client: "northstar",
+    location: "Google Meet",
+  },
   { title: "VAT return due", type: "DEADLINE", dayOffset: 16, description: "File monthly VAT return on iTax." },
-  { title: "Savannah Safaris status call", type: "MEETING", dayOffset: -2, time: "16:00", durationMin: 30, project: "booking", client: "savannah", location: "Phone" },
-  { title: "Northstar weekly sync", type: "MEETING", dayOffset: -6, time: "10:00", durationMin: 45, project: "ecommerce", client: "northstar", location: "Google Meet" },
+  {
+    title: "Savannah Safaris status call",
+    type: "MEETING",
+    dayOffset: -2,
+    time: "16:00",
+    durationMin: 30,
+    project: "booking",
+    client: "savannah",
+    location: "Phone",
+  },
+  {
+    title: "Northstar weekly sync",
+    type: "MEETING",
+    dayOffset: -6,
+    time: "10:00",
+    durationMin: 45,
+    project: "ecommerce",
+    client: "northstar",
+    location: "Google Meet",
+  },
 ];
 
 /** Small, real files uploaded to Storage during seeding so downloads work. */
@@ -684,7 +1095,8 @@ export const DEMO_FILES: {
     uploader: "aisha",
     shared: true,
     daysAgo: 48,
-    content: "page,path,owner\nHome,/,Marketing\nShop,/shop,Product\nProduct,/shop/[slug],Product\nCart,/cart,Product\nCheckout,/checkout,Engineering\nAbout,/about,Marketing\n",
+    content:
+      "page,path,owner\nHome,/,Marketing\nShop,/shop,Product\nProduct,/shop/[slug],Product\nCart,/cart,Product\nCheckout,/checkout,Engineering\nAbout,/about,Marketing\n",
   },
   {
     name: "Brand palette.svg",
@@ -706,7 +1118,8 @@ export const DEMO_FILES: {
     uploader: "david",
     shared: true,
     daysAgo: 2,
-    content: "# UAT checklist\n\n- [ ] Browse categories on mobile\n- [ ] Add to cart, apply discount code\n- [ ] Checkout with M-Pesa (sandbox)\n- [ ] Receive order confirmation email\n- [ ] Update homepage banner in CMS\n",
+    content:
+      "# UAT checklist\n\n- [ ] Browse categories on mobile\n- [ ] Add to cart, apply discount code\n- [ ] Checkout with M-Pesa (sandbox)\n- [ ] Receive order confirmation email\n- [ ] Update homepage banner in CMS\n",
   },
   {
     name: "Rate limits notes.txt",
@@ -715,7 +1128,8 @@ export const DEMO_FILES: {
     client: "savannah",
     uploader: "brian",
     daysAgo: 9,
-    content: "Channel manager B: 60 req/min documented, ~20 req/min in practice.\nPlan: queue + exponential back-off, nightly full sync, webhook for deltas.\n",
+    content:
+      "Channel manager B: 60 req/min documented, ~20 req/min in practice.\nPlan: queue + exponential back-off, nightly full sync, webhook for deltas.\n",
   },
   {
     name: "Studio rate card.md",
@@ -723,6 +1137,7 @@ export const DEMO_FILES: {
     folder: "Studio",
     uploader: "victor",
     daysAgo: 90,
-    content: "# Mwangaza Studio — rate card\n\n| Service | Rate |\n|---|---|\n| Design (per day) | KSh 28,000 |\n| Development (per hour) | KSh 3,500 |\n| Discovery workshop | KSh 35,000 |\n",
+    content:
+      "# Mwangaza Studio — rate card\n\n| Service | Rate |\n|---|---|\n| Design (per day) | KSh 28,000 |\n| Development (per hour) | KSh 3,500 |\n| Discovery workshop | KSh 35,000 |\n",
   },
 ];

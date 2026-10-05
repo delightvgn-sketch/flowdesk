@@ -13,7 +13,13 @@ import { OptionSelect } from "@/components/shared/option-select";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, transferOwnership } from "@/features/settings/actions";
@@ -25,7 +31,17 @@ import { canManageMember } from "@/lib/permissions";
 import { inviteSchema } from "@/lib/validation";
 import type { WorkspaceRole } from "@/server/db/schema";
 
-type Member = { id: string; profileId: string; fullName: string; email: string; avatarUrl: string | null; role: WorkspaceRole; title: string | null; clientName: string | null; createdAt: Date };
+type Member = {
+  id: string;
+  profileId: string;
+  fullName: string;
+  email: string;
+  avatarUrl: string | null;
+  role: WorkspaceRole;
+  title: string | null;
+  clientName: string | null;
+  createdAt: Date;
+};
 type Invite = { id: string; email: string; role: WorkspaceRole; expiresAt: Date; clientName: string | null };
 
 export function TeamManager({
@@ -49,8 +65,20 @@ export function TeamManager({
   const refresh = () => router.refresh();
 
   const setRole = useAction(changeMemberRole, { success: "Role updated.", onSuccess: refresh });
-  const remove = useAction(removeMember, { success: "Member removed.", onSuccess: () => { setConfirm(null); refresh(); } });
-  const transfer = useAction(transferOwnership, { success: "Ownership transferred.", onSuccess: () => { setConfirm(null); refresh(); } });
+  const remove = useAction(removeMember, {
+    success: "Member removed.",
+    onSuccess: () => {
+      setConfirm(null);
+      refresh();
+    },
+  });
+  const transfer = useAction(transferOwnership, {
+    success: "Ownership transferred.",
+    onSuccess: () => {
+      setConfirm(null);
+      refresh();
+    },
+  });
   const revoke = useAction(revokeInvitation, { success: "Invitation revoked.", onSuccess: refresh });
 
   return (
@@ -73,7 +101,11 @@ export function TeamManager({
               <Link2 className="mr-1.5 inline size-4 text-primary" aria-hidden />
               Invitation created. Email delivery is simulated in this build — copy the link and send it yourself.
             </p>
-            <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(lastLink).then(() => toast.success("Invite link copied."))}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigator.clipboard.writeText(lastLink).then(() => toast.success("Invite link copied."))}
+            >
               <Copy /> Copy link
             </Button>
           </div>
@@ -97,7 +129,10 @@ export function TeamManager({
                 </div>
                 <span className="hidden text-xs text-muted-foreground md:block">Joined {formatDate(m.createdAt)}</span>
                 {editable && m.role !== "CLIENT" ? (
-                  <Select value={m.role} onValueChange={(v) => setRole.execute({ memberId: m.id, role: v as "ADMIN" | "MEMBER" })}>
+                  <Select
+                    value={m.role}
+                    onValueChange={(v) => setRole.execute({ memberId: m.id, role: v as "ADMIN" | "MEMBER" })}
+                  >
                     <SelectTrigger size="sm" className="w-28" aria-label={`Role for ${m.fullName}`}>
                       <SelectValue />
                     </SelectTrigger>
@@ -170,14 +205,24 @@ export function TeamManager({
         <dl className="grid gap-3 sm:grid-cols-2">
           {(Object.keys(ROLE_META) as WorkspaceRole[]).map((r) => (
             <div key={r} className="rounded-lg bg-muted/40 p-3">
-              <dt><StatusBadge kind="role" value={r} /></dt>
+              <dt>
+                <StatusBadge kind="role" value={r} />
+              </dt>
               <dd className="mt-1.5 text-xs text-muted-foreground">{ROLE_META[r].description}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <InviteDialog open={inviteOpen} onOpenChange={setInviteOpen} clients={clients} onInvited={(url) => { setLastLink(url); refresh(); }} />
+      <InviteDialog
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        clients={clients}
+        onInvited={(url) => {
+          setLastLink(url);
+          refresh();
+        }}
+      />
       <ConfirmDialog
         open={confirm?.kind === "remove"}
         onOpenChange={(o) => !o && setConfirm(null)}
@@ -201,7 +246,17 @@ export function TeamManager({
   );
 }
 
-function InviteDialog({ open, onOpenChange, clients, onInvited }: { open: boolean; onOpenChange: (o: boolean) => void; clients: { id: string; label: string }[]; onInvited: (url: string) => void }) {
+function InviteDialog({
+  open,
+  onOpenChange,
+  clients,
+  onInvited,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  clients: { id: string; label: string }[];
+  onInvited: (url: string) => void;
+}) {
   const form = useZodForm(inviteSchema, { email: "", role: "MEMBER", clientId: null });
   const role = form.watch("role");
   const { execute, pending } = useAction(inviteMember, {
@@ -214,10 +269,22 @@ function InviteDialog({ open, onOpenChange, clients, onInvited }: { open: boolea
     onError: (r) => applyFieldErrors(form, r.fieldErrors),
   });
   return (
-    <FormDialog open={open} onOpenChange={onOpenChange} title="Invite someone" description="They'll join when they sign in with this email address." className="sm:max-w-md">
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Invite someone"
+      description="They'll join when they sign in with this email address."
+      className="sm:max-w-md"
+    >
       <form noValidate className="flex min-h-0 flex-1 flex-col" onSubmit={form.handleSubmit((v) => execute(v))}>
         <FormDialogBody>
-          <FormField control={form.control} name="email" label="Email" required render={({ field, props }) => <Input {...field} {...props} type="email" placeholder="name@company.co.ke" autoFocus />} />
+          <FormField
+            control={form.control}
+            name="email"
+            label="Email"
+            required
+            render={({ field, props }) => <Input {...field} {...props} type="email" placeholder="name@company.co.ke" autoFocus />}
+          />
           <FormField
             control={form.control}
             name="role"
@@ -225,7 +292,9 @@ function InviteDialog({ open, onOpenChange, clients, onInvited }: { open: boolea
             description={ROLE_META[role ?? "MEMBER"].description}
             render={({ field, props }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger {...props} className="w-full"><SelectValue /></SelectTrigger>
+                <SelectTrigger {...props} className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Admin</SelectItem>
                   <SelectItem value="MEMBER">Member</SelectItem>
@@ -235,11 +304,27 @@ function InviteDialog({ open, onOpenChange, clients, onInvited }: { open: boolea
             )}
           />
           {role === "CLIENT" && (
-            <FormField control={form.control} name="clientId" label="Client" required render={({ field, props }) => <OptionSelect {...props} options={clients} value={field.value} onChange={field.onChange} placeholder="Which client do they represent?" />} />
+            <FormField
+              control={form.control}
+              name="clientId"
+              label="Client"
+              required
+              render={({ field, props }) => (
+                <OptionSelect
+                  {...props}
+                  options={clients}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Which client do they represent?"
+                />
+              )}
+            />
           )}
         </FormDialogBody>
         <FormDialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
           <SubmitButton pending={pending}>Create invitation</SubmitButton>
         </FormDialogFooter>
       </form>

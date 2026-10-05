@@ -49,8 +49,12 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
     if (!detail) return null;
     const [clientProjects, clientInvoices, activity, clientFiles, msgs] = await Promise.all([
       tx.select().from(projects).where(eq(projects.clientId, id)).orderBy(desc(projects.createdAt)),
-      finance ? tx.select().from(invoices).where(eq(invoices.clientId, id)).orderBy(desc(invoices.issueDate)) : Promise.resolve([]),
-      tab === "overview" || tab === "activity" ? listActivity(tx, ctx.workspace.id, { clientId: id, limit: tab === "activity" ? 50 : 6 }) : Promise.resolve([]),
+      finance
+        ? tx.select().from(invoices).where(eq(invoices.clientId, id)).orderBy(desc(invoices.issueDate))
+        : Promise.resolve([]),
+      tab === "overview" || tab === "activity"
+        ? listActivity(tx, ctx.workspace.id, { clientId: id, limit: tab === "activity" ? 50 : 6 })
+        : Promise.resolve([]),
       tab === "files" ? listFiles(tx, ctx.workspace.id, { clientId: id }) : Promise.resolve([]),
       tab === "messages" ? listMessages(tx, ctx.workspace.id, { clientId: id }) : Promise.resolve([]),
     ]);
@@ -123,8 +127,17 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="min-w-0 space-y-6 lg:col-span-2">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {finance && <StatCard label="Lifetime revenue" value={formatMoney(stats.revenue, { compact: stats.revenue >= 1_000_000 })} />}
-              {finance && <StatCard label="Outstanding" value={formatMoney(stats.outstanding, { compact: stats.outstanding >= 1_000_000 })} tone={stats.overdue ? "danger" : "default"} hint={stats.overdue ? `${formatMoney(stats.overdue)} overdue` : undefined} />}
+              {finance && (
+                <StatCard label="Lifetime revenue" value={formatMoney(stats.revenue, { compact: stats.revenue >= 1_000_000 })} />
+              )}
+              {finance && (
+                <StatCard
+                  label="Outstanding"
+                  value={formatMoney(stats.outstanding, { compact: stats.outstanding >= 1_000_000 })}
+                  tone={stats.overdue ? "danger" : "default"}
+                  hint={stats.overdue ? `${formatMoney(stats.overdue)} overdue` : undefined}
+                />
+              )}
               <StatCard label="Active projects" value={stats.activeProjects} />
               {finance && <StatCard label="Invoices" value={stats.invoiceCount} />}
             </div>
@@ -137,7 +150,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             )}
 
             <Panel>
-              <PanelHeader title="Active projects" action={<Link href={`/clients/${id}?tab=projects`} className="text-xs font-medium text-primary hover:underline">All projects</Link>} />
+              <PanelHeader
+                title="Active projects"
+                action={
+                  <Link href={`/clients/${id}?tab=projects`} className="text-xs font-medium text-primary hover:underline">
+                    All projects
+                  </Link>
+                }
+              />
               {activeProjects.length === 0 ? (
                 <p className="px-5 py-6 text-sm text-muted-foreground">No active projects.</p>
               ) : (
@@ -170,9 +190,21 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             <Panel className="p-4 sm:p-5">
               <p className="mb-2 text-sm font-semibold">Details</p>
               <ul className="space-y-2.5 text-sm">
-                {client.email && <ContactLine icon={Mail} href={`mailto:${client.email}`}>{client.email}</ContactLine>}
-                {client.phone && <ContactLine icon={Phone} href={`tel:${client.phone.replace(/\s/g, "")}`}>{client.phone}</ContactLine>}
-                {client.website && <ContactLine icon={Globe} href={client.website} external>{client.website.replace(/^https?:\/\//, "")}</ContactLine>}
+                {client.email && (
+                  <ContactLine icon={Mail} href={`mailto:${client.email}`}>
+                    {client.email}
+                  </ContactLine>
+                )}
+                {client.phone && (
+                  <ContactLine icon={Phone} href={`tel:${client.phone.replace(/\s/g, "")}`}>
+                    {client.phone}
+                  </ContactLine>
+                )}
+                {client.website && (
+                  <ContactLine icon={Globe} href={client.website} external>
+                    {client.website.replace(/^https?:\/\//, "")}
+                  </ContactLine>
+                )}
                 {client.address && <ContactLine icon={MapPin}>{client.address}</ContactLine>}
               </ul>
               <dl className="mt-4 divide-y border-t">
@@ -181,7 +213,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                   {client.tags.length ? (
                     <span className="flex flex-wrap justify-end gap-1">
                       {client.tags.map((t) => (
-                        <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-xs font-normal">{t}</span>
+                        <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-xs font-normal">
+                          {t}
+                        </span>
                       ))}
                     </span>
                   ) : (
@@ -209,7 +243,15 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           <EmptyState
             icon={FolderKanban}
             title="No projects for this client yet"
-            action={can(ctx.role, "project:create") && <Button asChild><Link href={`/projects?new=1&client=${id}`}><Plus /> New project</Link></Button>}
+            action={
+              can(ctx.role, "project:create") && (
+                <Button asChild>
+                  <Link href={`/projects?new=1&client=${id}`}>
+                    <Plus /> New project
+                  </Link>
+                </Button>
+              )
+            }
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -217,25 +259,46 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
               const due = dueLabel(p.dueDate, today);
               const done = p.status === "COMPLETED" || p.status === "CANCELLED";
               return (
-                <Link key={p.id} href={`/projects/${p.id}`} className="rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-border-strong">
+                <Link
+                  key={p.id}
+                  href={`/projects/${p.id}`}
+                  className="rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-border-strong"
+                >
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-medium">{p.name}</p>
                     <StatusBadge kind="project" value={p.status} />
                   </div>
                   <div className="mt-4 flex items-center gap-2">
-                    <ProgressBar value={p.progress} label={`${p.name} progress`} tone={p.status === "COMPLETED" ? "success" : "brand"} />
+                    <ProgressBar
+                      value={p.progress}
+                      label={`${p.name} progress`}
+                      tone={p.status === "COMPLETED" ? "success" : "brand"}
+                    />
                     <span className="tabular text-xs text-muted-foreground">{p.progress}%</span>
                   </div>
-                  <p className={cn("mt-3 text-xs", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>{done ? `Finished ${formatDate(p.completedAt ?? p.dueDate)}` : due.text}</p>
+                  <p className={cn("mt-3 text-xs", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
+                    {done ? `Finished ${formatDate(p.completedAt ?? p.dueDate)}` : due.text}
+                  </p>
                 </Link>
               );
             })}
           </div>
         ))}
 
-      {tab === "invoices" && finance &&
+      {tab === "invoices" &&
+        finance &&
         (data.clientInvoices.length === 0 ? (
-          <EmptyState icon={FileText} title="No invoices for this client yet" action={<Button asChild><Link href={`/invoices/new?client=${id}`}><Plus /> Create invoice</Link></Button>} />
+          <EmptyState
+            icon={FileText}
+            title="No invoices for this client yet"
+            action={
+              <Button asChild>
+                <Link href={`/invoices/new?client=${id}`}>
+                  <Plus /> Create invoice
+                </Link>
+              </Button>
+            }
+          />
         ) : (
           <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
             <ul className="divide-y">
@@ -243,9 +306,13 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                 <li key={inv.id}>
                   <Link href={`/invoices/${inv.id}`} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/40 sm:px-5">
                     <span className="tabular w-24 font-medium">{inv.number}</span>
-                    <span className="hidden flex-1 text-sm text-muted-foreground sm:block">Issued {formatDate(inv.issueDate)} · due {formatDate(inv.dueDate)}</span>
+                    <span className="hidden flex-1 text-sm text-muted-foreground sm:block">
+                      Issued {formatDate(inv.issueDate)} · due {formatDate(inv.dueDate)}
+                    </span>
                     <StatusBadge kind="invoice" value={inv.status} />
-                    <span className="tabular ml-auto w-32 text-right text-sm font-medium sm:ml-0">{formatMoney(inv.total, { currency: inv.currency })}</span>
+                    <span className="tabular ml-auto w-32 text-right text-sm font-medium sm:ml-0">
+                      {formatMoney(inv.total, { currency: inv.currency })}
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -287,7 +354,17 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
   );
 }
 
-function ContactLine({ icon: Icon, href, external, children }: { icon: typeof Mail; href?: string; external?: boolean; children: React.ReactNode }) {
+function ContactLine({
+  icon: Icon,
+  href,
+  external,
+  children,
+}: {
+  icon: typeof Mail;
+  href?: string;
+  external?: boolean;
+  children: React.ReactNode;
+}) {
   const content = (
     <>
       <Icon className="mt-0.5 size-4 shrink-0 text-subtle-foreground" aria-hidden />

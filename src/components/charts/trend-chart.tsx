@@ -25,7 +25,10 @@ export function TrendChart({
   height?: number;
   className?: string;
 }) {
-  const columns: ChartColumn<Row>[] = [{ key: xKey, label: "Period" }, ...series.map((s) => ({ key: s.key, label: s.label, align: "right" as const }))];
+  const columns: ChartColumn<Row>[] = [
+    { key: xKey, label: "Period" },
+    ...series.map((s) => ({ key: s.key, label: s.label, align: "right" as const })),
+  ];
 
   return (
     <ChartFrame
@@ -34,7 +37,9 @@ export function TrendChart({
       data={data}
       columns={columns}
       className={className}
-      legend={series.length > 1 ? series.map((s) => <LegendKey key={s.key} color={s.color} label={s.label} shape="line" />) : undefined}
+      legend={
+        series.length > 1 ? series.map((s) => <LegendKey key={s.key} color={s.color} label={s.label} shape="line" />) : undefined
+      }
     >
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">

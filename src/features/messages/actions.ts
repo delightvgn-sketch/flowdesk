@@ -29,12 +29,16 @@ export const sendMessage = createAction({ schema: messageSchema, permission: "me
     let threadName = "General";
     let clientId = input.clientId;
     if (input.projectId) {
-      const project = await tx.query.projects.findFirst({ where: and(eq(projects.id, input.projectId), eq(projects.workspaceId, ctx.workspace.id)) });
+      const project = await tx.query.projects.findFirst({
+        where: and(eq(projects.id, input.projectId), eq(projects.workspaceId, ctx.workspace.id)),
+      });
       if (!project) throw new NotFoundError("Project");
       threadName = project.name;
       clientId = project.clientId;
     } else if (input.clientId) {
-      const client = await tx.query.clients.findFirst({ where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)) });
+      const client = await tx.query.clients.findFirst({
+        where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)),
+      });
       if (!client) throw new NotFoundError("Client");
       threadName = client.company ?? client.name;
     }
@@ -53,11 +57,21 @@ export const sendMessage = createAction({ schema: messageSchema, permission: "me
 
     // Recipients: project team (or managers), plus the client's portal users unless internal.
     const team = input.projectId
-      ? (await tx.select({ id: projectMembers.profileId }).from(projectMembers).where(eq(projectMembers.projectId, input.projectId))).map((r) => r.id)
+      ? (
+          await tx
+            .select({ id: projectMembers.profileId })
+            .from(projectMembers)
+            .where(eq(projectMembers.projectId, input.projectId))
+        ).map((r) => r.id)
       : [];
     const clientUsers =
       clientId && !input.internal
-        ? (await tx.select({ id: workspaceMembers.profileId }).from(workspaceMembers).where(and(eq(workspaceMembers.workspaceId, ctx.workspace.id), eq(workspaceMembers.clientId, clientId)))).map((r) => r.id)
+        ? (
+            await tx
+              .select({ id: workspaceMembers.profileId })
+              .from(workspaceMembers)
+              .where(and(eq(workspaceMembers.workspaceId, ctx.workspace.id), eq(workspaceMembers.clientId, clientId)))
+          ).map((r) => r.id)
         : [];
     // The general channel is a lightweight team chat and doesn't notify.
     await notify(tx, ctx, {
@@ -66,10 +80,21 @@ export const sendMessage = createAction({ schema: messageSchema, permission: "me
       type: "message.created",
       title: `${ctx.profile.fullName} ${input.internal ? "left an internal note" : "sent a message"} in ${threadName}`,
       body: input.body.slice(0, 140),
-      href: input.projectId ? `/projects/${input.projectId}?tab=messages` : input.clientId ? `/messages?client=${input.clientId}` : "/messages",
+      href: input.projectId
+        ? `/projects/${input.projectId}?tab=messages`
+        : input.clientId
+          ? `/messages?client=${input.clientId}`
+          : "/messages",
     });
     if (isClient) {
-      await logActivity(tx, ctx, { action: "message.posted", entityType: "message", entityId: msg.id, entityLabel: threadName, projectId: input.projectId, clientId });
+      await logActivity(tx, ctx, {
+        action: "message.posted",
+        entityType: "message",
+        entityId: msg.id,
+        entityLabel: threadName,
+        projectId: input.projectId,
+        clientId,
+      });
     }
     return msg;
   });
@@ -79,7 +104,12 @@ export const sendMessage = createAction({ schema: messageSchema, permission: "me
 });
 
 export const deleteMessage = createAction({ schema: idSchema, permission: "message:send" }, async ({ id }, ctx) => {
-  const [row] = await ctx.db((tx) => tx.delete(messages).where(and(eq(messages.id, id), eq(messages.workspaceId, ctx.workspace.id))).returning());
+  const [row] = await ctx.db((tx) =>
+    tx
+      .delete(messages)
+      .where(and(eq(messages.id, id), eq(messages.workspaceId, ctx.workspace.id)))
+      .returning(),
+  );
   if (!row) throw new UserFacingError("You can only delete your own messages.");
   revalidateThread(row.projectId, row.clientId);
 });

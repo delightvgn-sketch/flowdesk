@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { deletePayment, updatePaymentStatus } from "@/features/invoices/actions";
 import { useAction } from "@/hooks/use-action";
 import { PAYMENT_METHOD_LABEL, PAYMENT_STATUSES, PAYMENT_STATUS_META } from "@/lib/constants";
@@ -13,7 +20,15 @@ import { formatDate } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import type { PaymentMethod, PaymentStatus } from "@/server/db/schema";
 
-type Row = { id: string; amount: number; method: PaymentMethod; status: PaymentStatus; paidOn: string; reference: string | null; recordedBy: string | null };
+type Row = {
+  id: string;
+  amount: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  paidOn: string;
+  reference: string | null;
+  recordedBy: string | null;
+};
 
 export function PaymentList({ payments, currency, readOnly = false }: { payments: Row[]; currency: string; readOnly?: boolean }) {
   const router = useRouter();

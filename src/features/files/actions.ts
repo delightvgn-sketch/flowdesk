@@ -15,7 +15,13 @@ import { logActivity, managerIds, notify } from "@/server/services/activity";
 import { removeObjects, requireStorage, STORAGE_BUCKET } from "@/server/storage";
 
 function safeFileName(name: string) {
-  return name.normalize("NFKD").replace(/[^\w.\- ]+/g, "").replace(/\s+/g, "-").slice(-120) || "file";
+  return (
+    name
+      .normalize("NFKD")
+      .replace(/[^\w.\- ]+/g, "")
+      .replace(/\s+/g, "-")
+      .slice(-120) || "file"
+  );
 }
 
 function revalidateFileViews(projectId?: string | null, clientId?: string | null) {
@@ -29,24 +35,36 @@ function revalidateFileViews(projectId?: string | null, clientId?: string | null
  * Resolve and authorise the links a file will have. Everything is re-read
  * under RLS, so a user can only attach files to things they can see.
  */
-async function resolveLinks(tx: Tx, ctx: AppContext, input: { projectId: string | null; clientId: string | null; taskId: string | null; folderId: string | null }) {
+async function resolveLinks(
+  tx: Tx,
+  ctx: AppContext,
+  input: { projectId: string | null; clientId: string | null; taskId: string | null; folderId: string | null },
+) {
   let { projectId, clientId } = input;
   if (input.taskId) {
-    const task = await tx.query.tasks.findFirst({ where: and(eq(tasks.id, input.taskId), eq(tasks.workspaceId, ctx.workspace.id)) });
+    const task = await tx.query.tasks.findFirst({
+      where: and(eq(tasks.id, input.taskId), eq(tasks.workspaceId, ctx.workspace.id)),
+    });
     if (!task) throw new NotFoundError("Task");
     projectId = task.projectId;
   }
   if (projectId) {
-    const project = await tx.query.projects.findFirst({ where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)) });
+    const project = await tx.query.projects.findFirst({
+      where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)),
+    });
     if (!project) throw new NotFoundError("Project");
     clientId = project.clientId;
   } else if (clientId) {
-    const client = await tx.query.clients.findFirst({ where: and(eq(clients.id, clientId), eq(clients.workspaceId, ctx.workspace.id)) });
+    const client = await tx.query.clients.findFirst({
+      where: and(eq(clients.id, clientId), eq(clients.workspaceId, ctx.workspace.id)),
+    });
     if (!client) throw new NotFoundError("Client");
   }
   if (input.folderId) {
     if (ctx.role === "CLIENT") throw new UserFacingError("Clients can't upload into folders.");
-    const folder = await tx.query.folders.findFirst({ where: and(eq(folders.id, input.folderId), eq(folders.workspaceId, ctx.workspace.id)) });
+    const folder = await tx.query.folders.findFirst({
+      where: and(eq(folders.id, input.folderId), eq(folders.workspaceId, ctx.workspace.id)),
+    });
     if (!folder) throw new NotFoundError("Folder");
   }
   if (ctx.role === "CLIENT") {
@@ -82,38 +100,52 @@ export const confirmUpload = createAction(
       throw new UserFacingError("The upload didn't complete. Please try again.");
     }
 
-    const file = await ctx.db(async (tx) => {
-      const links = await resolveLinks(tx, ctx, input);
-      const [row] = await tx
-        .insert(files)
-        .values({
-          workspaceId: ctx.workspace.id,
-          name: input.name,
-          storagePath: path,
-          mimeType: input.mimeType,
-          sizeBytes: size,
-          sharedWithClient: ctx.role === "CLIENT" ? true : input.sharedWithClient,
-          uploadedById: ctx.profile.id,
-          ...links,
-        })
-        .returning();
-      await logActivity(tx, ctx, { action: "file.uploaded", entityType: "file", entityId: row.id, entityLabel: row.name, projectId: row.projectId, clientId: row.clientId });
+    const file = await ctx
+      .db(async (tx) => {
+        const links = await resolveLinks(tx, ctx, input);
+        const [row] = await tx
+          .insert(files)
+          .values({
+            workspaceId: ctx.workspace.id,
+            name: input.name,
+            storagePath: path,
+            mimeType: input.mimeType,
+            sizeBytes: size,
+            sharedWithClient: ctx.role === "CLIENT" ? true : input.sharedWithClient,
+            uploadedById: ctx.profile.id,
+            ...links,
+          })
+          .returning();
+        await logActivity(tx, ctx, {
+          action: "file.uploaded",
+          entityType: "file",
+          entityId: row.id,
+          entityLabel: row.name,
+          projectId: row.projectId,
+          clientId: row.clientId,
+        });
 
-      const team = row.projectId
-        ? (await tx.select({ id: projectMembers.profileId }).from(projectMembers).where(eq(projectMembers.projectId, row.projectId))).map((m) => m.id)
-        : [];
-      await notify(tx, ctx, {
-        recipientIds: ctx.role === "CLIENT" ? [...team, ...(await managerIds(tx, ctx))] : team,
-        category: "files",
-        type: "file.uploaded",
-        title: `${ctx.profile.fullName} uploaded ${row.name}`,
-        href: row.projectId ? `/projects/${row.projectId}?tab=files` : "/files",
+        const team = row.projectId
+          ? (
+              await tx
+                .select({ id: projectMembers.profileId })
+                .from(projectMembers)
+                .where(eq(projectMembers.projectId, row.projectId))
+            ).map((m) => m.id)
+          : [];
+        await notify(tx, ctx, {
+          recipientIds: ctx.role === "CLIENT" ? [...team, ...(await managerIds(tx, ctx))] : team,
+          category: "files",
+          type: "file.uploaded",
+          title: `${ctx.profile.fullName} uploaded ${row.name}`,
+          href: row.projectId ? `/projects/${row.projectId}?tab=files` : "/files",
+        });
+        return row;
+      })
+      .catch(async (error) => {
+        await removeObjects([path]);
+        throw error;
       });
-      return row;
-    }).catch(async (error) => {
-      await removeObjects([path]);
-      throw error;
-    });
 
     revalidateFileViews(file.projectId, file.clientId);
     return { id: file.id };
@@ -122,9 +154,18 @@ export const confirmUpload = createAction(
 
 export const deleteFile = createAction({ schema: idSchema, permission: "file:upload" }, async ({ id }, ctx) => {
   const row = await ctx.db(async (tx) => {
-    const [deleted] = await tx.delete(files).where(and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id))).returning();
+    const [deleted] = await tx
+      .delete(files)
+      .where(and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id)))
+      .returning();
     if (!deleted) throw new UserFacingError("You can only delete files you uploaded.");
-    await logActivity(tx, ctx, { action: "file.deleted", entityType: "file", entityLabel: deleted.name, projectId: deleted.projectId, clientId: deleted.clientId });
+    await logActivity(tx, ctx, {
+      action: "file.deleted",
+      entityType: "file",
+      entityLabel: deleted.name,
+      projectId: deleted.projectId,
+      clientId: deleted.clientId,
+    });
     return deleted;
   });
   await removeObjects([row.storagePath]);
@@ -143,10 +184,16 @@ export const updateFile = createAction(
   async ({ id, ...changes }, ctx) => {
     const row = await ctx.db(async (tx) => {
       if (changes.folderId) {
-        const folder = await tx.query.folders.findFirst({ where: and(eq(folders.id, changes.folderId), eq(folders.workspaceId, ctx.workspace.id)) });
+        const folder = await tx.query.folders.findFirst({
+          where: and(eq(folders.id, changes.folderId), eq(folders.workspaceId, ctx.workspace.id)),
+        });
         if (!folder) throw new NotFoundError("Folder");
       }
-      const [updated] = await tx.update(files).set(changes).where(and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id))).returning();
+      const [updated] = await tx
+        .update(files)
+        .set(changes)
+        .where(and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id)))
+        .returning();
       if (!updated) throw new NotFoundError("File");
       return updated;
     });
@@ -156,22 +203,36 @@ export const updateFile = createAction(
 
 export const createFolder = createAction({ schema: folderSchema, permission: "file:organize" }, async (input, ctx) => {
   const [row] = await ctx.db((tx) =>
-    tx.insert(folders).values({ ...input, workspaceId: ctx.workspace.id, createdById: ctx.profile.id }).returning(),
+    tx
+      .insert(folders)
+      .values({ ...input, workspaceId: ctx.workspace.id, createdById: ctx.profile.id })
+      .returning(),
   );
   revalidatePath("/files");
   return { id: row.id };
 });
 
-export const renameFolder = createAction({ schema: idSchema.extend({ name: folderSchema.shape.name }), permission: "file:organize" }, async ({ id, name }, ctx) => {
-  const [row] = await ctx.db((tx) => tx.update(folders).set({ name }).where(and(eq(folders.id, id), eq(folders.workspaceId, ctx.workspace.id))).returning());
-  if (!row) throw new NotFoundError("Folder");
-  revalidatePath("/files");
-});
+export const renameFolder = createAction(
+  { schema: idSchema.extend({ name: folderSchema.shape.name }), permission: "file:organize" },
+  async ({ id, name }, ctx) => {
+    const [row] = await ctx.db((tx) =>
+      tx
+        .update(folders)
+        .set({ name })
+        .where(and(eq(folders.id, id), eq(folders.workspaceId, ctx.workspace.id)))
+        .returning(),
+    );
+    if (!row) throw new NotFoundError("Folder");
+    revalidatePath("/files");
+  },
+);
 
 /** Deleting a folder keeps its files: they move up to the parent folder. */
 export const deleteFolder = createAction({ schema: idSchema, permission: "file:organize" }, async ({ id }, ctx) => {
   await ctx.db(async (tx) => {
-    const folder = await tx.query.folders.findFirst({ where: and(eq(folders.id, id), eq(folders.workspaceId, ctx.workspace.id)) });
+    const folder = await tx.query.folders.findFirst({
+      where: and(eq(folders.id, id), eq(folders.workspaceId, ctx.workspace.id)),
+    });
     if (!folder) throw new NotFoundError("Folder");
     await tx.update(files).set({ folderId: folder.parentId }).where(eq(files.folderId, id));
     await tx.update(folders).set({ parentId: folder.parentId }).where(eq(folders.parentId, id));
@@ -180,4 +241,3 @@ export const deleteFolder = createAction({ schema: idSchema, permission: "file:o
   });
   revalidatePath("/files");
 });
-

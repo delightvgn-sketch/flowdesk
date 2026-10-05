@@ -20,7 +20,11 @@ export function OnboardingForm({ defaultName }: { defaultName: string }) {
   });
 
   return (
-    <form onSubmit={form.handleSubmit((v) => execute(v))} className="mt-8 grid gap-5 rounded-xl border bg-card p-5 shadow-xs sm:p-6" noValidate>
+    <form
+      onSubmit={form.handleSubmit((v) => execute(v))}
+      className="mt-8 grid gap-5 rounded-xl border bg-card p-5 shadow-xs sm:p-6"
+      noValidate
+    >
       <FormField
         control={form.control}
         name="workspaceName"

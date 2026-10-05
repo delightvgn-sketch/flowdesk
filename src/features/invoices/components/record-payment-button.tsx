@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 
 import { PaymentDialog } from "./payment-dialogs";
 
-export function RecordPaymentButton({ invoices, currency, today }: { invoices: { id: string; label: string; balance: number }[]; currency: string; today: string }) {
+export function RecordPaymentButton({
+  invoices,
+  currency,
+  today,
+}: {
+  invoices: { id: string; label: string; balance: number }[];
+  currency: string;
+  today: string;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>

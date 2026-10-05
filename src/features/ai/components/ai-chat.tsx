@@ -83,10 +83,17 @@ export function AiChat({
               <Sparkles className="size-5" aria-hidden />
             </span>
             <h2 className="mt-4 text-lg font-semibold">How can I help, {userName.split(" ")[0]}?</h2>
-            <p className="mt-1 text-sm text-muted-foreground">I can look up clients, projects, tasks and invoices you have access to, and help you reason about them.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              I can look up clients, projects, tasks and invoices you have access to, and help you reason about them.
+            </p>
             <div className="mt-6 grid w-full gap-2 sm:grid-cols-2">
               {suggestions.map((s) => (
-                <button key={s} type="button" onClick={() => send(s)} className="rounded-lg border bg-card px-3 py-2.5 text-left text-sm shadow-xs transition-colors hover:border-primary/40 hover:bg-brand-soft/30">
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => send(s)}
+                  className="rounded-lg border bg-card px-3 py-2.5 text-left text-sm shadow-xs transition-colors hover:border-primary/40 hover:bg-brand-soft/30"
+                >
                   {s}
                 </button>
               ))}
@@ -106,12 +113,22 @@ export function AiChat({
                 <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                   <p className="text-xs font-medium text-muted-foreground">{m.role === "user" ? "You" : "FlowDesk AI"}</p>
                   {m.parts.map((part, i) => {
-                    if (part.type === "text") return m.role === "user" ? <p key={i} className="text-sm whitespace-pre-wrap">{part.text}</p> : <Markdown key={i}>{part.text}</Markdown>;
+                    if (part.type === "text")
+                      return m.role === "user" ? (
+                        <p key={i} className="text-sm whitespace-pre-wrap">
+                          {part.text}
+                        </p>
+                      ) : (
+                        <Markdown key={i}>{part.text}</Markdown>
+                      );
                     if (part.type.startsWith("tool-")) {
                       const name = part.type.slice(5);
                       const done = "state" in part && part.state === "output-available";
                       return (
-                        <p key={i} className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+                        <p
+                          key={i}
+                          className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
+                        >
                           {done ? <Search className="size-3" /> : <Loader2 className="size-3 animate-spin" />}
                           {TOOL_LABEL[name] ?? "Looking things up"}
                           {done ? "" : "…"}
@@ -165,7 +182,9 @@ export function AiChat({
             </Button>
           )}
         </div>
-        <p className={cn("mx-auto mt-2 max-w-3xl text-[11px] text-muted-foreground")}>AI can make mistakes. Answers are based only on data you can access.</p>
+        <p className={cn("mx-auto mt-2 max-w-3xl text-[11px] text-muted-foreground")}>
+          AI can make mistakes. Answers are based only on data you can access.
+        </p>
       </form>
     </div>
   );

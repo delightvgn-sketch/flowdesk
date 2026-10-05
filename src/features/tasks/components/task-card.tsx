@@ -6,7 +6,13 @@ import { toast } from "sonner";
 
 import { PriorityIndicator } from "@/components/shared/status-badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { moveTask } from "@/features/tasks/actions";
 import { TASK_STATUSES, TASK_STATUS_META } from "@/lib/constants";
 import { dueLabel } from "@/lib/dates";
@@ -27,7 +33,14 @@ export function TaskCard({ task, today, overlay = false }: { task: BoardTask; to
       )}
     >
       <div className="flex items-start gap-2">
-        <h3 className={cn("min-w-0 flex-1 text-[13px] leading-snug font-medium", done && "text-muted-foreground line-through decoration-1")}>{task.title}</h3>
+        <h3
+          className={cn(
+            "min-w-0 flex-1 text-[13px] leading-snug font-medium",
+            done && "text-muted-foreground line-through decoration-1",
+          )}
+        >
+          {task.title}
+        </h3>
         {!overlay && <MoveMenu task={task} />}
       </div>
       {task.projectName && <p className="mt-1 truncate text-xs text-muted-foreground">{task.projectName}</p>}
@@ -53,7 +66,11 @@ export function TaskCard({ task, today, overlay = false }: { task: BoardTask; to
           </span>
         )}
         <span className="ml-auto">
-          {task.assigneeName ? <UserAvatar name={task.assigneeName} src={task.assigneeAvatar} size="sm" /> : <span className="text-subtle-foreground">Unassigned</span>}
+          {task.assigneeName ? (
+            <UserAvatar name={task.assigneeName} src={task.assigneeAvatar} size="sm" />
+          ) : (
+            <span className="text-subtle-foreground">Unassigned</span>
+          )}
         </span>
       </div>
     </article>
@@ -72,7 +89,7 @@ function MoveMenu({ task }: { task: BoardTask }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="-mt-1 -mr-1 rounded-md p-1 text-subtle-foreground opacity-100 hover:bg-muted hover:text-foreground focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 data-[state=open]:opacity-100"
+        className="-mt-1 -mr-1 rounded-md p-1 text-subtle-foreground opacity-100 hover:bg-muted hover:text-foreground focus-visible:opacity-100 data-[state=open]:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label={`Move “${task.title}”`}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}

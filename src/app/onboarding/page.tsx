@@ -21,7 +21,8 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
       <Shell>
         <h1 className="text-2xl font-semibold tracking-tight">Verify your email to continue</h1>
         <p className="mt-2 text-muted-foreground">
-          FlowDesk links your account by verified email address. Please verify your email in your account settings, then come back.
+          FlowDesk links your account by verified email address. Please verify your email in your account settings, then come
+          back.
         </p>
         <Button asChild className="mt-6">
           <Link href="/sign-in">Back to sign in</Link>

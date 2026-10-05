@@ -65,7 +65,12 @@ export async function invoiceSummary(tx: Tx, workspaceId: string, today: string)
       count(*) filter (where status = 'DRAFT') as drafts
     from invoices where workspace_id = ${workspaceId}
   `);
-  return { outstanding: Number(row.outstanding), overdue: Number(row.overdue), paid30: Number(row.paid30), drafts: Number(row.drafts) };
+  return {
+    outstanding: Number(row.outstanding),
+    overdue: Number(row.overdue),
+    paid30: Number(row.paid30),
+    drafts: Number(row.drafts),
+  };
 }
 
 export async function getInvoice(tx: Tx, workspaceId: string, id: string) {

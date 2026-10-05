@@ -94,7 +94,8 @@ export function InvoiceEditor({
                   onChange={(v) => {
                     field.onChange(v ?? "");
                     const current = form.getValues("projectId");
-                    if (current && !projects.some((p) => p.id === current && (!p.clientId || p.clientId === v))) form.setValue("projectId", null);
+                    if (current && !projects.some((p) => p.id === current && (!p.clientId || p.clientId === v)))
+                      form.setValue("projectId", null);
                   }}
                   placeholder="Choose a client"
                 />
@@ -104,10 +105,30 @@ export function InvoiceEditor({
               control={form.control}
               name="projectId"
               label="Project"
-              render={({ field, props }) => <OptionSelect {...props} options={projectChoices} value={field.value} onChange={field.onChange} noneLabel="No project" />}
+              render={({ field, props }) => (
+                <OptionSelect
+                  {...props}
+                  options={projectChoices}
+                  value={field.value}
+                  onChange={field.onChange}
+                  noneLabel="No project"
+                />
+              )}
             />
-            <FormField control={form.control} name="issueDate" label="Issue date" required render={({ field, props }) => <Input {...field} {...props} type="date" />} />
-            <FormField control={form.control} name="dueDate" label="Due date" required render={({ field, props }) => <Input {...field} {...props} type="date" />} />
+            <FormField
+              control={form.control}
+              name="issueDate"
+              label="Issue date"
+              required
+              render={({ field, props }) => <Input {...field} {...props} type="date" />}
+            />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              label="Due date"
+              required
+              render={({ field, props }) => <Input {...field} {...props} type="date" />}
+            />
           </div>
         </section>
 
@@ -129,7 +150,10 @@ export function InvoiceEditor({
             {fields.map((field, index) => {
               const err = form.formState.errors.items?.[index];
               return (
-                <li key={field.id} className="grid grid-cols-2 gap-3 px-4 py-3 sm:grid-cols-[1fr_88px_128px_120px_36px] sm:items-start sm:px-5">
+                <li
+                  key={field.id}
+                  className="grid grid-cols-2 gap-3 px-4 py-3 sm:grid-cols-[1fr_88px_128px_120px_36px] sm:items-start sm:px-5"
+                >
                   <div className="col-span-2 flex items-start gap-1 sm:col-span-1">
                     <GripVertical className="mt-2.5 hidden size-4 shrink-0 text-border-strong sm:block" aria-hidden />
                     <div className="flex-1">
@@ -161,17 +185,38 @@ export function InvoiceEditor({
                     <label className="mb-1 block text-xs text-muted-foreground sm:sr-only" htmlFor={`item-${index}-qty`}>
                       Quantity
                     </label>
-                    <Input id={`item-${index}-qty`} type="number" inputMode="decimal" min={0} step="any" className="text-right" aria-invalid={!!err?.quantity} {...form.register(`items.${index}.quantity`)} />
+                    <Input
+                      id={`item-${index}-qty`}
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      step="any"
+                      className="text-right"
+                      aria-invalid={!!err?.quantity}
+                      {...form.register(`items.${index}.quantity`)}
+                    />
                     {err?.quantity && <p className="mt-1 text-xs text-danger">{err.quantity.message}</p>}
                   </div>
                   <div>
                     <label className="mb-1 block text-xs text-muted-foreground sm:sr-only" htmlFor={`item-${index}-price`}>
                       Unit price
                     </label>
-                    <Input id={`item-${index}-price`} type="number" inputMode="decimal" min={0} step="any" className="text-right" aria-invalid={!!err?.unitPrice} {...form.register(`items.${index}.unitPrice`)} />
+                    <Input
+                      id={`item-${index}-price`}
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      step="any"
+                      className="text-right"
+                      aria-invalid={!!err?.unitPrice}
+                      {...form.register(`items.${index}.unitPrice`)}
+                    />
                     {err?.unitPrice && <p className="mt-1 text-xs text-danger">{err.unitPrice.message}</p>}
                   </div>
-                  <p className="tabular col-span-1 self-center text-sm font-medium sm:text-right" aria-label={`Line ${index + 1} amount`}>
+                  <p
+                    className="tabular col-span-1 self-center text-sm font-medium sm:text-right"
+                    aria-label={`Line ${index + 1} amount`}
+                  >
                     {money(totals.lineAmounts[index] ?? 0)}
                   </p>
                   <Button
@@ -189,9 +234,17 @@ export function InvoiceEditor({
               );
             })}
           </ul>
-          {form.formState.errors.items?.root?.message && <p className="px-5 pb-2 text-xs text-danger">{form.formState.errors.items.root.message}</p>}
+          {form.formState.errors.items?.root?.message && (
+            <p className="px-5 pb-2 text-xs text-danger">{form.formState.errors.items.root.message}</p>
+          )}
           <div className="border-t px-4 py-3 sm:px-5">
-            <Button type="button" variant="ghost" size="sm" onClick={() => append({ description: "", quantity: 1, unitPrice: 0 })} disabled={fields.length >= 100}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => append({ description: "", quantity: 1, unitPrice: 0 })}
+              disabled={fields.length >= 100}
+            >
               <Plus /> Add line
             </Button>
           </div>
@@ -203,7 +256,15 @@ export function InvoiceEditor({
             name="notes"
             label="Notes & payment instructions"
             description="Shown at the bottom of the invoice."
-            render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={3} placeholder="M-Pesa Paybill 522522, Account 1234567…" />}
+            render={({ field, props }) => (
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                {...props}
+                rows={3}
+                placeholder="M-Pesa Paybill 522522, Account 1234567…"
+              />
+            )}
           />
         </section>
       </div>
@@ -217,8 +278,19 @@ export function InvoiceEditor({
             <Field label="Discount">
               {(p) => (
                 <div className="flex gap-1.5">
-                  <Input {...p} type="number" inputMode="decimal" min={0} step="any" className="text-right" {...form.register("discountValue")} />
-                  <Select value={values.discountType} onValueChange={(v) => form.setValue("discountType", v as "PERCENT" | "FIXED")}>
+                  <Input
+                    {...p}
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step="any"
+                    className="text-right"
+                    {...form.register("discountValue")}
+                  />
+                  <Select
+                    value={values.discountType}
+                    onValueChange={(v) => form.setValue("discountType", v as "PERCENT" | "FIXED")}
+                  >
                     <SelectTrigger className="w-16 shrink-0" aria-label="Discount type">
                       <SelectValue />
                     </SelectTrigger>
@@ -230,9 +302,27 @@ export function InvoiceEditor({
                 </div>
               )}
             </Field>
-            <FormField control={form.control} name="taxRate" label="Tax (VAT %)" render={({ props }) => <Input {...props} type="number" inputMode="decimal" min={0} max={100} step="any" className="text-right" {...form.register("taxRate")} />} />
+            <FormField
+              control={form.control}
+              name="taxRate"
+              label="Tax (VAT %)"
+              render={({ props }) => (
+                <Input
+                  {...props}
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  max={100}
+                  step="any"
+                  className="text-right"
+                  {...form.register("taxRate")}
+                />
+              )}
+            />
           </div>
-          {form.formState.errors.discountValue && <p className="mt-1 text-xs text-danger">{form.formState.errors.discountValue.message}</p>}
+          {form.formState.errors.discountValue && (
+            <p className="mt-1 text-xs text-danger">{form.formState.errors.discountValue.message}</p>
+          )}
 
           <dl className="mt-5 space-y-2 border-t pt-4 text-sm">
             <div className="flex justify-between">

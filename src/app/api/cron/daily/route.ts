@@ -48,7 +48,13 @@ export async function GET(request: Request) {
         .from(workspaceMembers)
         .where(and(eq(workspaceMembers.workspaceId, ws.id), inArray(workspaceMembers.role, ["OWNER", "ADMIN"])));
       const rows = newlyOverdue.flatMap((inv) =>
-        managers.map((m) => ({ workspaceId: ws.id, recipientId: m.id, type: "invoice.overdue", title: `Invoice ${inv.number} is overdue`, href: `/invoices/${inv.id}` })),
+        managers.map((m) => ({
+          workspaceId: ws.id,
+          recipientId: m.id,
+          type: "invoice.overdue",
+          title: `Invoice ${inv.number} is overdue`,
+          href: `/invoices/${inv.id}`,
+        })),
       );
       if (rows.length) await adminDb.insert(notifications).values(rows);
       summary.overdue += newlyOverdue.length;
@@ -57,13 +63,30 @@ export async function GET(request: Request) {
     const dueSoon = await adminDb
       .select({ id: projects.id, name: projects.name })
       .from(projects)
-      .where(and(eq(projects.workspaceId, ws.id), eq(projects.dueDate, addDaysISO(today, 3)), inArray(projects.status, ["PLANNING", "IN_PROGRESS", "REVIEW"])));
+      .where(
+        and(
+          eq(projects.workspaceId, ws.id),
+          eq(projects.dueDate, addDaysISO(today, 3)),
+          inArray(projects.status, ["PLANNING", "IN_PROGRESS", "REVIEW"]),
+        ),
+      );
     for (const p of dueSoon) {
-      const team = await adminDb.select({ id: projectMembers.profileId }).from(projectMembers).where(eq(projectMembers.projectId, p.id));
+      const team = await adminDb
+        .select({ id: projectMembers.profileId })
+        .from(projectMembers)
+        .where(eq(projectMembers.projectId, p.id));
       if (team.length) {
-        await adminDb.insert(notifications).values(
-          team.map((t) => ({ workspaceId: ws.id, recipientId: t.id, type: "project.deadline", title: `${p.name} is due in 3 days`, href: `/projects/${p.id}` })),
-        );
+        await adminDb
+          .insert(notifications)
+          .values(
+            team.map((t) => ({
+              workspaceId: ws.id,
+              recipientId: t.id,
+              type: "project.deadline",
+              title: `${p.name} is due in 3 days`,
+              href: `/projects/${p.id}`,
+            })),
+          );
         summary.reminders += team.length;
       }
     }

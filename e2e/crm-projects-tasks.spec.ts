@@ -31,7 +31,10 @@ test.describe("owner workflows", () => {
     await page.getByRole("searchbox", { name: "Search clients…" }).fill(company.split(" ").pop()!);
     await expect(page.getByRole("link", { name: new RegExp(company) }).first()).toBeVisible();
 
-    await page.getByRole("button", { name: `Actions for ${company}` }).first().click();
+    await page
+      .getByRole("button", { name: `Actions for ${company}` })
+      .first()
+      .click();
     await page.getByRole("menuitem", { name: "Archive" }).click();
     await page.getByRole("button", { name: "Archive client" }).click();
     await expectToast(page, "Client archived.");
@@ -48,7 +51,10 @@ test.describe("owner workflows", () => {
     await expectToast(page, "Project created.");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(name);
 
-    await page.getByRole("navigation", { name: "Sections" }).getByRole("link", { name: /^Tasks/ }).click();
+    await page
+      .getByRole("navigation", { name: "Sections" })
+      .getByRole("link", { name: /^Tasks/ })
+      .click();
     await page.getByRole("button", { name: "New task" }).click();
     const taskDialog = page.getByRole("dialog");
     const title = unique("Write homepage copy");

@@ -38,7 +38,12 @@ export const searchWorkspace = createAction(
           ? tx
               .select({ id: clients.id, name: clients.name, company: clients.company })
               .from(clients)
-              .where(and(eq(clients.workspaceId, ws), or(ilike(clients.name, pattern), ilike(clients.company, pattern), ilike(clients.email, pattern))))
+              .where(
+                and(
+                  eq(clients.workspaceId, ws),
+                  or(ilike(clients.name, pattern), ilike(clients.company, pattern), ilike(clients.email, pattern)),
+                ),
+              )
               .orderBy(desc(clients.updatedAt))
               .limit(5)
           : [],
@@ -63,7 +68,12 @@ export const searchWorkspace = createAction(
               .select({ id: invoices.id, number: invoices.number, clientName: clients.company, total: invoices.total })
               .from(invoices)
               .innerJoin(clients, eq(clients.id, invoices.clientId))
-              .where(and(eq(invoices.workspaceId, ws), or(ilike(invoices.number, pattern), ilike(clients.company, pattern), ilike(clients.name, pattern))))
+              .where(
+                and(
+                  eq(invoices.workspaceId, ws),
+                  or(ilike(invoices.number, pattern), ilike(clients.company, pattern), ilike(clients.name, pattern)),
+                ),
+              )
               .orderBy(desc(invoices.issueDate))
               .limit(5)
           : [],
@@ -77,9 +87,27 @@ export const searchWorkspace = createAction(
       ]);
 
       return [
-        ...clientRows.map((c) => ({ id: c.id, type: "client" as const, title: c.company ?? c.name, subtitle: c.company ? c.name : null, href: `/clients/${c.id}` })),
-        ...projectRows.map((p) => ({ id: p.id, type: "project" as const, title: p.name, subtitle: p.clientName, href: projectHref(p.id) })),
-        ...taskRows.map((t) => ({ id: t.id, type: "task" as const, title: t.title, subtitle: t.projectName, href: `/tasks?task=${t.id}` })),
+        ...clientRows.map((c) => ({
+          id: c.id,
+          type: "client" as const,
+          title: c.company ?? c.name,
+          subtitle: c.company ? c.name : null,
+          href: `/clients/${c.id}`,
+        })),
+        ...projectRows.map((p) => ({
+          id: p.id,
+          type: "project" as const,
+          title: p.name,
+          subtitle: p.clientName,
+          href: projectHref(p.id),
+        })),
+        ...taskRows.map((t) => ({
+          id: t.id,
+          type: "task" as const,
+          title: t.title,
+          subtitle: t.projectName,
+          href: `/tasks?task=${t.id}`,
+        })),
         ...invoiceRows.map((i) => ({
           id: i.id,
           type: "invoice" as const,
@@ -87,9 +115,14 @@ export const searchWorkspace = createAction(
           subtitle: i.clientName,
           href: isClient ? `/portal/invoices/${i.id}` : `/invoices/${i.id}`,
         })),
-        ...fileRows.map((f) => ({ id: f.id, type: "file" as const, title: f.name, subtitle: f.projectName, href: isClient ? `/portal/files` : `/files?highlight=${f.id}` })),
+        ...fileRows.map((f) => ({
+          id: f.id,
+          type: "file" as const,
+          title: f.name,
+          subtitle: f.projectName,
+          href: isClient ? `/portal/files` : `/files?highlight=${f.id}`,
+        })),
       ];
     });
   },
 );
-

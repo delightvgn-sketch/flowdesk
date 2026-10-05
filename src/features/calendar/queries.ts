@@ -43,23 +43,58 @@ export async function calendarItems(tx: Tx, ctx: AppContext, from: string, to: s
       .select({ id: tasks.id, title: tasks.title, dueDate: tasks.dueDate, projectName: projects.name })
       .from(tasks)
       .leftJoin(projects, eq(projects.id, tasks.projectId))
-      .where(and(eq(tasks.workspaceId, ws), ne(tasks.status, "DONE"), isNotNull(tasks.dueDate), gte(tasks.dueDate, from), lte(tasks.dueDate, to))),
+      .where(
+        and(
+          eq(tasks.workspaceId, ws),
+          ne(tasks.status, "DONE"),
+          isNotNull(tasks.dueDate),
+          gte(tasks.dueDate, from),
+          lte(tasks.dueDate, to),
+        ),
+      ),
     tx
       .select({ id: projects.id, name: projects.name, dueDate: projects.dueDate, client: clients.company })
       .from(projects)
       .leftJoin(clients, eq(clients.id, projects.clientId))
-      .where(and(eq(projects.workspaceId, ws), inArray(projects.status, ["PLANNING", "IN_PROGRESS", "REVIEW", "ON_HOLD"]), gte(projects.dueDate, from), lte(projects.dueDate, to))),
+      .where(
+        and(
+          eq(projects.workspaceId, ws),
+          inArray(projects.status, ["PLANNING", "IN_PROGRESS", "REVIEW", "ON_HOLD"]),
+          gte(projects.dueDate, from),
+          lte(projects.dueDate, to),
+        ),
+      ),
     tx
-      .select({ id: milestones.id, title: milestones.title, dueDate: milestones.dueDate, projectId: milestones.projectId, projectName: projects.name })
+      .select({
+        id: milestones.id,
+        title: milestones.title,
+        dueDate: milestones.dueDate,
+        projectId: milestones.projectId,
+        projectName: projects.name,
+      })
       .from(milestones)
       .innerJoin(projects, eq(projects.id, milestones.projectId))
-      .where(and(eq(milestones.workspaceId, ws), ne(milestones.status, "COMPLETED"), gte(milestones.dueDate, from), lte(milestones.dueDate, to))),
+      .where(
+        and(
+          eq(milestones.workspaceId, ws),
+          ne(milestones.status, "COMPLETED"),
+          gte(milestones.dueDate, from),
+          lte(milestones.dueDate, to),
+        ),
+      ),
     can(ctx.role, "invoice:view")
       ? tx
           .select({ id: invoices.id, number: invoices.number, dueDate: invoices.dueDate, client: clients.company })
           .from(invoices)
           .innerJoin(clients, eq(clients.id, invoices.clientId))
-          .where(and(eq(invoices.workspaceId, ws), inArray(invoices.status, ["SENT", "OVERDUE"]), gte(invoices.dueDate, from), lte(invoices.dueDate, to)))
+          .where(
+            and(
+              eq(invoices.workspaceId, ws),
+              inArray(invoices.status, ["SENT", "OVERDUE"]),
+              gte(invoices.dueDate, from),
+              lte(invoices.dueDate, to),
+            ),
+          )
       : Promise.resolve([]),
   ]);
 
@@ -79,10 +114,58 @@ export async function calendarItems(tx: Tx, ctx: AppContext, from: string, to: s
         location: e.location,
       }))
       .filter((i) => i.date >= from && i.date <= to),
-    ...dueTasks.map((t) => ({ id: t.id, kind: "task" as const, type: "DEADLINE" as const, title: t.title, date: t.dueDate!, time: null, endTime: null, subtitle: t.projectName ? `Task · ${t.projectName}` : "Task", href: `/tasks?task=${t.id}`, editable: false, location: null })),
-    ...dueProjects.map((p) => ({ id: p.id, kind: "project" as const, type: "DEADLINE" as const, title: `${p.name} due`, date: p.dueDate!, time: null, endTime: null, subtitle: p.client ? `Project · ${p.client}` : "Project", href: `/projects/${p.id}`, editable: false, location: null })),
-    ...dueMilestones.map((m) => ({ id: m.id, kind: "milestone" as const, type: "MILESTONE" as const, title: m.title, date: m.dueDate!, time: null, endTime: null, subtitle: `Milestone · ${m.projectName}`, href: `/projects/${m.projectId}?tab=timeline`, editable: false, location: null })),
-    ...dueInvoices.map((i) => ({ id: i.id, kind: "invoice" as const, type: "DEADLINE" as const, title: `${i.number} payment due`, date: i.dueDate, time: null, endTime: null, subtitle: i.client ? `Invoice · ${i.client}` : "Invoice", href: `/invoices/${i.id}`, editable: false, location: null })),
+    ...dueTasks.map((t) => ({
+      id: t.id,
+      kind: "task" as const,
+      type: "DEADLINE" as const,
+      title: t.title,
+      date: t.dueDate!,
+      time: null,
+      endTime: null,
+      subtitle: t.projectName ? `Task · ${t.projectName}` : "Task",
+      href: `/tasks?task=${t.id}`,
+      editable: false,
+      location: null,
+    })),
+    ...dueProjects.map((p) => ({
+      id: p.id,
+      kind: "project" as const,
+      type: "DEADLINE" as const,
+      title: `${p.name} due`,
+      date: p.dueDate!,
+      time: null,
+      endTime: null,
+      subtitle: p.client ? `Project · ${p.client}` : "Project",
+      href: `/projects/${p.id}`,
+      editable: false,
+      location: null,
+    })),
+    ...dueMilestones.map((m) => ({
+      id: m.id,
+      kind: "milestone" as const,
+      type: "MILESTONE" as const,
+      title: m.title,
+      date: m.dueDate!,
+      time: null,
+      endTime: null,
+      subtitle: `Milestone · ${m.projectName}`,
+      href: `/projects/${m.projectId}?tab=timeline`,
+      editable: false,
+      location: null,
+    })),
+    ...dueInvoices.map((i) => ({
+      id: i.id,
+      kind: "invoice" as const,
+      type: "DEADLINE" as const,
+      title: `${i.number} payment due`,
+      date: i.dueDate,
+      time: null,
+      endTime: null,
+      subtitle: i.client ? `Invoice · ${i.client}` : "Invoice",
+      href: `/invoices/${i.id}`,
+      editable: false,
+      location: null,
+    })),
   ];
   return items.sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? "00:00").localeCompare(b.time ?? "00:00"));
 }

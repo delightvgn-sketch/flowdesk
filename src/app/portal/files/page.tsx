@@ -20,7 +20,14 @@ export default async function PortalFilesPage() {
         </div>
         {features.storage() && <FileUploader links={{ clientId: ctx.clientId }} />}
       </div>
-      <FileList files={files} currentProfileId={ctx.profile.id} canOrganize={false} canDeleteAny={false} emptyTitle="No files yet" emptyDescription="When the team shares a file with you, it shows up here." />
+      <FileList
+        files={files}
+        currentProfileId={ctx.profile.id}
+        canOrganize={false}
+        canDeleteAny={false}
+        emptyTitle="No files yet"
+        emptyDescription="When the team shares a file with you, it shows up here."
+      />
     </>
   );
 }

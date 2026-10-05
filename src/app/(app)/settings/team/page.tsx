@@ -32,17 +32,35 @@ export default async function TeamSettingsPage() {
         .innerJoin(profiles, eq(profiles.id, workspaceMembers.profileId))
         .leftJoin(clients, eq(clients.id, workspaceMembers.clientId))
         .where(eq(workspaceMembers.workspaceId, ctx.workspace.id))
-        .orderBy(sql`case ${workspaceMembers.role} when 'OWNER' then 0 when 'ADMIN' then 1 when 'MEMBER' then 2 else 3 end`, asc(profiles.fullName)),
+        .orderBy(
+          sql`case ${workspaceMembers.role} when 'OWNER' then 0 when 'ADMIN' then 1 when 'MEMBER' then 2 else 3 end`,
+          asc(profiles.fullName),
+        ),
       manage
         ? tx
-            .select({ id: workspaceInvitations.id, email: workspaceInvitations.email, role: workspaceInvitations.role, expiresAt: workspaceInvitations.expiresAt, clientName: clients.company })
+            .select({
+              id: workspaceInvitations.id,
+              email: workspaceInvitations.email,
+              role: workspaceInvitations.role,
+              expiresAt: workspaceInvitations.expiresAt,
+              clientName: clients.company,
+            })
             .from(workspaceInvitations)
             .leftJoin(clients, eq(clients.id, workspaceInvitations.clientId))
-            .where(and(eq(workspaceInvitations.workspaceId, ctx.workspace.id), isNull(workspaceInvitations.acceptedAt), isNull(workspaceInvitations.revokedAt), gt(workspaceInvitations.expiresAt, new Date())))
+            .where(
+              and(
+                eq(workspaceInvitations.workspaceId, ctx.workspace.id),
+                isNull(workspaceInvitations.acceptedAt),
+                isNull(workspaceInvitations.revokedAt),
+                gt(workspaceInvitations.expiresAt, new Date()),
+              ),
+            )
         : Promise.resolve([]),
       manage ? clientOptions(tx, ctx.workspace.id) : Promise.resolve([]),
     ]),
   );
 
-  return <TeamManager members={members} invites={invites} role={ctx.role} currentProfileId={ctx.profile.id} clients={clientList} />;
+  return (
+    <TeamManager members={members} invites={invites} role={ctx.role} currentProfileId={ctx.profile.id} clients={clientList} />
+  );
 }

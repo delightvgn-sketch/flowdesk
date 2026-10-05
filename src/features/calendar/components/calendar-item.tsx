@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { TYPE_DOT } from "../colors";
 import type { CalendarItem } from "../queries";
 
-
 /** Compact chip in the month/week grid; opens details in a popover. */
 export function CalendarChip({ item, compact = true }: { item: CalendarItem; compact?: boolean }) {
   const router = useRouter();
@@ -53,7 +52,13 @@ export function CalendarChip({ item, compact = true }: { item: CalendarItem; com
             </Button>
           )}
           {item.kind === "event" && item.editable && (
-            <Button size="sm" variant="ghost" className="text-danger hover:text-danger" onClick={() => remove.execute({ id: item.id })} disabled={remove.pending}>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-danger hover:text-danger"
+              onClick={() => remove.execute({ id: item.id })}
+              disabled={remove.pending}
+            >
               <Trash2 /> Delete
             </Button>
           )}

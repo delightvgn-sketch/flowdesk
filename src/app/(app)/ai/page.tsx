@@ -42,7 +42,11 @@ export default async function AiPage({ searchParams }: PageProps<"/ai">) {
     const requested = param(sp.c);
     const activeId = param(sp.new) ? null : (conversations.find((c) => c.id === requested)?.id ?? null);
     const messages = activeId
-      ? await tx.select({ id: aiMessages.id, role: aiMessages.role, text: aiMessages.content }).from(aiMessages).where(eq(aiMessages.conversationId, activeId)).orderBy(asc(aiMessages.createdAt))
+      ? await tx
+          .select({ id: aiMessages.id, role: aiMessages.role, text: aiMessages.content })
+          .from(aiMessages)
+          .where(eq(aiMessages.conversationId, activeId))
+          .orderBy(asc(aiMessages.createdAt))
       : [];
     const projects = tab === "tasks" ? await projectOptions(tx, ctx.workspace.id) : [];
     return { conversations, activeId, messages, projects };
@@ -50,8 +54,18 @@ export default async function AiPage({ searchParams }: PageProps<"/ai">) {
 
   const finance = can(ctx.role, "invoice:view");
   const suggestions = finance
-    ? ["Summarize everything related to Northstar Digital", "Which projects appear to be delayed?", "What's the status of the E-commerce Redesign?", "Which invoices are overdue and by how much?"]
-    : ["What's on my plate this week?", "Which of my projects look delayed?", "What's the status of the E-commerce Redesign?", "Summarize the Booking Platform project"];
+    ? [
+        "Summarize everything related to Northstar Digital",
+        "Which projects appear to be delayed?",
+        "What's the status of the E-commerce Redesign?",
+        "Which invoices are overdue and by how much?",
+      ]
+    : [
+        "What's on my plate this week?",
+        "Which of my projects look delayed?",
+        "What's the status of the E-commerce Redesign?",
+        "Summarize the Booking Platform project",
+      ];
 
   return (
     <>
@@ -70,7 +84,12 @@ export default async function AiPage({ searchParams }: PageProps<"/ai">) {
             key={t.key}
             href={t.key === "chat" ? "/ai" : `/ai?tab=${t.key}`}
             aria-current={t.key === tab ? "page" : undefined}
-            className={cn("inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap", t.key === tab ? "bg-card text-foreground shadow-xs ring-1 ring-border" : "text-muted-foreground hover:text-foreground")}
+            className={cn(
+              "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap",
+              t.key === tab
+                ? "bg-card text-foreground shadow-xs ring-1 ring-border"
+                : "text-muted-foreground hover:text-foreground",
+            )}
           >
             <t.icon className="size-4" aria-hidden /> {t.label}
           </Link>
@@ -84,8 +103,9 @@ export default async function AiPage({ searchParams }: PageProps<"/ai">) {
           </span>
           <h2 className="mt-4 text-lg font-semibold">FlowDesk AI isn&apos;t configured yet</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Everything else in FlowDesk works without it. To turn on the assistant, meeting summaries, task generation and invoice drafting, add an{" "}
-            <code className="rounded bg-muted px-1 font-mono text-xs">AI_GATEWAY_API_KEY</code> to your environment (or deploy on Vercel with AI Gateway enabled) and restart.
+            Everything else in FlowDesk works without it. To turn on the assistant, meeting summaries, task generation and invoice
+            drafting, add an <code className="rounded bg-muted px-1 font-mono text-xs">AI_GATEWAY_API_KEY</code> to your
+            environment (or deploy on Vercel with AI Gateway enabled) and restart.
           </p>
           <p className="mt-4 text-xs text-muted-foreground">Keys stay on the server — the browser never sees them.</p>
         </Panel>
@@ -111,9 +131,15 @@ export default async function AiPage({ searchParams }: PageProps<"/ai">) {
           <div className="mx-auto max-w-xl text-center">
             <ListChecks className="mx-auto size-6 text-primary" aria-hidden />
             <h2 className="mt-3 text-lg font-semibold">Break a project into tasks</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Pick a project, add any context, review the suggestions and add the ones you like straight to its board.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Pick a project, add any context, review the suggestions and add the ones you like straight to its board.
+            </p>
             <div className="mt-6 flex justify-center">
-              {data.projects.length ? <AiTaskGenerator projects={data.projects} /> : <p className="text-sm text-muted-foreground">You don&apos;t have any active projects yet.</p>}
+              {data.projects.length ? (
+                <AiTaskGenerator projects={data.projects} />
+              ) : (
+                <p className="text-sm text-muted-foreground">You don&apos;t have any active projects yet.</p>
+              )}
             </div>
           </div>
         </Panel>

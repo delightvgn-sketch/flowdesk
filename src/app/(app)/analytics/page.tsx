@@ -10,7 +10,14 @@ import { Panel, PanelHeader } from "@/components/shared/misc";
 import { PageHeader, SectionHeader } from "@/components/shared/page-header";
 import { param } from "@/components/shared/pagination";
 import { StatCard } from "@/components/shared/stat-card";
-import { clientCounts, clientsByMonth, projectHealth, revenueByClient, revenueKpis, taskStats } from "@/features/analytics/queries";
+import {
+  clientCounts,
+  clientsByMonth,
+  projectHealth,
+  revenueByClient,
+  revenueKpis,
+  taskStats,
+} from "@/features/analytics/queries";
 import { getRevenueByMonth, getTaskTrend } from "@/features/dashboard/queries";
 import { PROJECT_STATUS_META } from "@/lib/constants";
 import { addDaysISO, dueLabel, todayISO } from "@/lib/dates";
@@ -72,7 +79,10 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
                 key={r.value}
                 href={`/analytics?range=${r.value}`}
                 aria-current={Number(r.value) === months ? "page" : undefined}
-                className={cn("rounded-[5px] px-3 py-1 text-[13px] font-medium", Number(r.value) === months ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+                className={cn(
+                  "rounded-[5px] px-3 py-1 text-[13px] font-medium",
+                  Number(r.value) === months ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
+                )}
               >
                 {r.label}
               </Link>
@@ -84,12 +94,29 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
       <div className="space-y-10">
         <section aria-labelledby="revenue-h">
           <SectionHeader title="Revenue" description={`Last ${months} months`} />
-          <h2 id="revenue-h" className="sr-only">Revenue</h2>
+          <h2 id="revenue-h" className="sr-only">
+            Revenue
+          </h2>
           <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="Collected" value={money(d.kpis.collected)} hint={`${d.kpis.paidCount} invoices paid`} />
-            <StatCard label="Invoiced" value={money(d.kpis.invoiced)} hint={d.kpis.daysToPay ? `Paid in ${d.kpis.daysToPay} days on average` : undefined} />
-            <StatCard label="Outstanding (not yet due)" value={money(d.kpis.outstanding)} hint={`${d.kpis.outstandingCount} invoices`} href="/invoices?status=SENT" />
-            <StatCard label="Overdue" value={money(d.kpis.overdue)} tone={d.kpis.overdue ? "danger" : "default"} hint={`${d.kpis.overdueCount} invoices`} href="/invoices?status=OVERDUE" />
+            <StatCard
+              label="Invoiced"
+              value={money(d.kpis.invoiced)}
+              hint={d.kpis.daysToPay ? `Paid in ${d.kpis.daysToPay} days on average` : undefined}
+            />
+            <StatCard
+              label="Outstanding (not yet due)"
+              value={money(d.kpis.outstanding)}
+              hint={`${d.kpis.outstandingCount} invoices`}
+              href="/invoices?status=SENT"
+            />
+            <StatCard
+              label="Overdue"
+              value={money(d.kpis.overdue)}
+              tone={d.kpis.overdue ? "danger" : "default"}
+              hint={`${d.kpis.overdueCount} invoices`}
+              href="/invoices?status=OVERDUE"
+            />
           </div>
           <div className="grid gap-6 lg:grid-cols-3">
             <ColumnChart
@@ -108,7 +135,15 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
             <Panel>
               <PanelHeader title="Revenue per client" description="Collected in period" />
               <div className="p-4 sm:p-5">
-                <BarList items={d.perClient.map((c) => ({ label: c.name, value: c.revenue, display: money(c.revenue, c.revenue >= 1_000_000), href: `/clients/${c.id}` }))} emptyLabel="No payments in this period." />
+                <BarList
+                  items={d.perClient.map((c) => ({
+                    label: c.name,
+                    value: c.revenue,
+                    display: money(c.revenue, c.revenue >= 1_000_000),
+                    href: `/clients/${c.id}`,
+                  }))}
+                  emptyLabel="No payments in this period."
+                />
               </div>
             </Panel>
           </div>
@@ -116,24 +151,46 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
 
         <section aria-labelledby="clients-h">
           <SectionHeader title="Clients" />
-          <h2 id="clients-h" className="sr-only">Clients</h2>
+          <h2 id="clients-h" className="sr-only">
+            Clients
+          </h2>
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
               <StatCard label="Active clients" value={d.counts.ACTIVE ?? 0} href="/clients?status=ACTIVE" />
               <StatCard label="Open leads" value={d.counts.LEAD ?? 0} href="/clients?status=LEAD" />
-              <StatCard label="New in period" value={d.newClients.reduce((s, m) => s + m.added, 0)} className="col-span-2 lg:col-span-1" />
+              <StatCard
+                label="New in period"
+                value={d.newClients.reduce((s, m) => s + m.added, 0)}
+                className="col-span-2 lg:col-span-1"
+              />
             </div>
-            <ColumnChart className="lg:col-span-2" title="New clients" description="Added per month" data={d.newClients} xKey="label" height={220} series={[{ key: "added", label: "New clients", color: CHART_COLORS[0] }]} />
+            <ColumnChart
+              className="lg:col-span-2"
+              title="New clients"
+              description="Added per month"
+              data={d.newClients}
+              xKey="label"
+              height={220}
+              series={[{ key: "added", label: "New clients", color: CHART_COLORS[0] }]}
+            />
           </div>
         </section>
 
         <section aria-labelledby="projects-h">
           <SectionHeader title="Projects" />
-          <h2 id="projects-h" className="sr-only">Projects</h2>
+          <h2 id="projects-h" className="sr-only">
+            Projects
+          </h2>
           <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="Active" value={d.projects.active} href="/projects?status=active" />
             <StatCard label="Completed in period" value={d.projects.completed} tone="success" href="/projects?status=COMPLETED" />
-            <StatCard label="Delayed" value={d.projects.delayed} tone={d.projects.delayed ? "danger" : "default"} icon={d.projects.delayed ? AlertTriangle : undefined} hint="Past due and not finished" />
+            <StatCard
+              label="Delayed"
+              value={d.projects.delayed}
+              tone={d.projects.delayed ? "danger" : "default"}
+              icon={d.projects.delayed ? AlertTriangle : undefined}
+              hint="Past due and not finished"
+            />
             <StatCard label="On hold" value={d.projects.onHold} href="/projects?status=ON_HOLD" />
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
@@ -143,7 +200,13 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
                 <BarList
                   items={d.projects.byStatus
                     .sort((a, b) => b.count - a.count)
-                    .map((s) => ({ label: PROJECT_STATUS_META[s.status as ProjectStatus].label, value: s.count, display: String(s.count), barClass: STATUS_BAR[s.status], href: `/projects?status=${s.status}` }))}
+                    .map((s) => ({
+                      label: PROJECT_STATUS_META[s.status as ProjectStatus].label,
+                      value: s.count,
+                      display: String(s.count),
+                      barClass: STATUS_BAR[s.status],
+                      href: `/projects?status=${s.status}`,
+                    }))}
                 />
               </div>
             </Panel>
@@ -155,10 +218,15 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
                 <ul className="divide-y">
                   {d.projects.delayedList.map((p) => (
                     <li key={p.id}>
-                      <Link href={`/projects/${p.id}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/40 sm:px-5">
+                      <Link
+                        href={`/projects/${p.id}`}
+                        className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/40 sm:px-5"
+                      >
                         <span className="min-w-0">
                           <span className="block truncate text-sm font-medium">{p.name}</span>
-                          <span className="block truncate text-xs text-muted-foreground">{p.client ?? "Internal"} · {p.progress}% done</span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {p.client ?? "Internal"} · {p.progress}% done
+                          </span>
                         </span>
                         <span className="shrink-0 text-xs font-medium text-danger">{dueLabel(p.due_date, today).text}</span>
                       </Link>
@@ -172,7 +240,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
 
         <section aria-labelledby="tasks-h">
           <SectionHeader title="Tasks" />
-          <h2 id="tasks-h" className="sr-only">Tasks</h2>
+          <h2 id="tasks-h" className="sr-only">
+            Tasks
+          </h2>
           <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard label="Completed in period" value={d.tasks.completed} tone="success" />
             <StatCard label="Open" value={d.tasks.open} href="/tasks" />
@@ -196,7 +266,13 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/analyt
               <PanelHeader title="Open work by person" description="Open tasks (overdue)" />
               <div className="p-4 sm:p-5">
                 <BarList
-                  items={d.tasks.workload.map((w) => ({ label: w.name, value: w.open, display: String(w.open), hint: w.overdue ? `(${w.overdue} overdue)` : undefined, barClass: w.overdue ? "bg-warning" : "bg-chart-1" }))}
+                  items={d.tasks.workload.map((w) => ({
+                    label: w.name,
+                    value: w.open,
+                    display: String(w.open),
+                    hint: w.overdue ? `(${w.overdue} overdue)` : undefined,
+                    barClass: w.overdue ? "bg-warning" : "bg-chart-1",
+                  }))}
                   emptyLabel="No open tasks."
                 />
               </div>

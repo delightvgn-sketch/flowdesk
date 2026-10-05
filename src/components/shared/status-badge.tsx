@@ -64,10 +64,17 @@ export function PriorityIndicator({ value, showLabel = false }: { value: Priorit
   const bars = PRIORITY_BARS[value];
   const color = value === "URGENT" ? "bg-danger" : value === "HIGH" ? "bg-warning" : "bg-foreground/60";
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground" title={`${PRIORITY_META[value].label} priority`}>
+    <span
+      className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
+      title={`${PRIORITY_META[value].label} priority`}
+    >
       <span aria-hidden className="flex h-3 items-end gap-[2px]">
         {[1, 2, 3, 4].map((i) => (
-          <span key={i} className={`w-[3px] rounded-sm ${i <= bars ? color : "bg-border-strong"}`} style={{ height: `${i * 25}%` }} />
+          <span
+            key={i}
+            className={`w-[3px] rounded-sm ${i <= bars ? color : "bg-border-strong"}`}
+            style={{ height: `${i * 25}%` }}
+          />
         ))}
       </span>
       <span className={showLabel ? "" : "sr-only"}>{PRIORITY_META[value].label}</span>

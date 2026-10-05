@@ -10,14 +10,24 @@ import { confirmUpload, prepareUpload } from "@/features/files/actions";
 import { ALLOWED_MIME_TYPES, fileUploadSchema, MAX_UPLOAD_BYTES } from "@/lib/validation";
 import { cn, formatBytes } from "@/lib/utils";
 
-type Links = { folderId?: string | null; projectId?: string | null; clientId?: string | null; taskId?: string | null; sharedWithClient?: boolean };
+type Links = {
+  folderId?: string | null;
+  projectId?: string | null;
+  clientId?: string | null;
+  taskId?: string | null;
+  sharedWithClient?: boolean;
+};
 type Item = { id: string; name: string; progress: number; error?: string };
 
 /** Some browsers report an empty type for e.g. .md files; infer from the extension. */
 function mimeFor(file: File) {
   if (file.type) return file.type;
   const ext = file.name.split(".").pop()?.toLowerCase();
-  return ({ md: "text/markdown", csv: "text/csv", txt: "text/plain", json: "application/json" } as Record<string, string>)[ext ?? ""] ?? "application/octet-stream";
+  return (
+    ({ md: "text/markdown", csv: "text/csv", txt: "text/plain", json: "application/json" } as Record<string, string>)[
+      ext ?? ""
+    ] ?? "application/octet-stream"
+  );
 }
 
 function putWithProgress(url: string, file: File, contentType: string, onProgress: (pct: number) => void) {
@@ -51,7 +61,8 @@ export function FileUploader({
   const [items, setItems] = useState<Item[]>([]);
   const busy = items.some((i) => i.progress < 100 && !i.error);
 
-  const patch = (id: string, change: Partial<Item>) => setItems((list) => list.map((i) => (i.id === id ? { ...i, ...change } : i)));
+  const patch = (id: string, change: Partial<Item>) =>
+    setItems((list) => list.map((i) => (i.id === id ? { ...i, ...change } : i)));
 
   async function uploadOne(file: File) {
     const id = crypto.randomUUID();
@@ -112,7 +123,11 @@ export function FileUploader({
         {busy ? "Uploading…" : label}
       </Button>
       {items.length > 0 && (
-        <div className="absolute right-0 z-20 mt-2 w-72 space-y-2 rounded-lg border bg-popover p-3 shadow-md" role="status" aria-live="polite">
+        <div
+          className="absolute right-0 z-20 mt-2 w-72 space-y-2 rounded-lg border bg-popover p-3 shadow-md"
+          role="status"
+          aria-live="polite"
+        >
           {items.map((item) => (
             <div key={item.id} className="text-xs">
               <div className="flex items-center justify-between gap-2">

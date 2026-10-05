@@ -47,7 +47,9 @@ export function PeoplePicker({
           {selected.length ? (
             <>
               <AvatarStack people={selected.map((p) => ({ ...p, avatarUrl: p.avatarUrl ?? null }))} max={4} />
-              <span className="truncate text-muted-foreground">{selected.length === 1 ? selected[0].fullName : `${selected.length} people`}</span>
+              <span className="truncate text-muted-foreground">
+                {selected.length === 1 ? selected[0].fullName : `${selected.length} people`}
+              </span>
             </>
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>

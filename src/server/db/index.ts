@@ -41,9 +41,7 @@ export const adminDb: Database = drizzle(client, { schema });
 export async function withRls<T>(clerkUserId: string, fn: (tx: Tx) => Promise<T>): Promise<T> {
   return adminDb.transaction(async (tx) => {
     const claims = JSON.stringify({ sub: clerkUserId, role: "authenticated" });
-    await tx.execute(
-      sql`select set_config('request.jwt.claims', ${claims}, true), set_config('role', 'authenticated', true)`,
-    );
+    await tx.execute(sql`select set_config('request.jwt.claims', ${claims}, true), set_config('role', 'authenticated', true)`);
     return fn(tx);
   });
 }

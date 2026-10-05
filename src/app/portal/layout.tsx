@@ -12,7 +12,13 @@ export default async function PortalLayout({ children }: LayoutProps<"/portal">)
       tx
         .select({ unread: count() })
         .from(notifications)
-        .where(and(eq(notifications.workspaceId, ctx.workspace.id), eq(notifications.recipientId, ctx.profile.id), isNull(notifications.readAt))),
+        .where(
+          and(
+            eq(notifications.workspaceId, ctx.workspace.id),
+            eq(notifications.recipientId, ctx.profile.id),
+            isNull(notifications.readAt),
+          ),
+        ),
     ]),
   );
   return (

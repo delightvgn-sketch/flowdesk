@@ -41,7 +41,9 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
     page: parsePage(sp.page),
   };
 
-  const [{ rows, total }, tags] = await ctx.db((tx) => Promise.all([listClients(tx, ctx.workspace.id, filters), listClientTags(tx, ctx.workspace.id)]));
+  const [{ rows, total }, tags] = await ctx.db((tx) =>
+    Promise.all([listClients(tx, ctx.workspace.id, filters), listClientTags(tx, ctx.workspace.id)]),
+  );
   const manage = can(ctx.role, "client:manage");
   const filtered = !!(filters.q || filters.status || filters.tag);
 
@@ -55,7 +57,12 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
 
       <Toolbar>
         <SearchInput placeholder="Search clients…" />
-        <FilterSelect param="status" label="Status" options={CLIENT_STATUSES.map((s) => ({ value: s, label: CLIENT_STATUS_META[s].label }))} allLabel="All but archived" />
+        <FilterSelect
+          param="status"
+          label="Status"
+          options={CLIENT_STATUSES.map((s) => ({ value: s, label: CLIENT_STATUS_META[s].label }))}
+          allLabel="All but archived"
+        />
         {tags.length > 0 && <FilterSelect param="tag" label="Tag" options={tags.map((t) => ({ value: t, label: t }))} />}
         <FilterSelect param="sort" label="Sort" options={SORTS.slice(1)} allLabel="Newest" />
         <ClearFilters keys={["q", "status", "tag", "sort"]} />
@@ -63,7 +70,11 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
 
       {rows.length === 0 ? (
         filtered ? (
-          <EmptyState icon={Users} title="No clients match your filters" description="Try a different search or clear the filters." />
+          <EmptyState
+            icon={Users}
+            title="No clients match your filters"
+            description="Try a different search or clear the filters."
+          />
         ) : (
           <EmptyState
             icon={Users}
@@ -85,7 +96,11 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
                   <TableHead className="text-right">Active projects</TableHead>
                   <TableHead className="text-right">Revenue</TableHead>
                   <TableHead>Added</TableHead>
-                  {manage && <TableHead className="w-12"><span className="sr-only">Actions</span></TableHead>}
+                  {manage && (
+                    <TableHead className="w-12">
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,11 +115,15 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell><StatusBadge kind="client" value={c.status} /></TableCell>
+                    <TableCell>
+                      <StatusBadge kind="client" value={c.status} />
+                    </TableCell>
                     <TableCell>
                       <div className="flex max-w-56 flex-wrap gap-1">
                         {c.tags.slice(0, 3).map((t) => (
-                          <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{t}</span>
+                          <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                            {t}
+                          </span>
                         ))}
                       </div>
                     </TableCell>
@@ -126,7 +145,10 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
           <ul className="grid gap-2 md:hidden">
             {rows.map((c) => (
               <li key={c.id}>
-                <Link href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-xs active:bg-muted/50">
+                <Link
+                  href={`/clients/${c.id}`}
+                  className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-xs active:bg-muted/50"
+                >
                   <UserAvatar name={c.company ?? c.name} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{c.company ?? c.name}</span>

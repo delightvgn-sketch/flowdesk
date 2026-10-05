@@ -33,9 +33,15 @@ export function InvoiceDocument({ data, className }: { data: InvoiceDocumentData
   const balance = Math.max(0, data.total - data.amountPaid);
 
   return (
-    <article className={cn("relative overflow-hidden rounded-xl border bg-card p-6 shadow-sm sm:p-10", className)} aria-label={`Invoice ${data.number}`}>
+    <article
+      className={cn("relative overflow-hidden rounded-xl border bg-card p-6 shadow-sm sm:p-10", className)}
+      aria-label={`Invoice ${data.number}`}
+    >
       {data.status === "PAID" && (
-        <span aria-hidden className="pointer-events-none absolute top-8 -right-12 rotate-45 bg-success px-14 py-1 text-xs font-semibold tracking-widest text-white">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-8 -right-12 rotate-45 bg-success px-14 py-1 text-xs font-semibold tracking-widest text-white"
+        >
           PAID
         </span>
       )}
@@ -45,7 +51,7 @@ export function InvoiceDocument({ data, className }: { data: InvoiceDocumentData
             <LogoMark className="size-8" />
             <span className="text-lg font-semibold tracking-tight">{data.from.name}</span>
           </div>
-          <address className="mt-3 text-sm leading-relaxed text-muted-foreground not-italic whitespace-pre-line">
+          <address className="mt-3 text-sm leading-relaxed whitespace-pre-line text-muted-foreground not-italic">
             {[data.from.address, data.from.email, data.from.phone].filter(Boolean).join("\n")}
           </address>
         </div>
@@ -65,8 +71,10 @@ export function InvoiceDocument({ data, className }: { data: InvoiceDocumentData
         <div>
           <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Bill to</p>
           <p className="mt-2 font-semibold">{data.to.company ?? data.to.name}</p>
-          <address className="mt-1 text-sm leading-relaxed text-muted-foreground not-italic whitespace-pre-line">
-            {[data.to.company ? `Attn: ${data.to.name}` : null, data.to.address, data.to.email, data.to.phone].filter(Boolean).join("\n")}
+          <address className="mt-1 text-sm leading-relaxed whitespace-pre-line text-muted-foreground not-italic">
+            {[data.to.company ? `Attn: ${data.to.name}` : null, data.to.address, data.to.email, data.to.phone]
+              .filter(Boolean)
+              .join("\n")}
           </address>
         </div>
         {data.projectName && (
@@ -81,10 +89,18 @@ export function InvoiceDocument({ data, className }: { data: InvoiceDocumentData
         <table className="w-full min-w-[480px] text-sm">
           <thead>
             <tr className="border-b text-xs text-muted-foreground">
-              <th scope="col" className="py-2 text-left font-medium">Description</th>
-              <th scope="col" className="w-16 py-2 text-right font-medium">Qty</th>
-              <th scope="col" className="w-32 py-2 text-right font-medium">Unit price</th>
-              <th scope="col" className="w-32 py-2 text-right font-medium">Amount</th>
+              <th scope="col" className="py-2 text-left font-medium">
+                Description
+              </th>
+              <th scope="col" className="w-16 py-2 text-right font-medium">
+                Qty
+              </th>
+              <th scope="col" className="w-32 py-2 text-right font-medium">
+                Unit price
+              </th>
+              <th scope="col" className="w-32 py-2 text-right font-medium">
+                Amount
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -108,7 +124,9 @@ export function InvoiceDocument({ data, className }: { data: InvoiceDocumentData
           </div>
           {data.discountTotal > 0 && (
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Discount{data.discountType === "PERCENT" ? ` (${data.discountValue}%)` : ""}</dt>
+              <dt className="text-muted-foreground">
+                Discount{data.discountType === "PERCENT" ? ` (${data.discountValue}%)` : ""}
+              </dt>
               <dd className="tabular">−{money(data.discountTotal)}</dd>
             </div>
           )}

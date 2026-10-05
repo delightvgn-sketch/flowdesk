@@ -70,7 +70,11 @@ export async function listFolders(tx: Tx, workspaceId: string, parentId: string 
 }
 
 export async function allFolders(tx: Tx, workspaceId: string) {
-  return tx.select({ id: folders.id, name: folders.name, parentId: folders.parentId }).from(folders).where(eq(folders.workspaceId, workspaceId)).orderBy(asc(folders.name));
+  return tx
+    .select({ id: folders.id, name: folders.name, parentId: folders.parentId })
+    .from(folders)
+    .where(eq(folders.workspaceId, workspaceId))
+    .orderBy(asc(folders.name));
 }
 
 /** Breadcrumb trail from the root to `folderId`. */

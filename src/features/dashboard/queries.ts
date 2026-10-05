@@ -49,15 +49,30 @@ export async function getFinancialSummary(tx: Tx, workspaceId: string, today: st
 
 export async function getBusinessSummary(tx: Tx, workspaceId: string, today: string) {
   const [[activeClients], [activeProjects], [openTasks], [overdueTasks], [pendingInvoices], [drafts]] = await Promise.all([
-    tx.select({ c: count() }).from(clients).where(and(eq(clients.workspaceId, workspaceId), eq(clients.status, "ACTIVE"))),
-    tx.select({ c: count() }).from(projects).where(and(eq(projects.workspaceId, workspaceId), inArray(projects.status, ACTIVE_PROJECT_STATUSES))),
-    tx.select({ c: count() }).from(tasks).where(and(eq(tasks.workspaceId, workspaceId), ne(tasks.status, "DONE"))),
+    tx
+      .select({ c: count() })
+      .from(clients)
+      .where(and(eq(clients.workspaceId, workspaceId), eq(clients.status, "ACTIVE"))),
+    tx
+      .select({ c: count() })
+      .from(projects)
+      .where(and(eq(projects.workspaceId, workspaceId), inArray(projects.status, ACTIVE_PROJECT_STATUSES))),
+    tx
+      .select({ c: count() })
+      .from(tasks)
+      .where(and(eq(tasks.workspaceId, workspaceId), ne(tasks.status, "DONE"))),
     tx
       .select({ c: count() })
       .from(tasks)
       .where(and(eq(tasks.workspaceId, workspaceId), ne(tasks.status, "DONE"), lt(tasks.dueDate, today))),
-    tx.select({ c: count() }).from(invoices).where(and(eq(invoices.workspaceId, workspaceId), inArray(invoices.status, ["SENT", "OVERDUE"]))),
-    tx.select({ c: count() }).from(invoices).where(and(eq(invoices.workspaceId, workspaceId), eq(invoices.status, "DRAFT"))),
+    tx
+      .select({ c: count() })
+      .from(invoices)
+      .where(and(eq(invoices.workspaceId, workspaceId), inArray(invoices.status, ["SENT", "OVERDUE"]))),
+    tx
+      .select({ c: count() })
+      .from(invoices)
+      .where(and(eq(invoices.workspaceId, workspaceId), eq(invoices.status, "DRAFT"))),
   ]);
   return {
     activeClients: activeClients.c,
@@ -96,7 +111,11 @@ export async function getInvoiceStatusBreakdown(tx: Tx, workspaceId: string, tod
     from invoices where workspace_id = ${workspaceId}
     group by 1
   `);
-  return rows.map((r) => ({ status: r.status as "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED", count: n(r.count), amount: n(r.amount) }));
+  return rows.map((r) => ({
+    status: r.status as "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED",
+    count: n(r.count),
+    amount: n(r.amount),
+  }));
 }
 
 /** Tasks created vs completed per week. */
@@ -153,13 +172,31 @@ export async function getUpcoming(tx: Tx, ctx: AppContext, today: string): Promi
 
   const [meetings, dueTasks, dueProjects, overdueInvoices] = await Promise.all([
     tx
-      .select({ id: calendarEvents.id, title: calendarEvents.title, startsAt: calendarEvents.startsAt, location: calendarEvents.location, allDay: calendarEvents.allDay })
+      .select({
+        id: calendarEvents.id,
+        title: calendarEvents.title,
+        startsAt: calendarEvents.startsAt,
+        location: calendarEvents.location,
+        allDay: calendarEvents.allDay,
+      })
       .from(calendarEvents)
-      .where(and(eq(calendarEvents.workspaceId, ctx.workspace.id), gte(calendarEvents.startsAt, now), lte(calendarEvents.startsAt, weekAhead)))
+      .where(
+        and(
+          eq(calendarEvents.workspaceId, ctx.workspace.id),
+          gte(calendarEvents.startsAt, now),
+          lte(calendarEvents.startsAt, weekAhead),
+        ),
+      )
       .orderBy(asc(calendarEvents.startsAt))
       .limit(4),
     tx
-      .select({ id: tasks.id, title: tasks.title, dueDate: tasks.dueDate, projectName: projects.name, assignee: profiles.fullName })
+      .select({
+        id: tasks.id,
+        title: tasks.title,
+        dueDate: tasks.dueDate,
+        projectName: projects.name,
+        assignee: profiles.fullName,
+      })
       .from(tasks)
       .leftJoin(projects, eq(projects.id, tasks.projectId))
       .leftJoin(profiles, eq(profiles.id, tasks.assigneeId))
@@ -190,10 +227,22 @@ export async function getUpcoming(tx: Tx, ctx: AppContext, today: string): Promi
       .limit(4),
     managers
       ? tx
-          .select({ id: invoices.id, number: invoices.number, dueDate: invoices.dueDate, clientName: clients.company, balance: sql<number>`${invoices.total} - ${invoices.amountPaid}`.mapWith(Number) })
+          .select({
+            id: invoices.id,
+            number: invoices.number,
+            dueDate: invoices.dueDate,
+            clientName: clients.company,
+            balance: sql<number>`${invoices.total} - ${invoices.amountPaid}`.mapWith(Number),
+          })
           .from(invoices)
           .innerJoin(clients, eq(clients.id, invoices.clientId))
-          .where(and(eq(invoices.workspaceId, ctx.workspace.id), inArray(invoices.status, ["SENT", "OVERDUE"]), lt(invoices.dueDate, today)))
+          .where(
+            and(
+              eq(invoices.workspaceId, ctx.workspace.id),
+              inArray(invoices.status, ["SENT", "OVERDUE"]),
+              lt(invoices.dueDate, today),
+            ),
+          )
           .orderBy(asc(invoices.dueDate))
           .limit(4)
       : [],
@@ -246,4 +295,3 @@ export async function getUpcoming(tx: Tx, ctx: AppContext, today: string): Promi
 export function workspaceToday(ctx: AppContext) {
   return todayISO(ctx.workspace.timezone);
 }
-

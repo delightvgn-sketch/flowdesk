@@ -1,4 +1,11 @@
-import { convertToModelMessages, createUIMessageStreamResponse, isStepCount, streamText, toUIMessageStream, type UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  createUIMessageStreamResponse,
+  isStepCount,
+  streamText,
+  toUIMessageStream,
+  type UIMessage,
+} from "ai";
 import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -49,10 +56,17 @@ export async function POST(request: Request) {
       where: and(eq(aiConversations.id, conversationId), eq(aiConversations.profileId, ctx.profile.id)),
     });
     if (!conversation) return null;
-    const rows = await tx.select().from(aiMessages).where(eq(aiMessages.conversationId, conversationId)).orderBy(asc(aiMessages.createdAt));
+    const rows = await tx
+      .select()
+      .from(aiMessages)
+      .where(eq(aiMessages.conversationId, conversationId))
+      .orderBy(asc(aiMessages.createdAt));
     await tx.insert(aiMessages).values({ workspaceId: ctx.workspace.id, conversationId, role: "user", content: text });
     if (rows.length === 0) {
-      await tx.update(aiConversations).set({ title: text.slice(0, 80) }).where(eq(aiConversations.id, conversationId));
+      await tx
+        .update(aiConversations)
+        .set({ title: text.slice(0, 80) })
+        .where(eq(aiConversations.id, conversationId));
     } else {
       await tx.update(aiConversations).set({ updatedAt: new Date() }).where(eq(aiConversations.id, conversationId));
     }
@@ -86,9 +100,18 @@ export async function POST(request: Request) {
         stream: result.stream,
         onEnd: async ({ messages: finalMessages }) => {
           const last = finalMessages.at(-1);
-          const reply = last?.role === "assistant" ? last.parts.filter((p) => p.type === "text").map((p) => (p as { text: string }).text).join("\n").trim() : "";
+          const reply =
+            last?.role === "assistant"
+              ? last.parts
+                  .filter((p) => p.type === "text")
+                  .map((p) => (p as { text: string }).text)
+                  .join("\n")
+                  .trim()
+              : "";
           if (reply) {
-            await ctx.db((tx) => tx.insert(aiMessages).values({ workspaceId: ctx.workspace.id, conversationId, role: "assistant", content: reply }));
+            await ctx.db((tx) =>
+              tx.insert(aiMessages).values({ workspaceId: ctx.workspace.id, conversationId, role: "assistant", content: reply }),
+            );
           }
         },
         onError: (error) => friendlyAiError(error),

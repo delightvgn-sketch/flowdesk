@@ -59,7 +59,10 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
       tab === "messages" ? listMessages(tx, ctx.workspace.id, { projectId: id }) : Promise.resolve([]),
       finance
         ? tx
-            .select({ total: sql<number>`coalesce(sum(${invoices.total}), 0)`.mapWith(Number), paid: sql<number>`coalesce(sum(${invoices.amountPaid}), 0)`.mapWith(Number) })
+            .select({
+              total: sql<number>`coalesce(sum(${invoices.total}), 0)`.mapWith(Number),
+              paid: sql<number>`coalesce(sum(${invoices.amountPaid}), 0)`.mapWith(Number),
+            })
             .from(invoices)
             .where(and(eq(invoices.projectId, id), sql`${invoices.status} not in ('DRAFT', 'CANCELLED')`))
             .then((r) => r[0])
@@ -85,7 +88,9 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
             <>
               For{" "}
               {can(ctx.role, "client:view") ? (
-                <Link href={`/clients/${p.clientId}`} className="font-medium text-foreground hover:underline">{p.clientName}</Link>
+                <Link href={`/clients/${p.clientId}`} className="font-medium text-foreground hover:underline">
+                  {p.clientName}
+                </Link>
               ) : (
                 <span className="font-medium text-foreground">{p.clientName}</span>
               )}
@@ -97,7 +102,18 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
         actions={
           manager ? (
             <ProjectActions
-              project={{ id: p.id, name: p.name, description: p.description, clientId: p.clientId, status: p.status, priority: p.priority, startDate: p.startDate, dueDate: p.dueDate, budget: p.budget, memberIds: p.team.map((t) => t.id) }}
+              project={{
+                id: p.id,
+                name: p.name,
+                description: p.description,
+                clientId: p.clientId,
+                status: p.status,
+                priority: p.priority,
+                startDate: p.startDate,
+                dueDate: p.dueDate,
+                budget: p.budget,
+                memberIds: p.team.map((t) => t.id),
+              }}
               options={{ clients: data.clients, people: data.people, currency: ctx.workspace.currency }}
             />
           ) : (
@@ -126,22 +142,58 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                 <ProgressRing value={p.progress} size={84} stroke={7} />
                 <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-3">
-                  <Fact icon={CheckSquare} label="Tasks done" value={`${p.taskStats.done} / ${p.taskStats.total}`} hint={p.taskStats.overdue ? `${p.taskStats.overdue} overdue` : undefined} danger={p.taskStats.overdue > 0} />
-                  <Fact icon={CalendarDays} label="Deadline" value={p.dueDate ? formatDate(p.dueDate) : "—"} hint={done ? undefined : due.text} danger={!done && due.overdue} />
-                  {finance && <Fact icon={Wallet} label="Budget" value={p.budget ? formatMoney(p.budget, { compact: p.budget >= 1_000_000 }) : "—"} hint={data.invoiced ? `${formatMoney(data.invoiced.total, { compact: true })} invoiced` : undefined} />}
+                  <Fact
+                    icon={CheckSquare}
+                    label="Tasks done"
+                    value={`${p.taskStats.done} / ${p.taskStats.total}`}
+                    hint={p.taskStats.overdue ? `${p.taskStats.overdue} overdue` : undefined}
+                    danger={p.taskStats.overdue > 0}
+                  />
+                  <Fact
+                    icon={CalendarDays}
+                    label="Deadline"
+                    value={p.dueDate ? formatDate(p.dueDate) : "—"}
+                    hint={done ? undefined : due.text}
+                    danger={!done && due.overdue}
+                  />
+                  {finance && (
+                    <Fact
+                      icon={Wallet}
+                      label="Budget"
+                      value={p.budget ? formatMoney(p.budget, { compact: p.budget >= 1_000_000 }) : "—"}
+                      hint={data.invoiced ? `${formatMoney(data.invoiced.total, { compact: true })} invoiced` : undefined}
+                    />
+                  )}
                 </div>
               </div>
-              {p.description && <p className="mt-5 border-t pt-4 text-sm leading-relaxed whitespace-pre-line text-muted-foreground">{p.description}</p>}
+              {p.description && (
+                <p className="mt-5 border-t pt-4 text-sm leading-relaxed whitespace-pre-line text-muted-foreground">
+                  {p.description}
+                </p>
+              )}
             </Panel>
 
             <Panel>
-              <PanelHeader title="Milestones" action={<Link href={`/projects/${id}?tab=timeline`} className="text-xs font-medium text-primary hover:underline">Timeline</Link>} />
+              <PanelHeader
+                title="Milestones"
+                action={
+                  <Link href={`/projects/${id}?tab=timeline`} className="text-xs font-medium text-primary hover:underline">
+                    Timeline
+                  </Link>
+                }
+              />
               {p.milestones.length === 0 ? (
                 <p className="px-5 py-6 text-sm text-muted-foreground">No milestones yet.</p>
               ) : (
                 <ol className="flex gap-2 overflow-x-auto p-4 sm:p-5">
                   {p.milestones.map((m) => (
-                    <li key={m.id} className={cn("min-w-36 flex-1 rounded-lg border p-3", m.status === "CURRENT" && "border-primary/40 bg-brand-soft/40")}>
+                    <li
+                      key={m.id}
+                      className={cn(
+                        "min-w-36 flex-1 rounded-lg border p-3",
+                        m.status === "CURRENT" && "border-primary/40 bg-brand-soft/40",
+                      )}
+                    >
                       <p className="truncate text-sm font-medium">{m.title}</p>
                       <p className="mt-0.5 text-xs text-muted-foreground">{m.dueDate ? formatDate(m.dueDate, "d MMM") : "—"}</p>
                       <div className="mt-2 flex flex-wrap gap-1">
@@ -165,8 +217,12 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
             <Panel className="p-4 sm:p-5">
               <p className="mb-1 text-sm font-semibold">Details</p>
               <dl className="divide-y">
-                <DetailRow label="Status"><StatusBadge kind="project" value={p.status} /></DetailRow>
-                <DetailRow label="Priority"><PriorityIndicator value={p.priority} showLabel /></DetailRow>
+                <DetailRow label="Status">
+                  <StatusBadge kind="project" value={p.status} />
+                </DetailRow>
+                <DetailRow label="Priority">
+                  <PriorityIndicator value={p.priority} showLabel />
+                </DetailRow>
                 <DetailRow label="Start">{formatDate(p.startDate)}</DetailRow>
                 <DetailRow label="Due">{formatDate(p.dueDate)}</DetailRow>
                 {p.clientName && <DetailRow label="Client">{p.clientName}</DetailRow>}
@@ -176,7 +232,9 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
             <Panel className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-sm font-semibold">Team</p>
-                <Link href={`/projects/${id}?tab=team`} className="text-xs font-medium text-primary hover:underline">Manage</Link>
+                <Link href={`/projects/${id}?tab=team`} className="text-xs font-medium text-primary hover:underline">
+                  Manage
+                </Link>
               </div>
               <TeamList team={p.team} people={data.people} />
             </Panel>
@@ -207,8 +265,19 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
               <FileUploader links={{ projectId: id }} />
             </div>
           )}
-          <FileList files={data.files} currentProfileId={ctx.profile.id} canOrganize canDeleteAny={manager} showProject={false} emptyTitle="No files in this project" />
-          {p.clientId && <p className="mt-3 text-xs text-muted-foreground">Use a file&apos;s menu → “Share with client” to make it visible in the client portal.</p>}
+          <FileList
+            files={data.files}
+            currentProfileId={ctx.profile.id}
+            canOrganize
+            canDeleteAny={manager}
+            showProject={false}
+            emptyTitle="No files in this project"
+          />
+          {p.clientId && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Use a file&apos;s menu → “Share with client” to make it visible in the client portal.
+            </p>
+          )}
         </>
       )}
 
@@ -216,7 +285,8 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
         <Panel className="p-4 sm:p-5">
           <TeamList team={p.team} people={data.people} detailed />
           <p className="mt-4 text-xs text-muted-foreground">
-            {manager ? "Change the team with “Edit” above." : "Only owners and admins can change the team."} Members only see projects they&apos;re on.
+            {manager ? "Change the team with “Edit” above." : "Only owners and admins can change the team."} Members only see
+            projects they&apos;re on.
           </p>
         </Panel>
       )}
@@ -225,14 +295,33 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
 
       {tab === "messages" && (
         <Panel className="flex h-[min(70dvh,640px)] flex-col overflow-hidden">
-          <MessageThread className="flex-1" messages={data.msgs} currentProfileId={ctx.profile.id} projectId={id} canPostInternal canModerate={manager} />
+          <MessageThread
+            className="flex-1"
+            messages={data.msgs}
+            currentProfileId={ctx.profile.id}
+            projectId={id}
+            canPostInternal
+            canModerate={manager}
+          />
         </Panel>
       )}
     </>
   );
 }
 
-function Fact({ icon: Icon, label, value, hint, danger }: { icon: typeof Users; label: string; value: string; hint?: string; danger?: boolean }) {
+function Fact({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  danger,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: string;
+  hint?: string;
+  danger?: boolean;
+}) {
   return (
     <div>
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -244,7 +333,15 @@ function Fact({ icon: Icon, label, value, hint, danger }: { icon: typeof Users; 
   );
 }
 
-function TeamList({ team, people, detailed }: { team: { id: string; fullName: string; avatarUrl: string | null }[]; people: { id: string; title: string | null; role: string }[]; detailed?: boolean }) {
+function TeamList({
+  team,
+  people,
+  detailed,
+}: {
+  team: { id: string; fullName: string; avatarUrl: string | null }[];
+  people: { id: string; title: string | null; role: string }[];
+  detailed?: boolean;
+}) {
   if (team.length === 0) return <p className="text-sm text-muted-foreground">No one is on this project yet.</p>;
   return (
     <ul className={cn(detailed ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "space-y-2.5")}>

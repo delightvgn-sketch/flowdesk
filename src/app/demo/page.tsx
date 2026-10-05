@@ -25,8 +25,8 @@ export default function DemoPage() {
         <p className="font-display text-lg text-primary italic">Live demo</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Step inside {DEMO_WORKSPACE.name}</h1>
         <p className="mt-3 max-w-xl text-muted-foreground">
-          A small Nairobi studio with real-looking clients, projects, invoices and files. Pick a role to see how FlowDesk
-          changes what each person can see and do — permissions are enforced by the database, not just hidden in the UI.
+          A small Nairobi studio with real-looking clients, projects, invoices and files. Pick a role to see how FlowDesk changes
+          what each person can see and do — permissions are enforced by the database, not just hidden in the UI.
         </p>
 
         <ul className="mt-8 grid gap-3">

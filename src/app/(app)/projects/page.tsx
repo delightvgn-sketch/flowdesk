@@ -31,7 +31,8 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
   const priority = param(sp.priority);
   const filters: ProjectFilters = {
     q: param(sp.q),
-    status: status === "active" ? "active" : PROJECT_STATUSES.includes(status as ProjectStatus) ? (status as ProjectStatus) : undefined,
+    status:
+      status === "active" ? "active" : PROJECT_STATUSES.includes(status as ProjectStatus) ? (status as ProjectStatus) : undefined,
     priority: PRIORITIES.includes(priority as Priority) ? (priority as Priority) : undefined,
     clientId: param(sp.client),
     sort: (["due", "newest", "name", "progress"].find((s) => s === param(sp.sort)) ?? "due") as ProjectFilters["sort"],
@@ -64,10 +65,19 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
         <FilterSelect
           param="status"
           label="Status"
-          options={[{ value: "active", label: "Active" }, ...PROJECT_STATUSES.map((s) => ({ value: s, label: PROJECT_STATUS_META[s].label }))]}
+          options={[
+            { value: "active", label: "Active" },
+            ...PROJECT_STATUSES.map((s) => ({ value: s, label: PROJECT_STATUS_META[s].label })),
+          ]}
         />
-        <FilterSelect param="priority" label="Priority" options={PRIORITIES.map((p) => ({ value: p, label: PRIORITY_META[p].label }))} />
-        {clients.length > 0 && <FilterSelect param="client" label="Client" options={clients.map((c) => ({ value: c.id, label: c.label }))} />}
+        <FilterSelect
+          param="priority"
+          label="Priority"
+          options={PRIORITIES.map((p) => ({ value: p, label: PRIORITY_META[p].label }))}
+        />
+        {clients.length > 0 && (
+          <FilterSelect param="client" label="Client" options={clients.map((c) => ({ value: c.id, label: c.label }))} />
+        )}
         <FilterSelect
           param="sort"
           label="Sort"
@@ -83,12 +93,20 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
 
       {rows.length === 0 ? (
         filtered ? (
-          <EmptyState icon={FolderKanban} title="No projects match your filters" description="Try a different search or clear the filters." />
+          <EmptyState
+            icon={FolderKanban}
+            title="No projects match your filters"
+            description="Try a different search or clear the filters."
+          />
         ) : (
           <EmptyState
             icon={FolderKanban}
             title="No projects yet"
-            description={canCreate ? "Create your first project to start managing client work." : "You haven't been added to any projects yet."}
+            description={
+              canCreate
+                ? "Create your first project to start managing client work."
+                : "You haven't been added to any projects yet."
+            }
             action={canCreate && <NewProjectButton options={options} label="Create project" />}
           />
         )
@@ -104,7 +122,9 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
                   <TableHead>Due</TableHead>
                   <TableHead>Team</TableHead>
                   {showBudget && <TableHead className="text-right">Budget</TableHead>}
-                  <TableHead className="w-10 pr-4"><span className="sr-only">Priority</span></TableHead>
+                  <TableHead className="w-10 pr-4">
+                    <span className="sr-only">Priority</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -121,19 +141,33 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
                           </span>
                         </Link>
                       </TableCell>
-                      <TableCell><StatusBadge kind="project" value={p.status} /></TableCell>
+                      <TableCell>
+                        <StatusBadge kind="project" value={p.status} />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <ProgressBar value={p.progress} label={`${p.name} progress`} tone={p.status === "COMPLETED" ? "success" : !done && due.overdue ? "danger" : "brand"} />
+                          <ProgressBar
+                            value={p.progress}
+                            label={`${p.name} progress`}
+                            tone={p.status === "COMPLETED" ? "success" : !done && due.overdue ? "danger" : "brand"}
+                          />
                           <span className="tabular w-9 text-right text-xs text-muted-foreground">{p.progress}%</span>
                         </div>
                       </TableCell>
-                      <TableCell className={cn("text-sm", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
+                      <TableCell
+                        className={cn("text-sm", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}
+                      >
                         {done ? "—" : due.text}
                       </TableCell>
-                      <TableCell><AvatarStack people={p.team} /></TableCell>
-                      {showBudget && <TableCell className="tabular text-right">{p.budget ? formatMoney(p.budget) : "—"}</TableCell>}
-                      <TableCell className="pr-4"><PriorityIndicator value={p.priority} /></TableCell>
+                      <TableCell>
+                        <AvatarStack people={p.team} />
+                      </TableCell>
+                      {showBudget && (
+                        <TableCell className="tabular text-right">{p.budget ? formatMoney(p.budget) : "—"}</TableCell>
+                      )}
+                      <TableCell className="pr-4">
+                        <PriorityIndicator value={p.priority} />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -161,7 +195,9 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
                     </div>
                     <div className="mt-3 flex items-center justify-between">
                       <AvatarStack people={p.team} />
-                      <span className={cn("text-xs", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>{done ? PROJECT_STATUS_META[p.status].label : due.text}</span>
+                      <span className={cn("text-xs", !done && due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
+                        {done ? PROJECT_STATUS_META[p.status].label : due.text}
+                      </span>
                     </div>
                   </Link>
                 </li>

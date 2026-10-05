@@ -3,7 +3,17 @@ import "server-only";
 import { and, asc, desc, eq, gte, ilike, inArray, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 
 import type { Tx } from "@/server/db";
-import { activityLogs, files, labels, profiles, projects, taskComments, taskLabels, tasks, type Priority } from "@/server/db/schema";
+import {
+  activityLogs,
+  files,
+  labels,
+  profiles,
+  projects,
+  taskComments,
+  taskLabels,
+  tasks,
+  type Priority,
+} from "@/server/db/schema";
 
 import type { BoardTask, TaskDetail, TaskLabel } from "./types";
 
@@ -31,7 +41,8 @@ export async function listBoardTasks(tx: Tx, workspaceId: string, f: TaskFilters
   else if (f.projectId) where.push(eq(tasks.projectId, f.projectId));
   if (f.assigneeId) where.push(eq(tasks.assigneeId, f.assigneeId));
   if (f.priority) where.push(eq(tasks.priority, f.priority));
-  if (f.labelId) where.push(sql`exists (select 1 from task_labels tl where tl.task_id = ${tasks.id} and tl.label_id = ${f.labelId})`);
+  if (f.labelId)
+    where.push(sql`exists (select 1 from task_labels tl where tl.task_id = ${tasks.id} and tl.label_id = ${f.labelId})`);
 
   const rows = await tx
     .select({
@@ -55,7 +66,10 @@ export async function listBoardTasks(tx: Tx, workspaceId: string, f: TaskFilters
     .orderBy(asc(tasks.position), desc(tasks.createdAt))
     .limit(500);
 
-  const labelMap = await labelsForTasks(tx, rows.map((r) => r.id));
+  const labelMap = await labelsForTasks(
+    tx,
+    rows.map((r) => r.id),
+  );
   return rows.map((r) => ({ ...r, labels: labelMap[r.id] ?? [] }));
 }
 
@@ -73,7 +87,11 @@ async function labelsForTasks(tx: Tx, taskIds: string[]) {
 }
 
 export async function listLabels(tx: Tx, workspaceId: string): Promise<TaskLabel[]> {
-  return tx.select({ id: labels.id, name: labels.name, color: labels.color }).from(labels).where(eq(labels.workspaceId, workspaceId)).orderBy(asc(labels.name));
+  return tx
+    .select({ id: labels.id, name: labels.name, color: labels.color })
+    .from(labels)
+    .where(eq(labels.workspaceId, workspaceId))
+    .orderBy(asc(labels.name));
 }
 
 export async function getTaskDetail(tx: Tx, workspaceId: string, id: string): Promise<TaskDetail | null> {
@@ -119,12 +137,24 @@ export async function getTaskDetail(tx: Tx, workspaceId: string, id: string): Pr
       .where(eq(taskComments.taskId, id))
       .orderBy(asc(taskComments.createdAt)),
     tx
-      .select({ id: files.id, name: files.name, sizeBytes: files.sizeBytes, mimeType: files.mimeType, createdAt: files.createdAt })
+      .select({
+        id: files.id,
+        name: files.name,
+        sizeBytes: files.sizeBytes,
+        mimeType: files.mimeType,
+        createdAt: files.createdAt,
+      })
       .from(files)
       .where(eq(files.taskId, id))
       .orderBy(desc(files.createdAt)),
     tx
-      .select({ id: activityLogs.id, action: activityLogs.action, actorName: profiles.fullName, createdAt: activityLogs.createdAt, metadata: activityLogs.metadata })
+      .select({
+        id: activityLogs.id,
+        action: activityLogs.action,
+        actorName: profiles.fullName,
+        createdAt: activityLogs.createdAt,
+        metadata: activityLogs.metadata,
+      })
       .from(activityLogs)
       .leftJoin(profiles, eq(profiles.id, activityLogs.actorId))
       .where(and(eq(activityLogs.entityId, id), eq(activityLogs.entityType, "task")))

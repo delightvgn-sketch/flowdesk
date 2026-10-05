@@ -1,8 +1,8 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "radix-ui"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 /**
  * Small status/metadata label. Use `tone` for semantic meaning — every status
@@ -25,8 +25,8 @@ const badgeVariants = cva(
       dot: { true: "pl-1.5", false: "" },
     },
     defaultVariants: { tone: "neutral", dot: false },
-  }
-)
+  },
+);
 
 const dotColor: Record<string, string> = {
   neutral: "bg-subtle-foreground",
@@ -37,7 +37,7 @@ const dotColor: Record<string, string> = {
   warning: "bg-warning",
   danger: "bg-danger",
   outline: "bg-foreground",
-}
+};
 
 function Badge({
   className,
@@ -47,13 +47,13 @@ function Badge({
   children,
   ...props
 }: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot.Root : "span"
+  const Comp = asChild ? Slot.Root : "span";
   return (
     <Comp data-slot="badge" className={cn(badgeVariants({ tone, dot }), className)} {...props}>
       {dot && <span aria-hidden className={cn("size-1.5 rounded-full", dotColor[tone ?? "neutral"])} />}
       {children}
     </Comp>
-  )
+  );
 }
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };

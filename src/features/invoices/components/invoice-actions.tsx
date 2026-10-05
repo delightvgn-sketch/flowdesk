@@ -8,9 +8,22 @@ import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { cancelInvoice, createShareLink, deleteInvoice, duplicateInvoice, revokeShareLink, sendInvoice } from "@/features/invoices/actions";
+import {
+  cancelInvoice,
+  createShareLink,
+  deleteInvoice,
+  duplicateInvoice,
+  revokeShareLink,
+  sendInvoice,
+} from "@/features/invoices/actions";
 import { useAction } from "@/hooks/use-action";
 import type { InvoiceStatus } from "@/server/db/schema";
 
@@ -36,9 +49,21 @@ export function InvoiceActions(props: Props) {
   const open = status === "SENT" || status === "OVERDUE";
   const refresh = () => router.refresh();
 
-  const send = useAction(sendInvoice, { success: `Invoice ${number} sent — your client can now see it in their portal.`, onSuccess: refresh });
-  const duplicate = useAction(duplicateInvoice, { success: "Invoice duplicated as a new draft.", onSuccess: ({ id: newId }) => router.push(`/invoices/${newId}/edit`) });
-  const cancel = useAction(cancelInvoice, { success: "Invoice cancelled.", onSuccess: () => { setConfirm(null); refresh(); } });
+  const send = useAction(sendInvoice, {
+    success: `Invoice ${number} sent — your client can now see it in their portal.`,
+    onSuccess: refresh,
+  });
+  const duplicate = useAction(duplicateInvoice, {
+    success: "Invoice duplicated as a new draft.",
+    onSuccess: ({ id: newId }) => router.push(`/invoices/${newId}/edit`),
+  });
+  const cancel = useAction(cancelInvoice, {
+    success: "Invoice cancelled.",
+    onSuccess: () => {
+      setConfirm(null);
+      refresh();
+    },
+  });
   const remove = useAction(deleteInvoice, { success: "Draft deleted.", onSuccess: () => router.push("/invoices") });
 
   return (
@@ -96,8 +121,22 @@ export function InvoiceActions(props: Props) {
         </DropdownMenu>
       </div>
 
-      <MarkPaidDialog open={paidOpen} onOpenChange={setPaidOpen} invoiceId={id} balance={balance} currency={props.currency} today={props.today} />
-      <PaymentDialog open={paymentOpen} onOpenChange={setPaymentOpen} invoiceId={id} balance={balance} currency={props.currency} today={props.today} />
+      <MarkPaidDialog
+        open={paidOpen}
+        onOpenChange={setPaidOpen}
+        invoiceId={id}
+        balance={balance}
+        currency={props.currency}
+        today={props.today}
+      />
+      <PaymentDialog
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        invoiceId={id}
+        balance={balance}
+        currency={props.currency}
+        today={props.today}
+      />
       <ConfirmDialog
         open={confirm === "cancel"}
         onOpenChange={(o) => !o && setConfirm(null)}
@@ -148,12 +187,24 @@ export function SharePanel({ id, status, shareToken, appUrl }: Pick<Props, "id" 
               <Copy />
             </Button>
           </div>
-          <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => revoke.execute({ id })} disabled={revoke.pending}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground"
+            onClick={() => revoke.execute({ id })}
+            disabled={revoke.pending}
+          >
             <Link2Off /> Revoke link
           </Button>
         </div>
       ) : (
-        <Button variant="outline" size="sm" className="mt-3" onClick={() => create.execute({ id })} disabled={!shareable || create.pending}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3"
+          onClick={() => create.execute({ id })}
+          disabled={!shareable || create.pending}
+        >
           <Link2 /> Create share link
         </Button>
       )}

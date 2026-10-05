@@ -21,7 +21,10 @@ export default async function ProfileSettingsPage() {
       <Section title="Profile" description="Your name across FlowDesk.">
         <ProfileForm fullName={ctx.profile.fullName} email={ctx.profile.email} />
       </Section>
-      <Section title="Account" description="Email addresses, password, profile photo and active sessions — managed securely by Clerk.">
+      <Section
+        title="Account"
+        description="Email addresses, password, profile photo and active sessions — managed securely by Clerk."
+      >
         <AccountManager />
       </Section>
     </div>

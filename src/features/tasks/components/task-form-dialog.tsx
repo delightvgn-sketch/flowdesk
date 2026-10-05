@@ -43,7 +43,16 @@ export function TaskFormDialog({
 }) {
   const router = useRouter();
   const [labels, setLabels] = useSyncedState(options.labels);
-  const form = useZodForm(taskSchema, { title: "", description: "", status: "TODO", priority: "MEDIUM", projectId: null, assigneeId: null, dueDate: "", labelIds: [] });
+  const form = useZodForm(taskSchema, {
+    title: "",
+    description: "",
+    status: "TODO",
+    priority: "MEDIUM",
+    projectId: null,
+    assigneeId: null,
+    dueDate: "",
+    labelIds: [],
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -72,7 +81,13 @@ export function TaskFormDialog({
     <FormDialog open={open} onOpenChange={onOpenChange} title="New task">
       <form noValidate className="flex min-h-0 flex-1 flex-col" onSubmit={form.handleSubmit((v) => execute(v))}>
         <FormDialogBody>
-          <FormField control={form.control} name="title" label="Title" required render={({ field, props }) => <Input {...field} {...props} placeholder="What needs doing?" autoFocus />} />
+          <FormField
+            control={form.control}
+            name="title"
+            label="Title"
+            required
+            render={({ field, props }) => <Input {...field} {...props} placeholder="What needs doing?" autoFocus />}
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
@@ -80,7 +95,14 @@ export function TaskFormDialog({
               label="Project"
               required={!options.allowNoProject}
               render={({ field, props }) => (
-                <OptionSelect options={options.projects} value={field.value} onChange={field.onChange} noneLabel={options.allowNoProject ? "No project (internal)" : undefined} placeholder="Choose a project" {...props} />
+                <OptionSelect
+                  options={options.projects}
+                  value={field.value}
+                  onChange={field.onChange}
+                  noneLabel={options.allowNoProject ? "No project (internal)" : undefined}
+                  placeholder="Choose a project"
+                  {...props}
+                />
               )}
             />
             <FormField
@@ -88,28 +110,61 @@ export function TaskFormDialog({
               name="assigneeId"
               label="Assignee"
               render={({ field, props }) => (
-                <OptionSelect options={options.people.map((p) => ({ id: p.id, label: p.fullName }))} value={field.value} onChange={field.onChange} noneLabel="Unassigned" {...props} />
+                <OptionSelect
+                  options={options.people.map((p) => ({ id: p.id, label: p.fullName }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  noneLabel="Unassigned"
+                  {...props}
+                />
               )}
             />
             <FormField
               control={form.control}
               name="status"
               label="Status"
-              render={({ field, props }) => <EnumSelect values={TASK_STATUSES} labels={TASK_STATUS_META} value={field.value ?? "TODO"} onChange={field.onChange} {...props} />}
+              render={({ field, props }) => (
+                <EnumSelect
+                  values={TASK_STATUSES}
+                  labels={TASK_STATUS_META}
+                  value={field.value ?? "TODO"}
+                  onChange={field.onChange}
+                  {...props}
+                />
+              )}
             />
             <FormField
               control={form.control}
               name="priority"
               label="Priority"
-              render={({ field, props }) => <EnumSelect values={PRIORITIES} labels={PRIORITY_META} value={field.value ?? "MEDIUM"} onChange={field.onChange} {...props} />}
+              render={({ field, props }) => (
+                <EnumSelect
+                  values={PRIORITIES}
+                  labels={PRIORITY_META}
+                  value={field.value ?? "MEDIUM"}
+                  onChange={field.onChange}
+                  {...props}
+                />
+              )}
             />
-            <FormField control={form.control} name="dueDate" label="Due date" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />} />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              label="Due date"
+              render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />}
+            />
             <FormField
               control={form.control}
               name="labelIds"
               label="Labels"
               render={({ field, props }) => (
-                <LabelPicker id={props.id} labels={labels} value={field.value ?? []} onChange={field.onChange} onLabelCreated={(l) => setLabels((ls) => [...ls, l])} />
+                <LabelPicker
+                  id={props.id}
+                  labels={labels}
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                  onLabelCreated={(l) => setLabels((ls) => [...ls, l])}
+                />
               )}
             />
           </div>
@@ -117,7 +172,15 @@ export function TaskFormDialog({
             control={form.control}
             name="description"
             label="Description"
-            render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={4} placeholder="Add details, links or acceptance criteria." />}
+            render={({ field, props }) => (
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                {...props}
+                rows={4}
+                placeholder="Add details, links or acceptance criteria."
+              />
+            )}
           />
         </FormDialogBody>
         <FormDialogFooter>

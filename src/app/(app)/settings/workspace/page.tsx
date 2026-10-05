@@ -12,10 +12,24 @@ export default async function WorkspaceSettingsPage() {
   const editable = can(ctx.role, "workspace:update");
   return (
     <div className="space-y-6">
-      <Section title="Workspace" description={editable ? "Details used on invoices and across the workspace." : "Only owners and admins can change these settings."}>
+      <Section
+        title="Workspace"
+        description={
+          editable ? "Details used on invoices and across the workspace." : "Only owners and admins can change these settings."
+        }
+      >
         <WorkspaceForm
           readOnly={!editable}
-          workspace={{ name: w.name, email: w.email, phone: w.phone, address: w.address, currency: w.currency, timezone: w.timezone, invoicePrefix: w.invoicePrefix, defaultTaxRate: w.defaultTaxRate }}
+          workspace={{
+            name: w.name,
+            email: w.email,
+            phone: w.phone,
+            address: w.address,
+            currency: w.currency,
+            timezone: w.timezone,
+            invoicePrefix: w.invoicePrefix,
+            defaultTaxRate: w.defaultTaxRate,
+          }}
         />
       </Section>
       {can(ctx.role, "workspace:delete") && (

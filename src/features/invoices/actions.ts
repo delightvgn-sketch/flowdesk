@@ -34,12 +34,17 @@ const today = (ctx: AppContext) => todayISO(ctx.workspace.timezone);
 
 /** Validate links and compute totals on the server — browser totals are never used. */
 async function prepare(tx: Tx, ctx: AppContext, input: InvoiceInput) {
-  const client = await tx.query.clients.findFirst({ where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)) });
+  const client = await tx.query.clients.findFirst({
+    where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)),
+  });
   if (!client) throw new NotFoundError("Client");
   if (input.projectId) {
-    const project = await tx.query.projects.findFirst({ where: and(eq(projects.id, input.projectId), eq(projects.workspaceId, ctx.workspace.id)) });
+    const project = await tx.query.projects.findFirst({
+      where: and(eq(projects.id, input.projectId), eq(projects.workspaceId, ctx.workspace.id)),
+    });
     if (!project) throw new NotFoundError("Project");
-    if (project.clientId && project.clientId !== input.clientId) throw new UserFacingError("That project belongs to a different client.");
+    if (project.clientId && project.clientId !== input.clientId)
+      throw new UserFacingError("That project belongs to a different client.");
   }
   const totals = calculateInvoiceTotals(input);
   return { client, totals };
@@ -98,7 +103,14 @@ export const createInvoice = createAction(
         })
         .returning();
       await writeItems(tx, ctx, row.id, input, totals.lineAmounts);
-      await logActivity(tx, ctx, { action: "invoice.created", entityType: "invoice", entityId: row.id, entityLabel: number, clientId: row.clientId, projectId: row.projectId });
+      await logActivity(tx, ctx, {
+        action: "invoice.created",
+        entityType: "invoice",
+        entityId: row.id,
+        entityLabel: number,
+        clientId: row.clientId,
+        projectId: row.projectId,
+      });
       if (send) await afterSend(tx, ctx, row);
       return row;
     });
@@ -111,10 +123,14 @@ export const updateInvoice = createAction(
   { schema: invoiceSchema.safeExtend({ id: z.uuid() }), permission: "invoice:manage" },
   async ({ id, ...input }, ctx) => {
     const invoice = await ctx.db(async (tx) => {
-      const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+      const existing = await tx.query.invoices.findFirst({
+        where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+      });
       if (!existing) throw new NotFoundError("Invoice");
       if (existing.status === "PAID" || existing.status === "CANCELLED") {
-        throw new UserFacingError(`${existing.status === "PAID" ? "Paid" : "Cancelled"} invoices can't be edited. Duplicate it instead.`);
+        throw new UserFacingError(
+          `${existing.status === "PAID" ? "Paid" : "Cancelled"} invoices can't be edited. Duplicate it instead.`,
+        );
       }
       const { totals } = await prepare(tx, ctx, input);
       const [row] = await tx
@@ -145,7 +161,14 @@ export const updateInvoice = createAction(
 );
 
 async function afterSend(tx: Tx, ctx: AppContext, row: typeof invoices.$inferSelect) {
-  await logActivity(tx, ctx, { action: "invoice.sent", entityType: "invoice", entityId: row.id, entityLabel: row.number, clientId: row.clientId, projectId: row.projectId });
+  await logActivity(tx, ctx, {
+    action: "invoice.sent",
+    entityType: "invoice",
+    entityId: row.id,
+    entityLabel: row.number,
+    clientId: row.clientId,
+    projectId: row.projectId,
+  });
   await notify(tx, ctx, {
     recipientIds: await clientPortalUsers(tx, ctx, row.clientId),
     category: "invoices",
@@ -163,10 +186,16 @@ async function afterSend(tx: Tx, ctx: AppContext, row: typeof invoices.$inferSel
  */
 export const sendInvoice = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
   const row = await ctx.db(async (tx) => {
-    const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const existing = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!existing) throw new NotFoundError("Invoice");
     if (existing.status !== "DRAFT") throw new UserFacingError("Only draft invoices can be sent.");
-    const [updated] = await tx.update(invoices).set({ status: "SENT", sentAt: new Date() }).where(eq(invoices.id, id)).returning();
+    const [updated] = await tx
+      .update(invoices)
+      .set({ status: "SENT", sentAt: new Date() })
+      .where(eq(invoices.id, id))
+      .returning();
     await refreshInvoicePaymentState(tx, id, today(ctx));
     await afterSend(tx, ctx, updated);
     return updated;
@@ -186,9 +215,12 @@ export const markInvoicePaid = createAction(
   },
   async ({ id, method, paidOn, reference }, ctx) => {
     const row = await ctx.db(async (tx) => {
-      const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+      const existing = await tx.query.invoices.findFirst({
+        where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+      });
       if (!existing) throw new NotFoundError("Invoice");
-      if (existing.status === "DRAFT" || existing.status === "CANCELLED") throw new UserFacingError("Send the invoice before marking it paid.");
+      if (existing.status === "DRAFT" || existing.status === "CANCELLED")
+        throw new UserFacingError("Send the invoice before marking it paid.");
       const balance = Math.round((existing.total - existing.amountPaid) * 100) / 100;
       if (balance <= 0) throw new UserFacingError("This invoice is already fully paid.");
       await tx.insert(payments).values({
@@ -202,8 +234,23 @@ export const markInvoicePaid = createAction(
         recordedById: ctx.profile.id,
       });
       const state = await refreshInvoicePaymentState(tx, id, today(ctx));
-      await logActivity(tx, ctx, { action: "payment.recorded", entityType: "payment", entityId: id, entityLabel: existing.number, clientId: existing.clientId, projectId: existing.projectId, metadata: { amount: balance } });
-      await logActivity(tx, ctx, { action: "invoice.paid", entityType: "invoice", entityId: id, entityLabel: existing.number, clientId: existing.clientId, projectId: existing.projectId });
+      await logActivity(tx, ctx, {
+        action: "payment.recorded",
+        entityType: "payment",
+        entityId: id,
+        entityLabel: existing.number,
+        clientId: existing.clientId,
+        projectId: existing.projectId,
+        metadata: { amount: balance },
+      });
+      await logActivity(tx, ctx, {
+        action: "invoice.paid",
+        entityType: "invoice",
+        entityId: id,
+        entityLabel: existing.number,
+        clientId: existing.clientId,
+        projectId: existing.projectId,
+      });
       return state!.after;
     });
     revalidateInvoice(id, row.clientId);
@@ -212,18 +259,38 @@ export const markInvoicePaid = createAction(
 
 export const recordPayment = createAction({ schema: paymentSchema, permission: "payment:manage" }, async (input, ctx) => {
   const row = await ctx.db(async (tx) => {
-    const invoice = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, input.invoiceId), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const invoice = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, input.invoiceId), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!invoice) throw new NotFoundError("Invoice");
-    if (invoice.status === "DRAFT" || invoice.status === "CANCELLED") throw new UserFacingError("Payments can only be recorded against sent invoices.");
+    if (invoice.status === "DRAFT" || invoice.status === "CANCELLED")
+      throw new UserFacingError("Payments can only be recorded against sent invoices.");
     const balance = Math.round((invoice.total - invoice.amountPaid) * 100) / 100;
     if (input.status === "COMPLETED" && input.amount > balance + 0.001) {
-      throw new UserFacingError(`That's more than the outstanding balance of ${formatMoney(balance, { currency: invoice.currency })}.`);
+      throw new UserFacingError(
+        `That's more than the outstanding balance of ${formatMoney(balance, { currency: invoice.currency })}.`,
+      );
     }
     await tx.insert(payments).values({ ...input, workspaceId: ctx.workspace.id, recordedById: ctx.profile.id });
     const state = await refreshInvoicePaymentState(tx, invoice.id, today(ctx));
-    await logActivity(tx, ctx, { action: "payment.recorded", entityType: "payment", entityId: invoice.id, entityLabel: invoice.number, clientId: invoice.clientId, projectId: invoice.projectId, metadata: { amount: input.amount } });
+    await logActivity(tx, ctx, {
+      action: "payment.recorded",
+      entityType: "payment",
+      entityId: invoice.id,
+      entityLabel: invoice.number,
+      clientId: invoice.clientId,
+      projectId: invoice.projectId,
+      metadata: { amount: input.amount },
+    });
     if (state?.before.status !== "PAID" && state?.after.status === "PAID") {
-      await logActivity(tx, ctx, { action: "invoice.paid", entityType: "invoice", entityId: invoice.id, entityLabel: invoice.number, clientId: invoice.clientId, projectId: invoice.projectId });
+      await logActivity(tx, ctx, {
+        action: "invoice.paid",
+        entityType: "invoice",
+        entityId: invoice.id,
+        entityLabel: invoice.number,
+        clientId: invoice.clientId,
+        projectId: invoice.projectId,
+      });
     }
     return invoice;
   });
@@ -234,7 +301,11 @@ export const updatePaymentStatus = createAction(
   { schema: idSchema.extend({ status: z.enum(PAYMENT_STATUSES) }), permission: "payment:manage" },
   async ({ id, status }, ctx) => {
     const invoiceId = await ctx.db(async (tx) => {
-      const [payment] = await tx.update(payments).set({ status }).where(and(eq(payments.id, id), eq(payments.workspaceId, ctx.workspace.id))).returning();
+      const [payment] = await tx
+        .update(payments)
+        .set({ status })
+        .where(and(eq(payments.id, id), eq(payments.workspaceId, ctx.workspace.id)))
+        .returning();
       if (!payment) throw new NotFoundError("Payment");
       await refreshInvoicePaymentState(tx, payment.invoiceId, today(ctx));
       return payment.invoiceId;
@@ -245,7 +316,10 @@ export const updatePaymentStatus = createAction(
 
 export const deletePayment = createAction({ schema: idSchema, permission: "payment:manage" }, async ({ id }, ctx) => {
   const invoiceId = await ctx.db(async (tx) => {
-    const [payment] = await tx.delete(payments).where(and(eq(payments.id, id), eq(payments.workspaceId, ctx.workspace.id))).returning();
+    const [payment] = await tx
+      .delete(payments)
+      .where(and(eq(payments.id, id), eq(payments.workspaceId, ctx.workspace.id)))
+      .returning();
     if (!payment) throw new NotFoundError("Payment");
     await refreshInvoicePaymentState(tx, payment.invoiceId, today(ctx));
     return payment.invoiceId;
@@ -255,11 +329,24 @@ export const deletePayment = createAction({ schema: idSchema, permission: "payme
 
 export const cancelInvoice = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
   const row = await ctx.db(async (tx) => {
-    const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const existing = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!existing) throw new NotFoundError("Invoice");
     if (existing.status === "PAID") throw new UserFacingError("Paid invoices can't be cancelled. Refund the payment first.");
-    const [updated] = await tx.update(invoices).set({ status: "CANCELLED", shareToken: null }).where(eq(invoices.id, id)).returning();
-    await logActivity(tx, ctx, { action: "invoice.cancelled", entityType: "invoice", entityId: id, entityLabel: existing.number, clientId: existing.clientId, projectId: existing.projectId });
+    const [updated] = await tx
+      .update(invoices)
+      .set({ status: "CANCELLED", shareToken: null })
+      .where(eq(invoices.id, id))
+      .returning();
+    await logActivity(tx, ctx, {
+      action: "invoice.cancelled",
+      entityType: "invoice",
+      entityId: id,
+      entityLabel: existing.number,
+      clientId: existing.clientId,
+      projectId: existing.projectId,
+    });
     return updated;
   });
   revalidateInvoice(id, row.clientId);
@@ -267,9 +354,12 @@ export const cancelInvoice = createAction({ schema: idSchema, permission: "invoi
 
 export const deleteInvoice = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
   const row = await ctx.db(async (tx) => {
-    const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const existing = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!existing) throw new NotFoundError("Invoice");
-    if (existing.status !== "DRAFT") throw new UserFacingError("Only drafts can be deleted. Cancel sent invoices to keep the record.");
+    if (existing.status !== "DRAFT")
+      throw new UserFacingError("Only drafts can be deleted. Cancel sent invoices to keep the record.");
     await tx.delete(invoices).where(eq(invoices.id, id));
     return existing;
   });
@@ -278,7 +368,9 @@ export const deleteInvoice = createAction({ schema: idSchema, permission: "invoi
 
 export const duplicateInvoice = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
   const copy = await ctx.db(async (tx) => {
-    const source = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const source = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!source) throw new NotFoundError("Invoice");
     const items = await tx.select().from(invoiceItems).where(eq(invoiceItems.invoiceId, id));
     const issueDate = today(ctx);
@@ -307,7 +399,8 @@ export const duplicateInvoice = createAction({ schema: idSchema, permission: "in
       })
       .returning();
     if (items.length) {
-      await tx.insert(invoiceItems).values(items.map((item) => ({
+      await tx.insert(invoiceItems).values(
+        items.map((item) => ({
           workspaceId: item.workspaceId,
           invoiceId: row.id,
           description: item.description,
@@ -315,9 +408,17 @@ export const duplicateInvoice = createAction({ schema: idSchema, permission: "in
           unitPrice: item.unitPrice,
           amount: item.amount,
           position: item.position,
-        })));
+        })),
+      );
     }
-    await logActivity(tx, ctx, { action: "invoice.created", entityType: "invoice", entityId: row.id, entityLabel: number, clientId: row.clientId, projectId: row.projectId });
+    await logActivity(tx, ctx, {
+      action: "invoice.created",
+      entityType: "invoice",
+      entityId: row.id,
+      entityLabel: number,
+      clientId: row.clientId,
+      projectId: row.projectId,
+    });
     return row;
   });
   revalidateInvoice(copy.id, copy.clientId);
@@ -328,9 +429,12 @@ export const duplicateInvoice = createAction({ schema: idSchema, permission: "in
 export const createShareLink = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
   const token = randomBytes(24).toString("base64url");
   await ctx.db(async (tx) => {
-    const existing = await tx.query.invoices.findFirst({ where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)) });
+    const existing = await tx.query.invoices.findFirst({
+      where: and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id)),
+    });
     if (!existing) throw new NotFoundError("Invoice");
-    if (existing.status === "DRAFT" || existing.status === "CANCELLED") throw new UserFacingError("Send the invoice before sharing it.");
+    if (existing.status === "DRAFT" || existing.status === "CANCELLED")
+      throw new UserFacingError("Send the invoice before sharing it.");
     await tx.update(invoices).set({ shareToken: token }).where(eq(invoices.id, id));
   });
   revalidatePath(`/invoices/${id}`);
@@ -338,6 +442,11 @@ export const createShareLink = createAction({ schema: idSchema, permission: "inv
 });
 
 export const revokeShareLink = createAction({ schema: idSchema, permission: "invoice:manage" }, async ({ id }, ctx) => {
-  await ctx.db((tx) => tx.update(invoices).set({ shareToken: null }).where(and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id))));
+  await ctx.db((tx) =>
+    tx
+      .update(invoices)
+      .set({ shareToken: null })
+      .where(and(eq(invoices.id, id), eq(invoices.workspaceId, ctx.workspace.id))),
+  );
   revalidatePath(`/invoices/${id}`);
 });

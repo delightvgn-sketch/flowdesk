@@ -31,14 +31,26 @@ export const createEvent = createAction({ schema: eventSchema, permission: "cale
         createdById: ctx.profile.id,
       })
       .returning();
-    await logActivity(tx, ctx, { action: "event.created", entityType: "event", entityId: row.id, entityLabel: row.title, projectId: row.projectId, clientId: row.clientId });
+    await logActivity(tx, ctx, {
+      action: "event.created",
+      entityType: "event",
+      entityId: row.id,
+      entityLabel: row.title,
+      projectId: row.projectId,
+      clientId: row.clientId,
+    });
   });
   revalidatePath("/calendar");
   revalidatePath("/dashboard");
 });
 
 export const deleteEvent = createAction({ schema: idSchema, permission: "calendar:manage" }, async ({ id }, ctx) => {
-  const rows = await ctx.db((tx) => tx.delete(calendarEvents).where(and(eq(calendarEvents.id, id), eq(calendarEvents.workspaceId, ctx.workspace.id))).returning());
+  const rows = await ctx.db((tx) =>
+    tx
+      .delete(calendarEvents)
+      .where(and(eq(calendarEvents.id, id), eq(calendarEvents.workspaceId, ctx.workspace.id)))
+      .returning(),
+  );
   if (rows.length === 0) throw new UserFacingError("Only managers or the person who created this event can delete it.");
   revalidatePath("/calendar");
   revalidatePath("/dashboard");

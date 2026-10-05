@@ -61,7 +61,12 @@ export function NewTaskButton({ formOptions, defaultProjectId }: { formOptions: 
       <Button onClick={() => setOpen(true)} disabled={formOptions.projects.length === 0 && !formOptions.allowNoProject}>
         <Plus /> New task
       </Button>
-      <TaskFormDialog open={open} onOpenChange={setOpen} options={formOptions} defaults={{ projectId: defaultProjectId ?? null }} />
+      <TaskFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        options={formOptions}
+        defaults={{ projectId: defaultProjectId ?? null }}
+      />
     </>
   );
 }

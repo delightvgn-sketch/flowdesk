@@ -82,9 +82,13 @@ export default async function FilesPage({ searchParams }: PageProps<"/files">) {
             <span key={f.id} className="flex items-center gap-1">
               <ChevronRight className="size-3.5 text-subtle-foreground" aria-hidden />
               {i === trail.length - 1 ? (
-                <span className="font-medium" aria-current="page">{f.name}</span>
+                <span className="font-medium" aria-current="page">
+                  {f.name}
+                </span>
               ) : (
-                <Link href={`/files?folder=${f.id}`} className="text-muted-foreground hover:text-foreground">{f.name}</Link>
+                <Link href={`/files?folder=${f.id}`} className="text-muted-foreground hover:text-foreground">
+                  {f.name}
+                </Link>
               )}
             </span>
           ))}
@@ -103,7 +107,11 @@ export default async function FilesPage({ searchParams }: PageProps<"/files">) {
         <EmptyState
           icon={HardDrive}
           title={searching ? "No files match" : folderId ? "This folder is empty" : "No files yet"}
-          description={searching ? "Try a different search or filter." : "Upload briefs, designs, contracts and deliverables to keep everything in one place."}
+          description={
+            searching
+              ? "Try a different search or filter."
+              : "Upload briefs, designs, contracts and deliverables to keep everything in one place."
+          }
           action={!searching && storageReady && <FileUploader links={{ folderId }} />}
         />
       ) : (

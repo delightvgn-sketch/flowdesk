@@ -27,7 +27,13 @@ export const createClient = createAction({ schema: clientSchema, permission: "cl
       phone: row.phone,
       isPrimary: true,
     });
-    await logActivity(tx, ctx, { action: "client.created", entityType: "client", entityId: row.id, entityLabel: label(row), clientId: row.id });
+    await logActivity(tx, ctx, {
+      action: "client.created",
+      entityType: "client",
+      entityId: row.id,
+      entityLabel: label(row),
+      clientId: row.id,
+    });
     return row;
   });
   revalidatePath("/clients");
@@ -89,7 +95,9 @@ export const deleteClient = createAction({ schema: idSchema, permission: "client
   await ctx.db(async (tx) => {
     const [{ invoiceCount }] = await tx.select({ invoiceCount: count() }).from(invoices).where(eq(invoices.clientId, id));
     if (invoiceCount > 0) {
-      throw new UserFacingError("This client has invoices, so it can't be deleted. Archive it instead to keep your financial records intact.");
+      throw new UserFacingError(
+        "This client has invoices, so it can't be deleted. Archive it instead to keep your financial records intact.",
+      );
     }
     const deleted = await tx
       .delete(clients)
@@ -109,7 +117,9 @@ export const deleteContact = createAction({ schema: idSchema, permission: "clien
   const [row] = await ctx.db((tx) =>
     tx
       .delete(clientContacts)
-      .where(and(eq(clientContacts.id, id), eq(clientContacts.workspaceId, ctx.workspace.id), eq(clientContacts.isPrimary, false)))
+      .where(
+        and(eq(clientContacts.id, id), eq(clientContacts.workspaceId, ctx.workspace.id), eq(clientContacts.isPrimary, false)),
+      )
       .returning({ clientId: clientContacts.clientId }),
   );
   if (!row) throw new UserFacingError("The primary contact can't be removed. Edit the client instead.");

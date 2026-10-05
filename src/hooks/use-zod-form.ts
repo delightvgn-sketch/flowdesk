@@ -9,7 +9,10 @@ import type { z } from "zod";
  * input type; `handleSubmit` receives the parsed (transformed) output — the
  * same shape the server action validates again.
  */
-export function useZodForm<S extends z.ZodType<unknown, Record<string, unknown>>>(schema: S, defaultValues: DefaultValues<z.input<S>>) {
+export function useZodForm<S extends z.ZodType<unknown, Record<string, unknown>>>(
+  schema: S,
+  defaultValues: DefaultValues<z.input<S>>,
+) {
   return useForm<z.input<S>, unknown, z.output<S>>({
     resolver: zodResolver(schema as never),
     defaultValues,

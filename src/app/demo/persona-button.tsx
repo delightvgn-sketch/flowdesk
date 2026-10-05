@@ -73,7 +73,10 @@ export function DemoPersonaButton({
       {pending ? (
         <Loader2 className="size-5 animate-spin text-primary" aria-label="Signing in" />
       ) : (
-        <ArrowRight className="size-5 text-subtle-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden />
+        <ArrowRight
+          className="size-5 text-subtle-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+          aria-hidden
+        />
       )}
     </button>
   );

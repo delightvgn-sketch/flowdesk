@@ -31,7 +31,17 @@ export type ClientFormValues = {
   tags: string[];
 };
 
-const EMPTY: ClientInput = { name: "", company: "", email: "", phone: "", website: "", address: "", notes: "", status: "LEAD", tags: [] };
+const EMPTY: ClientInput = {
+  name: "",
+  company: "",
+  email: "",
+  phone: "",
+  website: "",
+  address: "",
+  notes: "",
+  status: "LEAD",
+  tags: [],
+};
 
 export function ClientFormDialog({
   open,
@@ -93,15 +103,51 @@ export function ClientFormDialog({
       <form
         noValidate
         className="flex min-h-0 flex-1 flex-col"
-        onSubmit={form.handleSubmit((values) => (editing ? update.execute({ ...values, id: client!.id! }) : create.execute(values)))}
+        onSubmit={form.handleSubmit((values) =>
+          editing ? update.execute({ ...values, id: client!.id! }) : create.execute(values),
+        )}
       >
         <FormDialogBody>
           <div className="grid gap-4 sm:grid-cols-2">
-            <FormField control={form.control} name="company" label="Company" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} placeholder="Northstar Digital" autoFocus />} />
-            <FormField control={form.control} name="name" label="Contact name" required render={({ field, props }) => <Input {...field} {...props} placeholder="Grace Achieng" autoComplete="off" />} />
-            <FormField control={form.control} name="email" label="Email" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="email" placeholder="grace@northstar.co.ke" />} />
-            <FormField control={form.control} name="phone" label="Phone" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="tel" placeholder="+254 7xx xxx xxx" />} />
-            <FormField control={form.control} name="website" label="Website" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} placeholder="northstar.co.ke" />} />
+            <FormField
+              control={form.control}
+              name="company"
+              label="Company"
+              render={({ field, props }) => (
+                <Input {...field} value={field.value ?? ""} {...props} placeholder="Northstar Digital" autoFocus />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              label="Contact name"
+              required
+              render={({ field, props }) => <Input {...field} {...props} placeholder="Grace Achieng" autoComplete="off" />}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              label="Email"
+              render={({ field, props }) => (
+                <Input {...field} value={field.value ?? ""} {...props} type="email" placeholder="grace@northstar.co.ke" />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              label="Phone"
+              render={({ field, props }) => (
+                <Input {...field} value={field.value ?? ""} {...props} type="tel" placeholder="+254 7xx xxx xxx" />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="website"
+              label="Website"
+              render={({ field, props }) => (
+                <Input {...field} value={field.value ?? ""} {...props} placeholder="northstar.co.ke" />
+              )}
+            />
             <FormField
               control={form.control}
               name="status"
@@ -123,7 +169,14 @@ export function ClientFormDialog({
               )}
             />
           </div>
-          <FormField control={form.control} name="address" label="Address" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} placeholder="Westlands, Nairobi" />} />
+          <FormField
+            control={form.control}
+            name="address"
+            label="Address"
+            render={({ field, props }) => (
+              <Input {...field} value={field.value ?? ""} {...props} placeholder="Westlands, Nairobi" />
+            )}
+          />
           <FormField
             control={form.control}
             name="tags"
@@ -131,7 +184,14 @@ export function ClientFormDialog({
             description="Press Enter or comma to add."
             render={({ field, props }) => <TagInput value={field.value ?? []} onChange={field.onChange} {...props} />}
           />
-          <FormField control={form.control} name="notes" label="Notes" render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={3} placeholder="Context, preferences, history…" />} />
+          <FormField
+            control={form.control}
+            name="notes"
+            label="Notes"
+            render={({ field, props }) => (
+              <Textarea {...field} value={field.value ?? ""} {...props} rows={3} placeholder="Context, preferences, history…" />
+            )}
+          />
         </FormDialogBody>
         <FormDialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>

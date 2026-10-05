@@ -20,19 +20,29 @@ export function fileKind(mime: string): string {
 export function FileIcon({ mime, className }: { mime: string; className?: string }) {
   const kind = fileKind(mime);
   const Icon =
-    kind === "Image" ? FileImage
-    : kind === "Spreadsheet" ? FileSpreadsheet
-    : kind === "Archive" ? FileArchive
-    : kind === "Video" ? FileVideo
-    : kind === "Audio" ? FileAudio
-    : kind === "JSON" ? FileCode2
-    : kind === "File" ? File
-    : FileText;
+    kind === "Image"
+      ? FileImage
+      : kind === "Spreadsheet"
+        ? FileSpreadsheet
+        : kind === "Archive"
+          ? FileArchive
+          : kind === "Video"
+            ? FileVideo
+            : kind === "Audio"
+              ? FileAudio
+              : kind === "JSON"
+                ? FileCode2
+                : kind === "File"
+                  ? File
+                  : FileText;
   const tone =
-    kind === "PDF" ? "text-danger bg-danger-soft"
-    : kind === "Image" ? "text-info bg-info-soft"
-    : kind === "Spreadsheet" ? "text-success bg-success-soft"
-    : "text-muted-foreground bg-muted";
+    kind === "PDF"
+      ? "text-danger bg-danger-soft"
+      : kind === "Image"
+        ? "text-info bg-info-soft"
+        : kind === "Spreadsheet"
+          ? "text-success bg-success-soft"
+          : "text-muted-foreground bg-muted";
   return (
     <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-md", tone, className)}>
       <Icon className="size-4" aria-hidden />

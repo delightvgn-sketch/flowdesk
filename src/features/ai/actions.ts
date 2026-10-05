@@ -28,7 +28,11 @@ async function guarded<T>(fn: () => Promise<T>): Promise<T> {
 
 export const draftInvoiceDescription = createAction(
   {
-    schema: z.object({ draft: z.string().max(500).optional(), client: z.string().max(120).optional(), project: z.string().max(120).optional() }),
+    schema: z.object({
+      draft: z.string().max(500).optional(),
+      client: z.string().max(120).optional(),
+      project: z.string().max(120).optional(),
+    }),
     permission: "invoice:manage",
   },
   async ({ draft, client, project }) =>
@@ -67,13 +71,17 @@ const meetingSchema = z.object({
 export type MeetingSummary = z.infer<typeof meetingSchema>;
 
 export const summarizeMeeting = createAction(
-  { schema: z.object({ notes: z.string().trim().min(20, "Paste at least a few lines of notes").max(20000) }), permission: "ai:use" },
+  {
+    schema: z.object({ notes: z.string().trim().min(20, "Paste at least a few lines of notes").max(20000) }),
+    permission: "ai:use",
+  },
   async ({ notes }) =>
     guarded(async () => {
       const { output } = await generateText({
         model: aiModel(),
         output: Output.object({ schema: meetingSchema }),
-        system: "You turn messy meeting notes into a crisp summary for a small agency. Never invent facts that aren't in the notes.",
+        system:
+          "You turn messy meeting notes into a crisp summary for a small agency. Never invent facts that aren't in the notes.",
         prompt: notes,
       });
       return output;
@@ -93,7 +101,9 @@ export type GeneratedTask = z.infer<typeof generatedTaskSchema>;
 export const generateProjectTasks = createAction(
   { schema: z.object({ projectId: z.uuid(), brief: z.string().trim().max(4000).optional() }), permission: "task:create" },
   async ({ projectId, brief }, ctx) => {
-    const project = await ctx.db((tx) => tx.query.projects.findFirst({ where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)) }));
+    const project = await ctx.db((tx) =>
+      tx.query.projects.findFirst({ where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)) }),
+    );
     if (!project) throw new NotFoundError("Project");
     const existing = await ctx.db((tx) => tx.select({ title: tasks.title }).from(tasks).where(eq(tasks.projectId, projectId)));
 
@@ -121,15 +131,29 @@ export const addGeneratedTasks = createAction(
   {
     schema: z.object({
       projectId: z.uuid(),
-      tasks: z.array(z.object({ title: z.string().trim().min(1).max(200), description: z.string().max(2000).optional(), priority: z.enum(PRIORITIES) })).min(1).max(20),
+      tasks: z
+        .array(
+          z.object({
+            title: z.string().trim().min(1).max(200),
+            description: z.string().max(2000).optional(),
+            priority: z.enum(PRIORITIES),
+          }),
+        )
+        .min(1)
+        .max(20),
     }),
     permission: "task:create",
   },
   async ({ projectId, tasks: items }, ctx) => {
     await ctx.db(async (tx) => {
-      const project = await tx.query.projects.findFirst({ where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)) });
+      const project = await tx.query.projects.findFirst({
+        where: and(eq(projects.id, projectId), eq(projects.workspaceId, ctx.workspace.id)),
+      });
       if (!project) throw new NotFoundError("Project");
-      const [{ top }] = await tx.select({ top: max(tasks.position) }).from(tasks).where(and(eq(tasks.workspaceId, ctx.workspace.id), eq(tasks.status, "TODO")));
+      const [{ top }] = await tx
+        .select({ top: max(tasks.position) })
+        .from(tasks)
+        .where(and(eq(tasks.workspaceId, ctx.workspace.id), eq(tasks.status, "TODO")));
       const rows = await tx
         .insert(tasks)
         .values(
@@ -146,7 +170,14 @@ export const addGeneratedTasks = createAction(
         )
         .returning({ id: tasks.id, title: tasks.title });
       for (const r of rows) {
-        await logActivity(tx, ctx, { action: "task.created", entityType: "task", entityId: r.id, entityLabel: r.title, projectId, clientId: project.clientId });
+        await logActivity(tx, ctx, {
+          action: "task.created",
+          entityType: "task",
+          entityId: r.id,
+          entityLabel: r.title,
+          projectId,
+          clientId: project.clientId,
+        });
       }
       await recomputeProjectProgress(tx, projectId);
     });
@@ -158,21 +189,25 @@ export const addGeneratedTasks = createAction(
 
 /* ------------------------------- Conversations ------------------------------ */
 
-export const startConversation = createAction({ schema: z.object({ title: z.string().trim().max(120).optional() }), permission: "ai:use" }, async ({ title }, ctx) => {
-  const [row] = await ctx.db((tx) =>
-    tx
-      .insert(aiConversations)
-      .values({ workspaceId: ctx.workspace.id, profileId: ctx.profile.id, title: title?.slice(0, 80) || "New conversation" })
-      .returning({ id: aiConversations.id }),
-  );
-  return { id: row.id };
-});
+export const startConversation = createAction(
+  { schema: z.object({ title: z.string().trim().max(120).optional() }), permission: "ai:use" },
+  async ({ title }, ctx) => {
+    const [row] = await ctx.db((tx) =>
+      tx
+        .insert(aiConversations)
+        .values({ workspaceId: ctx.workspace.id, profileId: ctx.profile.id, title: title?.slice(0, 80) || "New conversation" })
+        .returning({ id: aiConversations.id }),
+    );
+    return { id: row.id };
+  },
+);
 
 export const deleteConversation = createAction({ schema: idSchema, permission: "ai:use" }, async ({ id }, ctx) => {
-  await ctx.db((tx) => tx.delete(aiConversations).where(and(eq(aiConversations.id, id), eq(aiConversations.profileId, ctx.profile.id))));
+  await ctx.db((tx) =>
+    tx.delete(aiConversations).where(and(eq(aiConversations.id, id), eq(aiConversations.profileId, ctx.profile.id))),
+  );
   revalidatePath("/ai");
 });
-
 
 /* ------------------------------ Client briefing ----------------------------- */
 

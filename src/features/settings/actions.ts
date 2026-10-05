@@ -8,7 +8,14 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { assignableRoles, canManageMember } from "@/lib/permissions";
-import { idSchema, inviteSchema, memberRoleSchema, notificationPrefsSchema, profileSchema, workspaceSchema } from "@/lib/validation";
+import {
+  idSchema,
+  inviteSchema,
+  memberRoleSchema,
+  notificationPrefsSchema,
+  profileSchema,
+  workspaceSchema,
+} from "@/lib/validation";
 import { createAction } from "@/server/actions/safe-action";
 import { WORKSPACE_COOKIE, type AppContext } from "@/server/auth/session";
 import type { Tx } from "@/server/db";
@@ -39,7 +46,9 @@ export const deleteWorkspace = createAction(
   async ({ confirmName }, ctx) => {
     if (ctx.workspace.isDemo) throw new UserFacingError("The shared demo workspace can't be deleted.");
     if (confirmName.trim() !== ctx.workspace.name) throw new UserFacingError("Type the workspace name exactly to confirm.");
-    const deleted = await ctx.db((tx) => tx.delete(workspaces).where(eq(workspaces.id, ctx.workspace.id)).returning({ id: workspaces.id }));
+    const deleted = await ctx.db((tx) =>
+      tx.delete(workspaces).where(eq(workspaces.id, ctx.workspace.id)).returning({ id: workspaces.id }),
+    );
     if (deleted.length === 0) throw new UserFacingError("Only the owner can delete the workspace.");
     (await cookies()).delete(WORKSPACE_COOKIE);
     return { remaining: ctx.memberships.length - 1 };
@@ -74,14 +83,23 @@ export const inviteMember = createAction({ schema: inviteSchema, permission: "te
       .where(and(eq(workspaceMembers.workspaceId, ctx.workspace.id), sql`lower(${profiles.email}) = ${input.email}`));
     if (existing) throw new UserFacingError("That person is already a member of this workspace.");
     if (input.clientId) {
-      const client = await tx.query.clients.findFirst({ where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)) });
+      const client = await tx.query.clients.findFirst({
+        where: and(eq(clients.id, input.clientId), eq(clients.workspaceId, ctx.workspace.id)),
+      });
       if (!client) throw new NotFoundError("Client");
     }
     // Replace any pending invitation for the same email.
     await tx
       .update(workspaceInvitations)
       .set({ revokedAt: new Date() })
-      .where(and(eq(workspaceInvitations.workspaceId, ctx.workspace.id), sql`lower(${workspaceInvitations.email}) = ${input.email}`, isNull(workspaceInvitations.acceptedAt), isNull(workspaceInvitations.revokedAt)));
+      .where(
+        and(
+          eq(workspaceInvitations.workspaceId, ctx.workspace.id),
+          sql`lower(${workspaceInvitations.email}) = ${input.email}`,
+          isNull(workspaceInvitations.acceptedAt),
+          isNull(workspaceInvitations.revokedAt),
+        ),
+      );
     await tx.insert(workspaceInvitations).values({
       workspaceId: ctx.workspace.id,
       email: input.email,
@@ -99,53 +117,81 @@ export const inviteMember = createAction({ schema: inviteSchema, permission: "te
 
 export const revokeInvitation = createAction({ schema: idSchema, permission: "team:manage" }, async ({ id }, ctx) => {
   await ctx.db((tx) =>
-    tx.update(workspaceInvitations).set({ revokedAt: new Date() }).where(and(eq(workspaceInvitations.id, id), eq(workspaceInvitations.workspaceId, ctx.workspace.id))),
+    tx
+      .update(workspaceInvitations)
+      .set({ revokedAt: new Date() })
+      .where(and(eq(workspaceInvitations.id, id), eq(workspaceInvitations.workspaceId, ctx.workspace.id))),
   );
   revalidatePath("/settings/team");
 });
 
-export const changeMemberRole = createAction({ schema: memberRoleSchema, permission: "team:manage" }, async ({ memberId, role }, ctx) => {
-  await ctx.db(async (tx) => {
-    const member = await tx.query.workspaceMembers.findFirst({ where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)) });
-    if (!member) throw new NotFoundError("Member");
-    if (member.profileId === ctx.profile.id) throw new UserFacingError("You can't change your own role.");
-    if (!canManageMember(ctx.role, member.role) || member.role === "CLIENT") throw new UserFacingError("You can't change this member's role.");
-    await assertNotDemoPersona(tx, ctx, member.profileId);
-    const updated = await tx.update(workspaceMembers).set({ role }).where(eq(workspaceMembers.id, memberId)).returning();
-    if (updated.length === 0) throw new UserFacingError("You can't change this member's role.");
-  });
-  revalidatePath("/settings/team");
-});
+export const changeMemberRole = createAction(
+  { schema: memberRoleSchema, permission: "team:manage" },
+  async ({ memberId, role }, ctx) => {
+    await ctx.db(async (tx) => {
+      const member = await tx.query.workspaceMembers.findFirst({
+        where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)),
+      });
+      if (!member) throw new NotFoundError("Member");
+      if (member.profileId === ctx.profile.id) throw new UserFacingError("You can't change your own role.");
+      if (!canManageMember(ctx.role, member.role) || member.role === "CLIENT")
+        throw new UserFacingError("You can't change this member's role.");
+      await assertNotDemoPersona(tx, ctx, member.profileId);
+      const updated = await tx.update(workspaceMembers).set({ role }).where(eq(workspaceMembers.id, memberId)).returning();
+      if (updated.length === 0) throw new UserFacingError("You can't change this member's role.");
+    });
+    revalidatePath("/settings/team");
+  },
+);
 
-export const removeMember = createAction({ schema: z.object({ memberId: z.uuid() }), permission: "team:manage" }, async ({ memberId }, ctx) => {
-  await ctx.db(async (tx) => {
-    const member = await tx.query.workspaceMembers.findFirst({ where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)) });
-    if (!member) throw new NotFoundError("Member");
-    if (member.profileId === ctx.profile.id) throw new UserFacingError("You can't remove yourself.");
-    if (!canManageMember(ctx.role, member.role)) throw new UserFacingError("You can't remove the workspace owner.");
-    await assertNotDemoPersona(tx, ctx, member.profileId);
-    const deleted = await tx.delete(workspaceMembers).where(eq(workspaceMembers.id, memberId)).returning();
-    if (deleted.length === 0) throw new UserFacingError("You can't remove this member.");
-  });
-  revalidatePath("/settings/team");
-});
+export const removeMember = createAction(
+  { schema: z.object({ memberId: z.uuid() }), permission: "team:manage" },
+  async ({ memberId }, ctx) => {
+    await ctx.db(async (tx) => {
+      const member = await tx.query.workspaceMembers.findFirst({
+        where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)),
+      });
+      if (!member) throw new NotFoundError("Member");
+      if (member.profileId === ctx.profile.id) throw new UserFacingError("You can't remove yourself.");
+      if (!canManageMember(ctx.role, member.role)) throw new UserFacingError("You can't remove the workspace owner.");
+      await assertNotDemoPersona(tx, ctx, member.profileId);
+      const deleted = await tx.delete(workspaceMembers).where(eq(workspaceMembers.id, memberId)).returning();
+      if (deleted.length === 0) throw new UserFacingError("You can't remove this member.");
+    });
+    revalidatePath("/settings/team");
+  },
+);
 
 /** Only the owner can hand over ownership; they become an admin. */
-export const transferOwnership = createAction({ schema: z.object({ memberId: z.uuid() }), permission: "team:transfer-ownership" }, async ({ memberId }, ctx) => {
-  await ctx.db(async (tx) => {
-    const member = await tx.query.workspaceMembers.findFirst({ where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)) });
-    if (!member || member.role === "CLIENT" || member.profileId === ctx.profile.id) throw new UserFacingError("Choose another staff member.");
-    if (ctx.workspace.isDemo) throw new UserFacingError("Ownership of the shared demo workspace can't be transferred.");
-    await tx.update(workspaceMembers).set({ role: "OWNER" }).where(eq(workspaceMembers.id, memberId));
-    await tx.update(workspaceMembers).set({ role: "ADMIN" }).where(and(eq(workspaceMembers.workspaceId, ctx.workspace.id), eq(workspaceMembers.profileId, ctx.profile.id)));
-  });
-  revalidatePath("/", "layout");
-});
+export const transferOwnership = createAction(
+  { schema: z.object({ memberId: z.uuid() }), permission: "team:transfer-ownership" },
+  async ({ memberId }, ctx) => {
+    await ctx.db(async (tx) => {
+      const member = await tx.query.workspaceMembers.findFirst({
+        where: and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id)),
+      });
+      if (!member || member.role === "CLIENT" || member.profileId === ctx.profile.id)
+        throw new UserFacingError("Choose another staff member.");
+      if (ctx.workspace.isDemo) throw new UserFacingError("Ownership of the shared demo workspace can't be transferred.");
+      await tx.update(workspaceMembers).set({ role: "OWNER" }).where(eq(workspaceMembers.id, memberId));
+      await tx
+        .update(workspaceMembers)
+        .set({ role: "ADMIN" })
+        .where(and(eq(workspaceMembers.workspaceId, ctx.workspace.id), eq(workspaceMembers.profileId, ctx.profile.id)));
+    });
+    revalidatePath("/", "layout");
+  },
+);
 
 export const updateMemberTitle = createAction(
   { schema: z.object({ memberId: z.uuid(), title: z.string().trim().max(80) }), permission: "team:manage" },
   async ({ memberId, title }, ctx) => {
-    await ctx.db((tx) => tx.update(workspaceMembers).set({ title: title || null }).where(and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id))));
+    await ctx.db((tx) =>
+      tx
+        .update(workspaceMembers)
+        .set({ title: title || null })
+        .where(and(eq(workspaceMembers.id, memberId), eq(workspaceMembers.workspaceId, ctx.workspace.id))),
+    );
     revalidatePath("/settings/team");
   },
 );

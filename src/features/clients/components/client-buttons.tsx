@@ -45,7 +45,13 @@ export function EditClientButton({ client }: { client: ClientFormValues }) {
   );
 }
 
-export function ClientRowActions({ client, redirectOnDelete }: { client: ClientFormValues & { id: string }; redirectOnDelete?: boolean }) {
+export function ClientRowActions({
+  client,
+  redirectOnDelete,
+}: {
+  client: ClientFormValues & { id: string };
+  redirectOnDelete?: boolean;
+}) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [confirm, setConfirm] = useState<"archive" | "delete" | null>(null);

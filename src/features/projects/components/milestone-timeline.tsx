@@ -11,7 +11,14 @@ import { SubmitButton } from "@/components/shared/misc";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createMilestone, deleteMilestone, requestMilestoneApproval, updateMilestoneStatus } from "@/features/projects/actions";
@@ -23,12 +30,25 @@ import { milestoneSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 import type { Milestone } from "@/server/db/schema";
 
-export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }: { projectId: string; milestones: Milestone[]; canEdit: boolean; hasClient: boolean }) {
+export function MilestoneTimeline({
+  projectId,
+  milestones,
+  canEdit,
+  hasClient,
+}: {
+  projectId: string;
+  milestones: Milestone[];
+  canEdit: boolean;
+  hasClient: boolean;
+}) {
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
   const refresh = () => router.refresh();
   const setStatus = useAction(updateMilestoneStatus, { success: "Milestone updated.", onSuccess: refresh });
-  const request = useAction(requestMilestoneApproval, { success: "Approval requested — the client has been notified.", onSuccess: refresh });
+  const request = useAction(requestMilestoneApproval, {
+    success: "Approval requested — the client has been notified.",
+    onSuccess: refresh,
+  });
   const remove = useAction(deleteMilestone, { success: "Milestone removed.", onSuccess: refresh });
 
   return (
@@ -38,7 +58,13 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
           icon={Flag}
           title="No milestones yet"
           description="Milestones show clients where the project is at, and let them approve deliverables."
-          action={canEdit && <Button onClick={() => setAddOpen(true)}><Plus /> Add milestone</Button>}
+          action={
+            canEdit && (
+              <Button onClick={() => setAddOpen(true)}>
+                <Plus /> Add milestone
+              </Button>
+            )
+          }
         />
       ) : (
         <>
@@ -48,7 +74,13 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
               return (
                 <li key={m.id} className="relative flex gap-4 pb-6 last:pb-0">
                   {i < milestones.length - 1 && (
-                    <span aria-hidden className={cn("absolute top-8 left-[15px] h-[calc(100%-2rem)] w-0.5", m.status === "COMPLETED" ? "bg-success/50" : "bg-border")} />
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute top-8 left-[15px] h-[calc(100%-2rem)] w-0.5",
+                        m.status === "COMPLETED" ? "bg-success/50" : "bg-border",
+                      )}
+                    />
                   )}
                   <span
                     className={cn(
@@ -79,7 +111,11 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel className="text-xs text-muted-foreground">Status</DropdownMenuLabel>
                               {MILESTONE_STATUSES.map((s) => (
-                                <DropdownMenuItem key={s} disabled={s === m.status} onSelect={() => setStatus.execute({ id: m.id, status: s })}>
+                                <DropdownMenuItem
+                                  key={s}
+                                  disabled={s === m.status}
+                                  onSelect={() => setStatus.execute({ id: m.id, status: s })}
+                                >
                                   {MILESTONE_STATUS_META[s].label}
                                 </DropdownMenuItem>
                               ))}
@@ -87,7 +123,8 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
                                 <>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem onSelect={() => request.execute({ id: m.id })}>
-                                    <Send /> {m.approvalStatus === "PENDING" ? "Remind client to approve" : "Request client approval"}
+                                    <Send />{" "}
+                                    {m.approvalStatus === "PENDING" ? "Remind client to approve" : "Request client approval"}
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -106,7 +143,9 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
                         <span className="font-medium">Client feedback:</span> {m.approvalNote}
                       </p>
                     )}
-                    {m.approvedAt && m.approvalStatus === "APPROVED" && <p className="mt-2 text-xs text-success">Approved {formatDate(m.approvedAt)}</p>}
+                    {m.approvedAt && m.approvalStatus === "APPROVED" && (
+                      <p className="mt-2 text-xs text-success">Approved {formatDate(m.approvedAt)}</p>
+                    )}
                   </div>
                 </li>
               );
@@ -124,7 +163,17 @@ export function MilestoneTimeline({ projectId, milestones, canEdit, hasClient }:
   );
 }
 
-function AddMilestoneDialog({ open, onOpenChange, projectId, hasClient }: { open: boolean; onOpenChange: (o: boolean) => void; projectId: string; hasClient: boolean }) {
+function AddMilestoneDialog({
+  open,
+  onOpenChange,
+  projectId,
+  hasClient,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  projectId: string;
+  hasClient: boolean;
+}) {
   const router = useRouter();
   const empty = { projectId, title: "", description: "", dueDate: "", status: "UPCOMING" as const, requiresApproval: false };
   const form = useZodForm(milestoneSchema, empty);
@@ -142,9 +191,25 @@ function AddMilestoneDialog({ open, onOpenChange, projectId, hasClient }: { open
     <FormDialog open={open} onOpenChange={onOpenChange} title="Add milestone" className="sm:max-w-md">
       <form noValidate className="flex min-h-0 flex-1 flex-col" onSubmit={form.handleSubmit((v) => execute(v))}>
         <FormDialogBody>
-          <FormField control={form.control} name="title" label="Title" required render={({ field, props }) => <Input {...field} {...props} placeholder="e.g. Design sign-off" autoFocus />} />
-          <FormField control={form.control} name="dueDate" label="Due date" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />} />
-          <FormField control={form.control} name="description" label="Description" render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={3} />} />
+          <FormField
+            control={form.control}
+            name="title"
+            label="Title"
+            required
+            render={({ field, props }) => <Input {...field} {...props} placeholder="e.g. Design sign-off" autoFocus />}
+          />
+          <FormField
+            control={form.control}
+            name="dueDate"
+            label="Due date"
+            render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            label="Description"
+            render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={3} />}
+          />
           {hasClient && (
             <FormField
               control={form.control}
@@ -160,7 +225,9 @@ function AddMilestoneDialog({ open, onOpenChange, projectId, hasClient }: { open
           )}
         </FormDialogBody>
         <FormDialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
           <SubmitButton pending={pending}>Add milestone</SubmitButton>
         </FormDialogFooter>
       </form>

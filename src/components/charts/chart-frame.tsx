@@ -5,7 +5,12 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-export type ChartColumn<T> = { key: keyof T & string; label: string; format?: (value: T[keyof T]) => string; align?: "left" | "right" };
+export type ChartColumn<T> = {
+  key: keyof T & string;
+  label: string;
+  format?: (value: T[keyof T]) => string;
+  align?: "left" | "right";
+};
 
 /**
  * Card chrome for a chart with a Chart/Table toggle, so every value is reachable
@@ -68,7 +73,9 @@ export function ChartFrame<T extends Record<string, unknown>>({
 
       {view === "chart" ? (
         <>
-          {legend && <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">{legend}</div>}
+          {legend && (
+            <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">{legend}</div>
+          )}
           <div className="min-h-0 flex-1">{children}</div>
         </>
       ) : (
@@ -77,7 +84,14 @@ export function ChartFrame<T extends Record<string, unknown>>({
             <thead>
               <tr className="border-b">
                 {columns.map((c) => (
-                  <th key={c.key} scope="col" className={cn("py-2 text-xs font-medium text-muted-foreground", c.align === "right" ? "text-right" : "text-left")}>
+                  <th
+                    key={c.key}
+                    scope="col"
+                    className={cn(
+                      "py-2 text-xs font-medium text-muted-foreground",
+                      c.align === "right" ? "text-right" : "text-left",
+                    )}
+                  >
                     {c.label}
                   </th>
                 ))}
@@ -104,20 +118,18 @@ export function ChartFrame<T extends Record<string, unknown>>({
 export function LegendKey({ color, label, shape = "rect" }: { color: string; label: string; shape?: "rect" | "line" }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span aria-hidden className={shape === "rect" ? "size-2.5 rounded-[3px]" : "h-0.5 w-3 rounded-full"} style={{ background: color }} />
+      <span
+        aria-hidden
+        className={shape === "rect" ? "size-2.5 rounded-[3px]" : "h-0.5 w-3 rounded-full"}
+        style={{ background: color }}
+      />
       {label}
     </span>
   );
 }
 
 /** Shared tooltip body: value first (strong), label second, line keys. */
-export function TooltipCard({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: { label: string; value: string; color?: string }[];
-}) {
+export function TooltipCard({ title, rows }: { title: string; rows: { label: string; value: string; color?: string }[] }) {
   return (
     <div className="min-w-36 rounded-lg border bg-popover px-3 py-2 text-xs shadow-md">
       <p className="mb-1.5 text-muted-foreground">{title}</p>

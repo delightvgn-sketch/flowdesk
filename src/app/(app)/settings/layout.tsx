@@ -9,7 +9,7 @@ export default async function SettingsLayout({ children }: LayoutProps<"/setting
       <PageHeader title="Settings" description={`Your account and the ${ctx.workspace.name} workspace.`} />
       <div className="grid gap-6 lg:grid-cols-[200px_1fr]">
         <SettingsNav />
-        <div className="min-w-0 max-w-3xl">{children}</div>
+        <div className="max-w-3xl min-w-0">{children}</div>
       </div>
     </>
   );

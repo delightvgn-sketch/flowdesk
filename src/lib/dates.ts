@@ -12,9 +12,7 @@ function toDate(value: Date | string): Date {
 
 /** Today in the given IANA timezone, as YYYY-MM-DD. */
 export function todayISO(timeZone = "Africa/Nairobi"): DateString {
-  return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(
-    new Date(),
-  );
+  return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 }
 
 export function addDaysISO(date: DateString, days: number): DateString {

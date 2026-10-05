@@ -37,7 +37,10 @@ test.describe("authorization", () => {
 
   test("a client approves a deliverable", async ({ page }) => {
     await signInAs(page, "client");
-    await page.getByRole("link", { name: /Testing/ }).first().click();
+    await page
+      .getByRole("link", { name: /Testing/ })
+      .first()
+      .click();
     await page.getByRole("button", { name: "Approve" }).click();
     await expectToast(page, /approved/);
     await expect(page.getByText("Approved").first()).toBeVisible();

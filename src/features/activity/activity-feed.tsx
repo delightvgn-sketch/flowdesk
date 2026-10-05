@@ -20,7 +20,8 @@ export function ActivityFeed({ items, emptyLabel = "No activity yet." }: { items
           <li key={item.id} className="relative flex gap-3">
             <UserAvatar name={item.actorName ?? "Someone"} src={item.actorAvatar} size="sm" className="ring-4 ring-card" />
             <div className="min-w-0 flex-1 text-sm leading-6">
-              <span className="font-medium">{item.actorName ?? "Someone"}</span> <span className="text-muted-foreground">{verb}</span>{" "}
+              <span className="font-medium">{item.actorName ?? "Someone"}</span>{" "}
+              <span className="text-muted-foreground">{verb}</span>{" "}
               {target &&
                 (href ? (
                   <Link href={href} className="font-medium underline-offset-4 hover:underline">
@@ -29,7 +30,11 @@ export function ActivityFeed({ items, emptyLabel = "No activity yet." }: { items
                 ) : (
                   <span className="font-medium">{target}</span>
                 ))}
-              <time dateTime={item.createdAt.toISOString()} title={formatDateTime(item.createdAt)} className="block text-xs text-subtle-foreground">
+              <time
+                dateTime={item.createdAt.toISOString()}
+                title={formatDateTime(item.createdAt)}
+                className="block text-xs text-subtle-foreground"
+              >
                 {timeAgo(item.createdAt)}
               </time>
             </div>

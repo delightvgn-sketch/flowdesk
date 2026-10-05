@@ -66,7 +66,10 @@ export async function listClients(tx: Tx, workspaceId: string, f: ClientListFilt
       .orderBy(...order)
       .limit(PAGE_SIZE)
       .offset((f.page - 1) * PAGE_SIZE),
-    tx.select({ total: count() }).from(clients).where(and(...where)),
+    tx
+      .select({ total: count() })
+      .from(clients)
+      .where(and(...where)),
   ]);
 
   return { rows, total };
@@ -95,12 +98,22 @@ export async function getClient(tx: Tx, workspaceId: string, id: string) {
   if (!client) return null;
 
   const [contacts, [stats], [projectCount]] = await Promise.all([
-    tx.select().from(clientContacts).where(eq(clientContacts.clientId, id)).orderBy(desc(clientContacts.isPrimary), asc(clientContacts.name)),
+    tx
+      .select()
+      .from(clientContacts)
+      .where(eq(clientContacts.clientId, id))
+      .orderBy(desc(clientContacts.isPrimary), asc(clientContacts.name)),
     tx
       .select({
         revenue: sql<number>`coalesce(sum(${invoices.amountPaid}), 0)`.mapWith(Number),
-        outstanding: sql<number>`coalesce(sum(case when ${invoices.status} in ('SENT', 'OVERDUE') then ${invoices.total} - ${invoices.amountPaid} else 0 end), 0)`.mapWith(Number),
-        overdue: sql<number>`coalesce(sum(case when ${invoices.status} in ('SENT', 'OVERDUE') and ${invoices.dueDate} < current_date then ${invoices.total} - ${invoices.amountPaid} else 0 end), 0)`.mapWith(Number),
+        outstanding:
+          sql<number>`coalesce(sum(case when ${invoices.status} in ('SENT', 'OVERDUE') then ${invoices.total} - ${invoices.amountPaid} else 0 end), 0)`.mapWith(
+            Number,
+          ),
+        overdue:
+          sql<number>`coalesce(sum(case when ${invoices.status} in ('SENT', 'OVERDUE') and ${invoices.dueDate} < current_date then ${invoices.total} - ${invoices.amountPaid} else 0 end), 0)`.mapWith(
+            Number,
+          ),
         invoiceCount: count(),
       })
       .from(invoices)

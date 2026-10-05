@@ -49,8 +49,8 @@ export default async function InvitePage({ params }: PageProps<"/invite/[token]"
           <>
             <h1 className="mt-5 text-2xl font-semibold tracking-tight">Join {invite.workspaceName}</h1>
             <p className="mt-2 text-muted-foreground">
-              {invite.invitedBy ?? "A teammate"} invited <span className="font-medium text-foreground">{invite.email}</span> to join as{" "}
-              {ROLE_META[invite.role].label.toLowerCase()}.
+              {invite.invitedBy ?? "A teammate"} invited <span className="font-medium text-foreground">{invite.email}</span> to
+              join as {ROLE_META[invite.role].label.toLowerCase()}.
             </p>
             <div className="mt-8">
               <AcceptInviteButton token={token} signedInEmail={session?.profile.email ?? null} inviteEmail={invite.email} />
@@ -59,7 +59,9 @@ export default async function InvitePage({ params }: PageProps<"/invite/[token]"
         ) : (
           <>
             <h1 className="mt-5 text-2xl font-semibold tracking-tight">This invitation has expired</h1>
-            <p className="mt-2 text-muted-foreground">Invitations are valid for 7 days. Ask the person who invited you for a new link.</p>
+            <p className="mt-2 text-muted-foreground">
+              Invitations are valid for 7 days. Ask the person who invited you for a new link.
+            </p>
           </>
         )}
       </main>

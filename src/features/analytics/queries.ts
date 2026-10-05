@@ -53,7 +53,9 @@ export async function clientsByMonth(tx: Tx, ws: string, today: string, months: 
 }
 
 export async function clientCounts(tx: Tx, ws: string) {
-  const rows = await tx.execute<{ status: string; count: string }>(sql`select status::text, count(*) from clients where workspace_id = ${ws} group by 1`);
+  const rows = await tx.execute<{ status: string; count: string }>(
+    sql`select status::text, count(*) from clients where workspace_id = ${ws} group by 1`,
+  );
   return Object.fromEntries(rows.map((r) => [r.status, n(r.count)])) as Record<string, number>;
 }
 
@@ -66,8 +68,16 @@ export async function projectHealth(tx: Tx, ws: string, from: string, today: str
       count(*) filter (where status = 'ON_HOLD') as on_hold
     from projects where workspace_id = ${ws}
   `);
-  const byStatus = await tx.execute<{ status: string; count: string }>(sql`select status::text, count(*) from projects where workspace_id = ${ws} group by 1`);
-  const delayedList = await tx.execute<{ id: string; name: string; due_date: string; progress: number; client: string | null }>(sql`
+  const byStatus = await tx.execute<{ status: string; count: string }>(
+    sql`select status::text, count(*) from projects where workspace_id = ${ws} group by 1`,
+  );
+  const delayedList = await tx.execute<{
+    id: string;
+    name: string;
+    due_date: string;
+    progress: number;
+    client: string | null;
+  }>(sql`
     select p.id, p.name, p.due_date::text, p.progress, c.company as client from projects p left join clients c on c.id = p.client_id
     where p.workspace_id = ${ws} and p.status in ('PLANNING', 'IN_PROGRESS', 'REVIEW') and p.due_date < ${today}::date order by p.due_date
   `);

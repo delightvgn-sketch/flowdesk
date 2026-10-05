@@ -6,7 +6,13 @@ import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { deleteProject, setProjectStatus } from "@/features/projects/actions";
 import { useAction } from "@/hooks/use-action";
@@ -17,7 +23,15 @@ import type { ProjectStatus } from "@/server/db/schema";
 
 import { ProjectFormDialog, type ProjectFormOptions, type ProjectFormValues } from "./project-form-dialog";
 
-export function NewProjectButton({ options, label = "New project", variant = "default" }: { options: ProjectFormOptions; label?: string; variant?: "default" | "outline" }) {
+export function NewProjectButton({
+  options,
+  label = "New project",
+  variant = "default",
+}: {
+  options: ProjectFormOptions;
+  label?: string;
+  variant?: "default" | "outline";
+}) {
   const { open, setOpen, fromQuery, params } = useQueryDialog("new", ["client"]);
   const clientId = fromQuery ? params.get("client") : null;
 

@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 
-import { AccountManager, NotificationPrefsForm, ProfileForm, Section, ThemePicker } from "@/features/settings/components/settings-forms";
+import {
+  AccountManager,
+  NotificationPrefsForm,
+  ProfileForm,
+  Section,
+  ThemePicker,
+} from "@/features/settings/components/settings-forms";
 import { requireClientContext } from "@/server/auth/session";
 import { DEFAULT_NOTIFICATION_PREFS } from "@/server/services/activity";
 

@@ -24,23 +24,11 @@ import {
 
 export const workspaceRole = pgEnum("workspace_role", ["OWNER", "ADMIN", "MEMBER", "CLIENT"]);
 export const clientStatus = pgEnum("client_status", ["LEAD", "ACTIVE", "INACTIVE", "ARCHIVED"]);
-export const projectStatus = pgEnum("project_status", [
-  "PLANNING",
-  "IN_PROGRESS",
-  "REVIEW",
-  "COMPLETED",
-  "ON_HOLD",
-  "CANCELLED",
-]);
+export const projectStatus = pgEnum("project_status", ["PLANNING", "IN_PROGRESS", "REVIEW", "COMPLETED", "ON_HOLD", "CANCELLED"]);
 export const priority = pgEnum("priority", ["LOW", "MEDIUM", "HIGH", "URGENT"]);
 export const taskStatus = pgEnum("task_status", ["TODO", "IN_PROGRESS", "REVIEW", "DONE"]);
 export const milestoneStatus = pgEnum("milestone_status", ["UPCOMING", "CURRENT", "COMPLETED"]);
-export const approvalStatus = pgEnum("approval_status", [
-  "NOT_REQUIRED",
-  "PENDING",
-  "APPROVED",
-  "CHANGES_REQUESTED",
-]);
+export const approvalStatus = pgEnum("approval_status", ["NOT_REQUIRED", "PENDING", "APPROVED", "CHANGES_REQUESTED"]);
 export const invoiceStatus = pgEnum("invoice_status", ["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"]);
 export const discountType = pgEnum("discount_type", ["PERCENT", "FIXED"]);
 export const paymentMethod = pgEnum("payment_method", ["MPESA", "BANK", "CARD", "CASH", "OTHER"]);
@@ -174,7 +162,10 @@ export const clients = pgTable(
     address: text("address"),
     notes: text("notes"),
     status: clientStatus("status").notNull().default("LEAD"),
-    tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
+    tags: text("tags")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
     createdById: uuid("created_by_id").references(() => profiles.id, { onDelete: "set null" }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

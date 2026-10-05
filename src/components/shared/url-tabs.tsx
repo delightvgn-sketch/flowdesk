@@ -18,7 +18,10 @@ export function UrlTabs({
   className?: string;
 }) {
   return (
-    <nav aria-label="Sections" className={cn("scrollbar-none -mx-4 mb-6 overflow-x-auto border-b px-4 sm:mx-0 sm:px-0", className)}>
+    <nav
+      aria-label="Sections"
+      className={cn("-mx-4 mb-6 scrollbar-none overflow-x-auto border-b px-4 sm:mx-0 sm:px-0", className)}
+    >
       <ul className="flex min-w-max gap-1">
         {tabs.map((tab, i) => {
           const isActive = tab.key === active;

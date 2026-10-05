@@ -15,7 +15,7 @@ export function SettingsNav() {
     { href: "/settings/team", label: "Team", icon: Users },
   ];
   return (
-    <nav aria-label="Settings" className="scrollbar-none -mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+    <nav aria-label="Settings" className="-mx-4 scrollbar-none overflow-x-auto px-4 lg:mx-0 lg:px-0">
       <ul className="flex gap-1 lg:flex-col">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
@@ -26,7 +26,9 @@ export function SettingsNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors",
-                  active ? "bg-card text-foreground shadow-xs ring-1 ring-border" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  active
+                    ? "bg-card text-foreground shadow-xs ring-1 ring-border"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 <item.icon className="size-4" aria-hidden /> {item.label}

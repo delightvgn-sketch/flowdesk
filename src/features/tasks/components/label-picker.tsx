@@ -14,7 +14,13 @@ import { cn } from "@/lib/utils";
 import type { TaskLabel } from "../types";
 
 export function LabelChip({ label, className }: { label: TaskLabel; className?: string }) {
-  return <span className={cn("inline-flex h-5 items-center rounded px-1.5 text-[11px] font-medium", labelClass(label.color), className)}>{label.name}</span>;
+  return (
+    <span
+      className={cn("inline-flex h-5 items-center rounded px-1.5 text-[11px] font-medium", labelClass(label.color), className)}
+    >
+      {label.name}
+    </span>
+  );
 }
 
 /** Choose labels, or create a new one from the search text. */
@@ -53,7 +59,9 @@ export function LabelPicker({
           className="flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-input bg-card px-2 py-1.5 text-left text-sm shadow-xs focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           aria-label="Labels"
         >
-          {selected.length ? selected.map((l) => <LabelChip key={l.id} label={l} />) : (
+          {selected.length ? (
+            selected.map((l) => <LabelChip key={l.id} label={l} />)
+          ) : (
             <span className="flex items-center gap-1.5 px-1 text-muted-foreground">
               <Tag className="size-3.5" /> Add labels
             </span>
@@ -69,7 +77,11 @@ export function LabelPicker({
               {labels.map((l) => {
                 const checked = value.includes(l.id);
                 return (
-                  <CommandItem key={l.id} value={l.name} onSelect={() => onChange(checked ? value.filter((v) => v !== l.id) : [...value, l.id])}>
+                  <CommandItem
+                    key={l.id}
+                    value={l.name}
+                    onSelect={() => onChange(checked ? value.filter((v) => v !== l.id) : [...value, l.id])}
+                  >
                     <LabelChip label={l} />
                     <Check className={cn("ml-auto size-4 text-primary", checked ? "opacity-100" : "opacity-0")} />
                   </CommandItem>
@@ -79,7 +91,9 @@ export function LabelPicker({
                 <CommandItem
                   value={`create-${search}`}
                   disabled={create.pending}
-                  onSelect={() => create.execute({ name: search.trim(), color: LABEL_COLORS[labels.length % LABEL_COLORS.length] })}
+                  onSelect={() =>
+                    create.execute({ name: search.trim(), color: LABEL_COLORS[labels.length % LABEL_COLORS.length] })
+                  }
                 >
                   <Plus /> Create “{search.trim()}”
                 </CommandItem>

@@ -34,10 +34,22 @@ export function MilestoneApproval({ id, title }: { id: string; title: string }) 
         <label htmlFor={`note-${id}`} className="text-sm font-medium">
           What should change?
         </label>
-        <Textarea id={`note-${id}`} rows={3} value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} required placeholder="Be as specific as you can…" />
+        <Textarea
+          id={`note-${id}`}
+          rows={3}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          maxLength={1000}
+          required
+          placeholder="Be as specific as you can…"
+        />
         <div className="flex gap-2">
-          <Button type="submit" size="sm" disabled={pending || !note.trim()}>Send feedback</Button>
-          <Button type="button" size="sm" variant="ghost" onClick={() => setMode("idle")}>Cancel</Button>
+          <Button type="submit" size="sm" disabled={pending || !note.trim()}>
+            Send feedback
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={() => setMode("idle")}>
+            Cancel
+          </Button>
         </div>
       </form>
     );

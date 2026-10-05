@@ -4,7 +4,16 @@ import { and, asc, count, desc, eq, ilike, inArray, or, sql, type SQL } from "dr
 
 import { PAGE_SIZE } from "@/lib/constants";
 import type { Tx } from "@/server/db";
-import { clients, milestones, profiles, projectMembers, projects, tasks, type Priority, type ProjectStatus } from "@/server/db/schema";
+import {
+  clients,
+  milestones,
+  profiles,
+  projectMembers,
+  projects,
+  tasks,
+  type Priority,
+  type ProjectStatus,
+} from "@/server/db/schema";
 
 export type ProjectFilters = {
   q?: string;
@@ -32,7 +41,10 @@ export async function listProjects(tx: Tx, workspaceId: string, f: ProjectFilter
         ? [asc(projects.name)]
         : f.sort === "progress"
           ? [desc(projects.progress)]
-          : [sql`case when ${projects.status} in ('COMPLETED', 'CANCELLED') then 1 else 0 end`, sql`${projects.dueDate} asc nulls last`];
+          : [
+              sql`case when ${projects.status} in ('COMPLETED', 'CANCELLED') then 1 else 0 end`,
+              sql`${projects.dueDate} asc nulls last`,
+            ];
 
   const [rows, [{ total }]] = await Promise.all([
     tx
@@ -47,7 +59,8 @@ export async function listProjects(tx: Tx, workspaceId: string, f: ProjectFilter
         budget: projects.budget,
         clientId: projects.clientId,
         clientName: sql<string | null>`coalesce(${clients.company}, ${clients.name})`,
-        openTasks: sql<number>`(select count(*) from tasks t where t.project_id = "projects"."id" and t.status <> 'DONE')`.mapWith(Number),
+        openTasks:
+          sql<number>`(select count(*) from tasks t where t.project_id = "projects"."id" and t.status <> 'DONE')`.mapWith(Number),
       })
       .from(projects)
       .leftJoin(clients, eq(clients.id, projects.clientId))
@@ -62,7 +75,10 @@ export async function listProjects(tx: Tx, workspaceId: string, f: ProjectFilter
       .where(and(...where)),
   ]);
 
-  const members = await projectTeams(tx, rows.map((r) => r.id));
+  const members = await projectTeams(
+    tx,
+    rows.map((r) => r.id),
+  );
   return { rows: rows.map((r) => ({ ...r, team: members[r.id] ?? [] })), total };
 }
 
@@ -100,13 +116,23 @@ export async function getProject(tx: Tx, workspaceId: string, id: string) {
       .select({
         total: count(),
         done: sql<number>`count(*) filter (where ${tasks.status} = 'DONE')`.mapWith(Number),
-        overdue: sql<number>`count(*) filter (where ${tasks.status} <> 'DONE' and ${tasks.dueDate} < current_date)`.mapWith(Number),
+        overdue: sql<number>`count(*) filter (where ${tasks.status} <> 'DONE' and ${tasks.dueDate} < current_date)`.mapWith(
+          Number,
+        ),
       })
       .from(tasks)
       .where(eq(tasks.projectId, id)),
   ]);
 
-  return { ...project.project, clientName: project.clientName, clientContact: project.clientContact, clientEmail: project.clientEmail, team, milestones: projectMilestones, taskStats };
+  return {
+    ...project.project,
+    clientName: project.clientName,
+    clientContact: project.clientContact,
+    clientEmail: project.clientEmail,
+    team,
+    milestones: projectMilestones,
+    taskStats,
+  };
 }
 
 /** Projects for <select> inputs (RLS limits members to their own). */

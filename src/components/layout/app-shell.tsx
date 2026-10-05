@@ -93,7 +93,13 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur-md sm:px-6">
-          <Button variant="ghost" size="icon-sm" className="lg:hidden" aria-label="Open navigation" onClick={() => setMobileOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="lg:hidden"
+            aria-label="Open navigation"
+            onClick={() => setMobileOpen(true)}
+          >
             <Menu />
           </Button>
           <Link href="/dashboard" className="lg:hidden" aria-label="FlowDesk home">
@@ -243,7 +249,10 @@ function SidebarLink({ item, active }: { item: NavItem; active: boolean }) {
           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
       )}
     >
-      <Icon aria-hidden className={cn("size-4 shrink-0", active ? "text-primary" : "text-subtle-foreground group-hover:text-foreground")} />
+      <Icon
+        aria-hidden
+        className={cn("size-4 shrink-0", active ? "text-primary" : "text-subtle-foreground group-hover:text-foreground")}
+      />
       {item.label}
     </Link>
   );

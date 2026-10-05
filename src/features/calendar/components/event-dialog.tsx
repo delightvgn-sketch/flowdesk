@@ -21,7 +21,18 @@ import { eventSchema } from "@/lib/validation";
 export function NewEventButton({ defaultDate, projects }: { defaultDate: string; projects: { id: string; label: string }[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const empty = { title: "", description: "", type: "MEETING" as const, date: defaultDate, startTime: "10:00", endTime: "11:00", allDay: false, location: "", projectId: null, clientId: null };
+  const empty = {
+    title: "",
+    description: "",
+    type: "MEETING" as const,
+    date: defaultDate,
+    startTime: "10:00",
+    endTime: "11:00",
+    allDay: false,
+    location: "",
+    projectId: null,
+    clientId: null,
+  };
   const form = useZodForm(eventSchema, empty);
   const allDay = form.watch("allDay");
   useEffect(() => {
@@ -45,14 +56,50 @@ export function NewEventButton({ defaultDate, projects }: { defaultDate: string;
       <FormDialog open={open} onOpenChange={setOpen} title="New event">
         <form noValidate className="flex min-h-0 flex-1 flex-col" onSubmit={form.handleSubmit((v) => execute(v))}>
           <FormDialogBody>
-            <FormField control={form.control} name="title" label="Title" required render={({ field, props }) => <Input {...field} {...props} placeholder="Client kickoff call" autoFocus />} />
+            <FormField
+              control={form.control}
+              name="title"
+              label="Title"
+              required
+              render={({ field, props }) => <Input {...field} {...props} placeholder="Client kickoff call" autoFocus />}
+            />
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={form.control} name="type" label="Type" render={({ field, props }) => <EnumSelect {...props} values={EVENT_TYPES} labels={EVENT_TYPE_META} value={field.value} onChange={field.onChange} />} />
-              <FormField control={form.control} name="date" label="Date" required render={({ field, props }) => <Input {...field} {...props} type="date" />} />
+              <FormField
+                control={form.control}
+                name="type"
+                label="Type"
+                render={({ field, props }) => (
+                  <EnumSelect
+                    {...props}
+                    values={EVENT_TYPES}
+                    labels={EVENT_TYPE_META}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="date"
+                label="Date"
+                required
+                render={({ field, props }) => <Input {...field} {...props} type="date" />}
+              />
               {!allDay && (
                 <>
-                  <FormField control={form.control} name="startTime" label="Starts" required render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="time" />} />
-                  <FormField control={form.control} name="endTime" label="Ends" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="time" />} />
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    label="Starts"
+                    required
+                    render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="time" />}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="endTime"
+                    label="Ends"
+                    render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="time" />}
+                  />
                 </>
               )}
             </div>
@@ -67,13 +114,34 @@ export function NewEventButton({ defaultDate, projects }: { defaultDate: string;
               )}
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={form.control} name="location" label="Location" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} placeholder="Google Meet, office…" />} />
-              <FormField control={form.control} name="projectId" label="Project" render={({ field, props }) => <OptionSelect {...props} options={projects} value={field.value} onChange={field.onChange} noneLabel="None" />} />
+              <FormField
+                control={form.control}
+                name="location"
+                label="Location"
+                render={({ field, props }) => (
+                  <Input {...field} value={field.value ?? ""} {...props} placeholder="Google Meet, office…" />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="projectId"
+                label="Project"
+                render={({ field, props }) => (
+                  <OptionSelect {...props} options={projects} value={field.value} onChange={field.onChange} noneLabel="None" />
+                )}
+              />
             </div>
-            <FormField control={form.control} name="description" label="Notes" render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={2} />} />
+            <FormField
+              control={form.control}
+              name="description"
+              label="Notes"
+              render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={2} />}
+            />
           </FormDialogBody>
           <FormDialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
             <SubmitButton pending={pending}>Add event</SubmitButton>
           </FormDialogFooter>
         </form>

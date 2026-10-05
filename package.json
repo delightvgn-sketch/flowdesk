@@ -16,7 +16,9 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "db:studio": "drizzle-kit studio",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.130",
@@ -69,5 +71,9 @@
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.3"
+  },
+  "description": "A portfolio-grade full-stack SaaS platform for managing clients, projects, tasks, invoices and business operations.",
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -4,7 +4,10 @@ import type { InvoiceDocumentData } from "./components/invoice-document";
 import type { InvoiceWithDetails } from "./queries";
 
 /** Shape an invoice + workspace into the data both the HTML and PDF documents render. */
-export function toDocumentData(d: InvoiceWithDetails, workspace: Pick<Workspace, "name" | "email" | "phone" | "address">): InvoiceDocumentData {
+export function toDocumentData(
+  d: InvoiceWithDetails,
+  workspace: Pick<Workspace, "name" | "email" | "phone" | "address">,
+): InvoiceDocumentData {
   const { invoice, client, items, project } = d;
   return {
     number: invoice.number,

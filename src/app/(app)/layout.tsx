@@ -23,7 +23,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     <AppShell
       user={{ name: ctx.profile.fullName, email: ctx.profile.email, avatarUrl: ctx.profile.avatarUrl }}
       workspace={{ id: ctx.workspace.id, name: ctx.workspace.name, role: ctx.role, isDemo: ctx.workspace.isDemo }}
-      workspaces={ctx.memberships.map((m) => ({ id: m.workspace.id, name: m.workspace.name, role: m.role, isDemo: m.workspace.isDemo }))}
+      workspaces={ctx.memberships.map((m) => ({
+        id: m.workspace.id,
+        name: m.workspace.name,
+        role: m.role,
+        isDemo: m.workspace.isDemo,
+      }))}
       unreadCount={unread}
     >
       {children}

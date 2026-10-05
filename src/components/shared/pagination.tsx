@@ -35,7 +35,7 @@ export function Pagination({
 
   return (
     <nav aria-label="Pagination" className="mt-4 flex items-center justify-between gap-3 text-sm">
-      <p className="text-muted-foreground tabular">
+      <p className="tabular text-muted-foreground">
         {from}–{to} of {total.toLocaleString("en-KE")}
       </p>
       <div className="flex items-center gap-1">
@@ -43,7 +43,7 @@ export function Pagination({
           <ChevronLeft className="size-4" />
           <span className="hidden sm:inline">Previous</span>
         </PageLink>
-        <span className="px-2 text-muted-foreground tabular">
+        <span className="tabular px-2 text-muted-foreground">
           {page} / {pages}
         </span>
         <PageLink href={href(page + 1)} disabled={page >= pages} label="Next page">
@@ -55,7 +55,17 @@ export function Pagination({
   );
 }
 
-function PageLink({ href, disabled, label, children }: { href: string; disabled: boolean; label: string; children: React.ReactNode }) {
+function PageLink({
+  href,
+  disabled,
+  label,
+  children,
+}: {
+  href: string;
+  disabled: boolean;
+  label: string;
+  children: React.ReactNode;
+}) {
   const classes = cn(
     "inline-flex h-8 items-center gap-1 rounded-md border bg-card px-2.5 text-[13px] font-medium shadow-xs",
     disabled ? "pointer-events-none opacity-40" : "hover:bg-muted",

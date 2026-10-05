@@ -67,7 +67,12 @@ export function ProjectFormDialog({
     if (!open) return;
     form.reset(
       project
-        ? { ...project, description: project.description ?? "", startDate: project.startDate ?? "", dueDate: project.dueDate ?? "" }
+        ? {
+            ...project,
+            description: project.description ?? "",
+            startDate: project.startDate ?? "",
+            dueDate: project.dueDate ?? "",
+          }
         : { ...EMPTY, clientId: defaultClientId ?? null },
     );
   }, [open, project, defaultClientId, form]);
@@ -99,13 +104,27 @@ export function ProjectFormDialog({
         onSubmit={form.handleSubmit((v) => (editing ? update.execute({ ...v, id: project!.id }) : create.execute(v)))}
       >
         <FormDialogBody>
-          <FormField control={form.control} name="name" label="Project name" required render={({ field, props }) => <Input {...field} {...props} placeholder="Brand Website" autoFocus />} />
+          <FormField
+            control={form.control}
+            name="name"
+            label="Project name"
+            required
+            render={({ field, props }) => <Input {...field} {...props} placeholder="Brand Website" autoFocus />}
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="clientId"
               label="Client"
-              render={({ field, props }) => <OptionSelect options={options.clients} value={field.value} onChange={field.onChange} noneLabel="Internal project" {...props} />}
+              render={({ field, props }) => (
+                <OptionSelect
+                  options={options.clients}
+                  value={field.value}
+                  onChange={field.onChange}
+                  noneLabel="Internal project"
+                  {...props}
+                />
+              )}
             />
             <FormField
               control={form.control}
@@ -131,29 +150,59 @@ export function ProjectFormDialog({
               control={form.control}
               name="status"
               label="Status"
-              render={({ field, props }) => <EnumSelect values={PROJECT_STATUSES} labels={PROJECT_STATUS_META} value={field.value} onChange={field.onChange} {...props} />}
+              render={({ field, props }) => (
+                <EnumSelect
+                  values={PROJECT_STATUSES}
+                  labels={PROJECT_STATUS_META}
+                  value={field.value}
+                  onChange={field.onChange}
+                  {...props}
+                />
+              )}
             />
             <FormField
               control={form.control}
               name="priority"
               label="Priority"
-              render={({ field, props }) => <EnumSelect values={PRIORITIES} labels={PRIORITY_META} value={field.value} onChange={field.onChange} {...props} />}
+              render={({ field, props }) => (
+                <EnumSelect values={PRIORITIES} labels={PRIORITY_META} value={field.value} onChange={field.onChange} {...props} />
+              )}
             />
-            <FormField control={form.control} name="startDate" label="Start date" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />} />
-            <FormField control={form.control} name="dueDate" label="Due date" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />} />
+            <FormField
+              control={form.control}
+              name="startDate"
+              label="Start date"
+              render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />}
+            />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              label="Due date"
+              render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="date" />}
+            />
           </div>
           <FormField
             control={form.control}
             name="memberIds"
             label="Team"
             description="Members only see projects they're on."
-            render={({ field, props }) => <PeoplePicker people={options.people} value={field.value ?? []} onChange={field.onChange} {...props} />}
+            render={({ field, props }) => (
+              <PeoplePicker people={options.people} value={field.value ?? []} onChange={field.onChange} {...props} />
+            )}
           />
           <FormField
             control={form.control}
             name="description"
             label="Description"
-            render={({ field, props }) => <Textarea {...field} value={field.value ?? ""} {...props} rows={4} placeholder="Goals, scope and anything the team should know." />}
+            render={({ field, props }) => (
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                {...props}
+                rows={4}
+                placeholder="Goals, scope and anything the team should know."
+              />
+            )}
           />
         </FormDialogBody>
         <FormDialogFooter>

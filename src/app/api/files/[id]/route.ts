@@ -16,7 +16,9 @@ export async function GET(request: Request, { params }: RouteContext<"/api/files
 
   try {
     const ctx = await getAppContext();
-    const file = await ctx.db((tx) => tx.query.files.findFirst({ where: and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id)) }));
+    const file = await ctx.db((tx) =>
+      tx.query.files.findFirst({ where: and(eq(files.id, id), eq(files.workspaceId, ctx.workspace.id)) }),
+    );
     if (!file) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const inline = new URL(request.url).searchParams.get("inline") === "1";

@@ -31,7 +31,10 @@ export function describeActivity(a: ActivityItem): { verb: string; target: strin
     case "project.updated":
       return { verb: "updated project", target: label };
     case "project.status_changed":
-      return { verb: `moved to ${PROJECT_STATUS_META[m.to as ProjectStatus]?.label.toLowerCase() ?? "a new status"}:`, target: label };
+      return {
+        verb: `moved to ${PROJECT_STATUS_META[m.to as ProjectStatus]?.label.toLowerCase() ?? "a new status"}:`,
+        target: label,
+      };
     case "project.deleted":
       return { verb: "deleted project", target: label };
     case "task.created":

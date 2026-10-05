@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  calculateInvoiceTotals,
-  deriveInvoiceStatus,
-  formatInvoiceNumber,
-  sumCompletedPayments,
-} from "@/lib/invoice-math";
+import { calculateInvoiceTotals, deriveInvoiceStatus, formatInvoiceNumber, sumCompletedPayments } from "@/lib/invoice-math";
 
 describe("calculateInvoiceTotals", () => {
   it("sums line items and applies VAT on the subtotal", () => {

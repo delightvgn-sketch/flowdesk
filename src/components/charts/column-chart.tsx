@@ -33,7 +33,12 @@ export function ColumnChart({
 }) {
   const columns: ChartColumn<Row>[] = [
     { key: xKey, label: "Period" },
-    ...series.map((s) => ({ key: s.key, label: s.label, align: "right" as const, format: (v: Row[string]) => formatValue(Number(v), money) })),
+    ...series.map((s) => ({
+      key: s.key,
+      label: s.label,
+      align: "right" as const,
+      format: (v: Row[string]) => formatValue(Number(v), money),
+    })),
   ];
 
   return (
@@ -56,7 +61,9 @@ export function ColumnChart({
               axisLine={false}
               width={money ? 64 : 32}
               allowDecimals={false}
-              tickFormatter={(v: number) => (money ? formatMoney(v, { compact: true }).replace("KSh ", "") : v.toLocaleString("en-KE"))}
+              tickFormatter={(v: number) =>
+                money ? formatMoney(v, { compact: true }).replace("KSh ", "") : v.toLocaleString("en-KE")
+              }
             />
             <Tooltip
               cursor={{ fill: "var(--muted)", opacity: 0.6 }}
@@ -74,7 +81,15 @@ export function ColumnChart({
               }
             />
             {series.map((s) => (
-              <Bar key={s.key} dataKey={s.key} name={s.label} fill={s.color} radius={[4, 4, 0, 0]} maxBarSize={24} isAnimationActive={false} />
+              <Bar
+                key={s.key}
+                dataKey={s.key}
+                name={s.label}
+                fill={s.color}
+                radius={[4, 4, 0, 0]}
+                maxBarSize={24}
+                isAnimationActive={false}
+              />
             ))}
           </BarChart>
         </ResponsiveContainer>

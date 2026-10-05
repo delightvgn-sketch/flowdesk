@@ -74,14 +74,20 @@ export default async function DashboardPage() {
       getUpcoming(tx, ctx, today),
     ]);
     const [financial, revenue, invoiceStatus] = finance
-      ? await Promise.all([getFinancialSummary(tx, ws, today), getRevenueByMonth(tx, ws, today), getInvoiceStatusBreakdown(tx, ws, today)])
+      ? await Promise.all([
+          getFinancialSummary(tx, ws, today),
+          getRevenueByMonth(tx, ws, today),
+          getInvoiceStatusBreakdown(tx, ws, today),
+        ])
       : [null, [], []];
     return { business, activeProjects, taskTrend, activity, upcoming, financial, revenue, invoiceStatus };
   });
 
   const { business, financial } = data;
   const monthDelta =
-    financial && financial.previous30 > 0 ? Math.round(((financial.last30 - financial.previous30) / financial.previous30) * 100) : null;
+    financial && financial.previous30 > 0
+      ? Math.round(((financial.last30 - financial.previous30) / financial.previous30) * 100)
+      : null;
   const statusOrder = ["PAID", "SENT", "OVERDUE", "DRAFT", "CANCELLED"];
 
   return (
@@ -189,7 +195,13 @@ export default async function DashboardPage() {
                 href="/invoices"
               />
             ) : (
-              <StatCard label="Upcoming deadlines" value={data.upcoming.filter((u) => u.kind !== "meeting").length} icon={CalendarClock} hint="Next 14 days" href="/calendar" />
+              <StatCard
+                label="Upcoming deadlines"
+                value={data.upcoming.filter((u) => u.kind !== "meeting").length}
+                icon={CalendarClock}
+                hint="Next 14 days"
+                href="/calendar"
+              />
             )}
           </div>
         </section>
@@ -209,7 +221,11 @@ export default async function DashboardPage() {
               ]}
             />
             <Panel>
-              <PanelHeader title="Invoice status" description="Balance by status" action={<Receipt className="size-4 text-subtle-foreground" aria-hidden />} />
+              <PanelHeader
+                title="Invoice status"
+                description="Balance by status"
+                action={<Receipt className="size-4 text-subtle-foreground" aria-hidden />}
+              />
               <div className="p-4 sm:p-5">
                 <BarList
                   items={statusOrder
@@ -256,7 +272,10 @@ export default async function DashboardPage() {
                   const due = dueLabel(p.dueDate, today);
                   return (
                     <li key={p.id}>
-                      <Link href={`/projects/${p.id}`} className="grid gap-2 px-4 py-3 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_160px_110px] sm:items-center sm:gap-4 sm:px-5">
+                      <Link
+                        href={`/projects/${p.id}`}
+                        className="grid gap-2 px-4 py-3 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_160px_110px] sm:items-center sm:gap-4 sm:px-5"
+                      >
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">{p.name}</p>
                           <p className="truncate text-xs text-muted-foreground">{p.clientName ?? "Internal"}</p>
@@ -267,7 +286,9 @@ export default async function DashboardPage() {
                         </div>
                         <div className="flex items-center justify-between gap-2 sm:justify-end">
                           <StatusBadge kind="project" value={p.status} className="sm:hidden" />
-                          <span className={cn("text-xs", due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>{due.text}</span>
+                          <span className={cn("text-xs", due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>
+                            {due.text}
+                          </span>
                         </div>
                       </Link>
                     </li>
@@ -314,4 +335,3 @@ export default async function DashboardPage() {
     </>
   );
 }
-

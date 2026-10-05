@@ -51,7 +51,9 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
     label = "Next 30 days";
   }
 
-  const [items, projects] = await ctx.db((tx) => Promise.all([calendarItems(tx, ctx, from, to), projectOptions(tx, ctx.workspace.id)]));
+  const [items, projects] = await ctx.db((tx) =>
+    Promise.all([calendarItems(tx, ctx, from, to), projectOptions(tx, ctx.workspace.id)]),
+  );
   const byDay = new Map<string, CalendarItem[]>();
   for (const item of items) byDay.set(item.date, [...(byDay.get(item.date) ?? []), item]);
   const href = (v: View, d?: string) => `/calendar?view=${v}${d ? `&date=${d}` : ""}`;
@@ -69,17 +71,23 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
           {view !== "upcoming" && (
             <>
               <Button variant="outline" size="icon-sm" asChild>
-                <Link href={href(view, prev)} aria-label="Previous"><ChevronLeft /></Link>
+                <Link href={href(view, prev)} aria-label="Previous">
+                  <ChevronLeft />
+                </Link>
               </Button>
               <Button variant="outline" size="icon-sm" asChild>
-                <Link href={href(view, next)} aria-label="Next"><ChevronRight /></Link>
+                <Link href={href(view, next)} aria-label="Next">
+                  <ChevronRight />
+                </Link>
               </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link href={href(view)}>Today</Link>
               </Button>
             </>
           )}
-          <h2 className="ml-1 text-base font-semibold" aria-live="polite">{label}</h2>
+          <h2 className="ml-1 text-base font-semibold" aria-live="polite">
+            {label}
+          </h2>
         </div>
         <div className="flex rounded-md border bg-card p-0.5 shadow-xs" role="group" aria-label="Calendar view">
           {(["month", "week", "upcoming"] as const).map((v) => (
@@ -87,7 +95,10 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
               key={v}
               href={href(v, view === "upcoming" ? undefined : iso(anchor))}
               aria-current={v === view ? "page" : undefined}
-              className={cn("rounded-[5px] px-3 py-1 text-[13px] font-medium capitalize", v === view ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "rounded-[5px] px-3 py-1 text-[13px] font-medium capitalize",
+                v === view ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
             >
               {v}
             </Link>
@@ -108,32 +119,54 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
           <div className="hidden overflow-hidden rounded-xl border bg-card shadow-xs md:block">
             <div className="grid grid-cols-7 border-b bg-muted/40 text-xs font-medium text-muted-foreground">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-                <div key={d} className="px-2 py-2">{d}</div>
+                <div key={d} className="px-2 py-2">
+                  {d}
+                </div>
               ))}
             </div>
             <div className="grid grid-cols-7">
-              {Array.from({ length: Math.round((parseISO(to).getTime() - parseISO(from).getTime()) / 86_400_000) + 1 }).map((_, i) => {
-                const day = addDays(parseISO(from), i);
-                const key = iso(day);
-                const dayItems = byDay.get(key) ?? [];
-                return (
-                  <div key={key} className={cn("min-h-28 border-r border-b p-1.5 [&:nth-child(7n)]:border-r-0", !isSameMonth(day, anchor) && "bg-muted/30")}>
-                    <p className={cn("mb-1 flex size-6 items-center justify-center rounded-full text-xs", key === today ? "bg-primary font-semibold text-primary-foreground" : isSameMonth(day, anchor) ? "" : "text-subtle-foreground")}>
-                      {format(day, "d")}
-                    </p>
-                    <div className="space-y-0.5">
-                      {dayItems.slice(0, 3).map((item) => (
-                        <CalendarChip key={`${item.kind}-${item.id}`} item={item} />
-                      ))}
-                      {dayItems.length > 3 && (
-                        <Link href={href("week", key)} className="block px-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground">
-                          +{dayItems.length - 3} more
-                        </Link>
+              {Array.from({ length: Math.round((parseISO(to).getTime() - parseISO(from).getTime()) / 86_400_000) + 1 }).map(
+                (_, i) => {
+                  const day = addDays(parseISO(from), i);
+                  const key = iso(day);
+                  const dayItems = byDay.get(key) ?? [];
+                  return (
+                    <div
+                      key={key}
+                      className={cn(
+                        "min-h-28 border-r border-b p-1.5 [&:nth-child(7n)]:border-r-0",
+                        !isSameMonth(day, anchor) && "bg-muted/30",
                       )}
+                    >
+                      <p
+                        className={cn(
+                          "mb-1 flex size-6 items-center justify-center rounded-full text-xs",
+                          key === today
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : isSameMonth(day, anchor)
+                              ? ""
+                              : "text-subtle-foreground",
+                        )}
+                      >
+                        {format(day, "d")}
+                      </p>
+                      <div className="space-y-0.5">
+                        {dayItems.slice(0, 3).map((item) => (
+                          <CalendarChip key={`${item.kind}-${item.id}`} item={item} />
+                        ))}
+                        {dayItems.length > 3 && (
+                          <Link
+                            href={href("week", key)}
+                            className="block px-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
+                          >
+                            +{dayItems.length - 3} more
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           </div>
           <div className="md:hidden">
@@ -148,12 +181,23 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
             const key = addDaysISO(from, i);
             const dayItems = byDay.get(key) ?? [];
             return (
-              <section key={key} className={cn("rounded-xl border bg-card p-2 shadow-xs md:min-h-80", key === today && "border-primary/40 ring-1 ring-primary/20")} aria-label={formatDate(key, "EEEE d MMMM")}>
+              <section
+                key={key}
+                className={cn(
+                  "rounded-xl border bg-card p-2 shadow-xs md:min-h-80",
+                  key === today && "border-primary/40 ring-1 ring-primary/20",
+                )}
+                aria-label={formatDate(key, "EEEE d MMMM")}
+              >
                 <p className="mb-2 px-1 text-xs font-medium">
                   <span className="text-muted-foreground">{formatDate(key, "EEE")}</span> {formatDate(key, "d")}
                 </p>
                 <div className="space-y-1">
-                  {dayItems.length === 0 ? <p className="px-1 text-xs text-subtle-foreground">—</p> : dayItems.map((item) => <CalendarChip key={`${item.kind}-${item.id}`} item={item} compact={false} />)}
+                  {dayItems.length === 0 ? (
+                    <p className="px-1 text-xs text-subtle-foreground">—</p>
+                  ) : (
+                    dayItems.map((item) => <CalendarChip key={`${item.kind}-${item.id}`} item={item} compact={false} />)
+                  )}
                 </div>
               </section>
             );
@@ -168,7 +212,14 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
 function AgendaList({ byDay, today, emptyText }: { byDay: Map<string, CalendarItem[]>; today: string; emptyText: string }) {
   const days = [...byDay.keys()].sort();
-  if (days.length === 0) return <EmptyState icon={CalendarDays} title={emptyText} description="Add meetings with “New event”. Task, project, milestone and invoice due dates appear automatically." />;
+  if (days.length === 0)
+    return (
+      <EmptyState
+        icon={CalendarDays}
+        title={emptyText}
+        description="Add meetings with “New event”. Task, project, milestone and invoice due dates appear automatically."
+      />
+    );
   return (
     <div className="space-y-4">
       {days.map((day) => (

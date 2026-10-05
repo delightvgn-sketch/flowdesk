@@ -81,8 +81,12 @@ describe("fileUploadSchema", () => {
   });
 
   it("rejects executables, oversized files and path tricks", () => {
-    expect(fileUploadSchema.safeParse({ name: "x.exe", mimeType: "application/x-msdownload", sizeBytes: 10 }).success).toBe(false);
-    expect(fileUploadSchema.safeParse({ name: "big.pdf", mimeType: "application/pdf", sizeBytes: 26 * 1024 * 1024 }).success).toBe(false);
+    expect(fileUploadSchema.safeParse({ name: "x.exe", mimeType: "application/x-msdownload", sizeBytes: 10 }).success).toBe(
+      false,
+    );
+    expect(
+      fileUploadSchema.safeParse({ name: "big.pdf", mimeType: "application/pdf", sizeBytes: 26 * 1024 * 1024 }).success,
+    ).toBe(false);
     expect(fileUploadSchema.safeParse({ name: "../etc/passwd", mimeType: "text/plain", sizeBytes: 10 }).success).toBe(false);
   });
 });

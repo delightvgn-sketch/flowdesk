@@ -18,11 +18,26 @@ const NAV = [
 ];
 
 /** Client-facing chrome: a calm top bar, no internal navigation. */
-export function PortalShell({ user, workspaceName, clientName, unread, children }: { user: ShellUser; workspaceName: string; clientName: string; unread: number; children: React.ReactNode }) {
+export function PortalShell({
+  user,
+  workspaceName,
+  clientName,
+  unread,
+  children,
+}: {
+  user: ShellUser;
+  workspaceName: string;
+  clientName: string;
+  unread: number;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   return (
     <div className="min-h-dvh">
-      <a href="#main" className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
         Skip to content
       </a>
       <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur-md">
@@ -39,7 +54,7 @@ export function PortalShell({ user, workspaceName, clientName, unread, children 
             <UserMenu user={user} settingsHref="/portal/account" />
           </div>
         </div>
-        <nav aria-label="Portal" className="scrollbar-none mx-auto max-w-6xl overflow-x-auto px-4 sm:px-6">
+        <nav aria-label="Portal" className="mx-auto max-w-6xl scrollbar-none overflow-x-auto px-4 sm:px-6">
           <ul className="flex min-w-max gap-1">
             {NAV.map((item) => {
               const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
@@ -50,7 +65,9 @@ export function PortalShell({ user, workspaceName, clientName, unread, children 
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "relative inline-flex h-10 items-center px-3 text-sm font-medium transition-colors",
-                      active ? "text-foreground after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground hover:text-foreground",
+                      active
+                        ? "text-foreground after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:rounded-full after:bg-primary"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {item.label}

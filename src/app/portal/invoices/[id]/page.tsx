@@ -25,7 +25,9 @@ export default async function PortalInvoicePage({ params }: PageProps<"/portal/i
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/portal/invoices" className="text-xs text-muted-foreground hover:text-foreground">← All invoices</Link>
+        <Link href="/portal/invoices" className="text-xs text-muted-foreground hover:text-foreground">
+          ← All invoices
+        </Link>
         <Button asChild>
           <a href={`/api/invoices/${id}/pdf`} download>
             <Download /> Download PDF
@@ -36,9 +38,19 @@ export default async function PortalInvoicePage({ params }: PageProps<"/portal/i
         <InvoiceDocument data={toDocumentData(details, ctx.workspace)} />
         <div className="space-y-4">
           <Panel className="p-5">
-            <p className="text-xs text-muted-foreground">{balance > 0 && invoice.status !== "CANCELLED" ? "Balance due" : "Status"}</p>
-            <p className="tabular mt-1 text-2xl font-semibold">{balance > 0 && invoice.status !== "CANCELLED" ? formatMoney(balance, { currency: invoice.currency }) : invoice.status === "PAID" ? "Paid in full" : "Cancelled"}</p>
-            <p className="mt-3 text-xs text-muted-foreground">Pay using the instructions on the invoice. Your payment will show here once {ctx.workspace.name} records it.</p>
+            <p className="text-xs text-muted-foreground">
+              {balance > 0 && invoice.status !== "CANCELLED" ? "Balance due" : "Status"}
+            </p>
+            <p className="tabular mt-1 text-2xl font-semibold">
+              {balance > 0 && invoice.status !== "CANCELLED"
+                ? formatMoney(balance, { currency: invoice.currency })
+                : invoice.status === "PAID"
+                  ? "Paid in full"
+                  : "Cancelled"}
+            </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Pay using the instructions on the invoice. Your payment will show here once {ctx.workspace.name} records it.
+            </p>
           </Panel>
           <Panel className="p-5">
             <p className="mb-3 text-sm font-semibold">Payments</p>

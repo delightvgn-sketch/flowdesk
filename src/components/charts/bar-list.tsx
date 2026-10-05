@@ -16,7 +16,15 @@ export type BarListItem = {
  * Ranked horizontal bars rendered as plain HTML. Labels and values are always
  * visible text, so the list doubles as its own table view.
  */
-export function BarList({ items, className, emptyLabel = "Nothing to show yet." }: { items: BarListItem[]; className?: string; emptyLabel?: string }) {
+export function BarList({
+  items,
+  className,
+  emptyLabel = "Nothing to show yet.",
+}: {
+  items: BarListItem[];
+  className?: string;
+  emptyLabel?: string;
+}) {
   const max = Math.max(1, ...items.map((i) => i.value));
   if (items.length === 0) return <p className="py-6 text-center text-sm text-muted-foreground">{emptyLabel}</p>;
   return (
@@ -32,7 +40,10 @@ export function BarList({ items, className, emptyLabel = "Nothing to show yet." 
               </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div className={cn("h-full rounded-full", item.barClass ?? "bg-chart-1")} style={{ width: `${Math.max(2, (item.value / max) * 100)}%` }} />
+              <div
+                className={cn("h-full rounded-full", item.barClass ?? "bg-chart-1")}
+                style={{ width: `${Math.max(2, (item.value / max) * 100)}%` }}
+              />
             </div>
           </>
         );

@@ -59,12 +59,18 @@ export default async function InvoicePage({ params }: PageProps<"/invoices/[id]"
 
         <aside className="space-y-4 lg:sticky lg:top-20">
           <Panel className="p-4 sm:p-5">
-            <p className="text-xs text-muted-foreground">{isOpen ? "Balance due" : invoice.status === "PAID" ? "Paid in full" : "Total"}</p>
+            <p className="text-xs text-muted-foreground">
+              {isOpen ? "Balance due" : invoice.status === "PAID" ? "Paid in full" : "Total"}
+            </p>
             <p className="tabular mt-1 text-3xl font-semibold tracking-tight">
               {formatMoney(isOpen ? balance : invoice.total, { currency: invoice.currency })}
             </p>
-            {isOpen && <p className={cn("mt-1 text-sm", due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>{due.text}</p>}
-            {invoice.status === "PAID" && invoice.paidAt && <p className="mt-1 text-sm text-success">Paid {formatDate(invoice.paidAt)}</p>}
+            {isOpen && (
+              <p className={cn("mt-1 text-sm", due.overdue ? "font-medium text-danger" : "text-muted-foreground")}>{due.text}</p>
+            )}
+            {invoice.status === "PAID" && invoice.paidAt && (
+              <p className="mt-1 text-sm text-success">Paid {formatDate(invoice.paidAt)}</p>
+            )}
             <dl className="mt-4 divide-y border-t">
               <DetailRow label="Issued">{formatDate(invoice.issueDate)}</DetailRow>
               <DetailRow label="Due">{formatDate(invoice.dueDate)}</DetailRow>

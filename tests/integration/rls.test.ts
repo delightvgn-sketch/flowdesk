@@ -50,9 +50,13 @@ describe.skipIf(!hasDb)("row level security", () => {
     });
 
     it("managers can create projects and clients and read them back (INSERT … RETURNING)", async () => {
-      const [project] = await as("admin", (tx) => tx.insert(s.projects).values({ workspaceId: f.wsA.id, name: "Returned" }).returning());
+      const [project] = await as("admin", (tx) =>
+        tx.insert(s.projects).values({ workspaceId: f.wsA.id, name: "Returned" }).returning(),
+      );
       expect(project.name).toBe("Returned");
-      const [client] = await as("owner", (tx) => tx.insert(s.clients).values({ workspaceId: f.wsA.id, name: "Returned client" }).returning());
+      const [client] = await as("owner", (tx) =>
+        tx.insert(s.clients).values({ workspaceId: f.wsA.id, name: "Returned client" }).returning(),
+      );
       expect(client.name).toBe("Returned client");
     });
 
@@ -127,13 +131,17 @@ describe.skipIf(!hasDb)("row level security", () => {
     it("cannot post internal messages", async () => {
       await expect(
         as("client", (tx) =>
-          tx.insert(s.messages).values({ workspaceId: f.wsA.id, projectId: f.p1.id, authorId: f.p.client.id, body: "x", internal: true }),
+          tx
+            .insert(s.messages)
+            .values({ workspaceId: f.wsA.id, projectId: f.p1.id, authorId: f.p.client.id, body: "x", internal: true }),
         ),
       ).rejects.toThrow();
     });
 
     it("cannot see other client users in the roster", async () => {
-      const members = await as("client", (tx) => tx.select({ role: s.workspaceMembers.role, profileId: s.workspaceMembers.profileId }).from(s.workspaceMembers));
+      const members = await as("client", (tx) =>
+        tx.select({ role: s.workspaceMembers.role, profileId: s.workspaceMembers.profileId }).from(s.workspaceMembers),
+      );
       expect(members.some((m) => m.profileId === f.p.otherClient.id)).toBe(false);
       expect(members.some((m) => m.role === "OWNER")).toBe(true);
     });
@@ -182,7 +190,9 @@ describe.skipIf(!hasDb)("row level security", () => {
   describe("notifications", () => {
     it("are private to their recipient", async () => {
       await as("owner", (tx) =>
-        tx.insert(s.notifications).values({ workspaceId: f.wsA.id, recipientId: f.p.member.id, actorId: f.p.owner.id, type: "test", title: "hi" }),
+        tx
+          .insert(s.notifications)
+          .values({ workspaceId: f.wsA.id, recipientId: f.p.member.id, actorId: f.p.owner.id, type: "test", title: "hi" }),
       );
       const forMember = await as("member", (tx) => tx.select().from(s.notifications));
       const forAdmin = await as("admin", (tx) => tx.select().from(s.notifications));
@@ -193,7 +203,9 @@ describe.skipIf(!hasDb)("row level security", () => {
     it("cannot be sent to people outside the workspace", async () => {
       await expect(
         as("owner", (tx) =>
-          tx.insert(s.notifications).values({ workspaceId: f.wsA.id, recipientId: f.p.rival.id, actorId: f.p.owner.id, type: "test", title: "spam" }),
+          tx
+            .insert(s.notifications)
+            .values({ workspaceId: f.wsA.id, recipientId: f.p.rival.id, actorId: f.p.owner.id, type: "test", title: "spam" }),
         ),
       ).rejects.toThrow();
     });

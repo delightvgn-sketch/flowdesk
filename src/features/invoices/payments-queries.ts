@@ -6,7 +6,11 @@ import { PAGE_SIZE } from "@/lib/constants";
 import type { Tx } from "@/server/db";
 import { clients, invoices, payments, profiles, type PaymentMethod, type PaymentStatus } from "@/server/db/schema";
 
-export async function listPayments(tx: Tx, workspaceId: string, f: { method?: PaymentMethod; status?: PaymentStatus; from?: string; page: number }) {
+export async function listPayments(
+  tx: Tx,
+  workspaceId: string,
+  f: { method?: PaymentMethod; status?: PaymentStatus; from?: string; page: number },
+) {
   const where: SQL[] = [eq(payments.workspaceId, workspaceId)];
   if (f.method) where.push(eq(payments.method, f.method));
   if (f.status) where.push(eq(payments.status, f.status));
@@ -35,7 +39,10 @@ export async function listPayments(tx: Tx, workspaceId: string, f: { method?: Pa
       .orderBy(desc(payments.paidOn), desc(payments.createdAt))
       .limit(PAGE_SIZE)
       .offset((f.page - 1) * PAGE_SIZE),
-    tx.select({ total: count() }).from(payments).where(and(...where)),
+    tx
+      .select({ total: count() })
+      .from(payments)
+      .where(and(...where)),
     tx
       .select({ method: payments.method, amount: sql<number>`coalesce(sum(${payments.amount}), 0)`.mapWith(Number), n: count() })
       .from(payments)

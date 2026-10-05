@@ -18,7 +18,14 @@ import { applyFieldErrors, useAction } from "@/hooks/use-action";
 import { useZodForm } from "@/hooks/use-zod-form";
 import { clientContactSchema } from "@/lib/validation";
 
-type Contact = { id: string; name: string; email: string | null; phone: string | null; jobTitle: string | null; isPrimary: boolean };
+type Contact = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  jobTitle: string | null;
+  isPrimary: boolean;
+};
 
 export function ContactsList({ clientId, contacts, canManage }: { clientId: string; contacts: Contact[]; canManage: boolean }) {
   const router = useRouter();
@@ -46,10 +53,18 @@ export function ContactsList({ clientId, contacts, canManage }: { clientId: stri
                 {c.name}
                 {c.isPrimary && <Badge tone="brand">Primary</Badge>}
               </p>
-              <p className="truncate text-xs text-muted-foreground">{[c.jobTitle, c.email, c.phone].filter(Boolean).join(" · ") || "No details"}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {[c.jobTitle, c.email, c.phone].filter(Boolean).join(" · ") || "No details"}
+              </p>
             </div>
             {canManage && !c.isPrimary && (
-              <Button variant="ghost" size="icon-xs" className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100" aria-label={`Remove ${c.name}`} onClick={() => remove.execute({ id: c.id })}>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                aria-label={`Remove ${c.name}`}
+                onClick={() => remove.execute({ id: c.id })}
+              >
                 <Trash2 />
               </Button>
             )}
@@ -64,11 +79,32 @@ export function ContactsList({ clientId, contacts, canManage }: { clientId: stri
       <FormDialog open={open} onOpenChange={setOpen} title="Add contact" className="sm:max-w-md">
         <form noValidate className="flex min-h-0 flex-1 flex-col" onSubmit={form.handleSubmit((v) => add.execute(v))}>
           <FormDialogBody>
-            <FormField control={form.control} name="name" label="Name" required render={({ field, props }) => <Input {...field} {...props} autoFocus />} />
-            <FormField control={form.control} name="jobTitle" label="Job title" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} />} />
+            <FormField
+              control={form.control}
+              name="name"
+              label="Name"
+              required
+              render={({ field, props }) => <Input {...field} {...props} autoFocus />}
+            />
+            <FormField
+              control={form.control}
+              name="jobTitle"
+              label="Job title"
+              render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} />}
+            />
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={form.control} name="email" label="Email" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="email" />} />
-              <FormField control={form.control} name="phone" label="Phone" render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="tel" />} />
+              <FormField
+                control={form.control}
+                name="email"
+                label="Email"
+                render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="email" />}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                label="Phone"
+                render={({ field, props }) => <Input {...field} value={field.value ?? ""} {...props} type="tel" />}
+              />
             </div>
           </FormDialogBody>
           <FormDialogFooter>
@@ -101,7 +137,9 @@ export function ClientAiSummary({ clientId }: { clientId: string }) {
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">Get a briefing on this client: relationship, work in flight, money owed and what needs attention.</p>
+          <p className="text-sm text-muted-foreground">
+            Get a briefing on this client: relationship, work in flight, money owed and what needs attention.
+          </p>
           <Button variant="outline" size="sm" onClick={() => execute({ id: clientId })} disabled={pending}>
             {pending ? <Loader2 className="animate-spin" /> : <Sparkles />}
             {pending ? "Thinking…" : "Summarize"}

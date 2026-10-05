@@ -8,7 +8,8 @@ import type { AppContext } from "@/server/auth/session";
 
 type ActivityInput = {
   action: string;
-  entityType: "client" | "project" | "task" | "invoice" | "payment" | "file" | "milestone" | "message" | "member" | "comment" | "event";
+  entityType:
+    "client" | "project" | "task" | "invoice" | "payment" | "file" | "milestone" | "message" | "member" | "comment" | "event";
   entityId?: string | null;
   entityLabel?: string | null;
   clientId?: string | null;

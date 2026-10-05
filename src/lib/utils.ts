@@ -8,7 +8,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function initials(name: string | null | undefined): string {
   if (!name) return "?";
-  const parts = name.replace(/^(dr|mr|mrs|ms)\.?\s+/i, "").trim().split(/\s+/);
+  const parts = name
+    .replace(/^(dr|mr|mrs|ms)\.?\s+/i, "")
+    .trim()
+    .split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() || "?";
 }
 
