@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Check, MessageSquare, MoreHorizontal } from "lucide-react";
+import { Calendar, Check, GripVertical, MessageSquare, MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -20,8 +20,21 @@ import { cn } from "@/lib/utils";
 
 import type { BoardTask } from "../types";
 import { LabelChip } from "./label-picker";
+import { openTask } from "./task-sheet";
 
-export function TaskCard({ task, today, overlay = false }: { task: BoardTask; today: string; overlay?: boolean }) {
+type HandleProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { ref?: (node: HTMLButtonElement | null) => void };
+
+export function TaskCard({
+  task,
+  today,
+  overlay = false,
+  handleProps,
+}: {
+  task: BoardTask;
+  today: string;
+  overlay?: boolean;
+  handleProps?: HandleProps;
+}) {
   const due = task.dueDate ? dueLabel(task.dueDate, today) : null;
   const done = task.status === "DONE";
 
@@ -32,14 +45,33 @@ export function TaskCard({ task, today, overlay = false }: { task: BoardTask; to
         overlay && "rotate-1 shadow-lg ring-1 ring-primary/30",
       )}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-1">
+        {handleProps && (
+          <button
+            type="button"
+            {...handleProps}
+            className="mt-px -ml-1.5 cursor-grab rounded p-0.5 text-border-strong hover:text-muted-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing"
+          >
+            <GripVertical className="size-3.5" aria-hidden />
+          </button>
+        )}
         <h3
           className={cn(
             "min-w-0 flex-1 text-[13px] leading-snug font-medium",
             done && "text-muted-foreground line-through decoration-1",
           )}
         >
-          {task.title}
+          {overlay ? (
+            task.title
+          ) : (
+            <button
+              type="button"
+              onClick={() => openTask(task.id)}
+              className="w-full rounded-sm text-left hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {task.title}
+            </button>
+          )}
         </h3>
         {!overlay && <MoveMenu task={task} />}
       </div>

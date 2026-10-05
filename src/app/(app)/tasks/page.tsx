@@ -60,7 +60,7 @@ export default async function TasksPage({ searchParams }: PageProps<"/tasks">) {
     <>
       <PageHeader
         title="Tasks"
-        description="Drag cards between columns, or use a card's menu to move it."
+        description="Drag cards between columns (or focus a card’s handle and use Space + arrow keys), or use its menu."
         actions={
           <>
             <div className="flex rounded-md border bg-card p-0.5 shadow-xs" role="group" aria-label="View">

@@ -31,7 +31,7 @@ export function StatCard({
             className={cn(
               "size-4",
               tone === "success" && "text-success",
-              tone === "warning" && "text-warning",
+              tone === "warning" && "text-warning-foreground",
               tone === "danger" && "text-danger",
               tone === "default" && "text-subtle-foreground",
             )}

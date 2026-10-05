@@ -44,7 +44,7 @@ export default async function PortalHome() {
       {approvals.length > 0 && (
         <section className="rounded-xl border border-warning/30 bg-warning-soft/50 p-4 sm:p-5" aria-labelledby="approvals-h">
           <h2 id="approvals-h" className="flex items-center gap-2 text-sm font-semibold">
-            <BellRing className="size-4 text-warning" aria-hidden /> Waiting for your approval
+            <BellRing className="size-4 text-warning-foreground" aria-hidden /> Waiting for your approval
           </h2>
           <ul className="mt-3 space-y-2">
             {approvals.map((a) => (

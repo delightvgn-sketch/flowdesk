@@ -261,22 +261,39 @@ function Column({
 }
 
 function SortableTask({ task, today }: { task: BoardTask; today: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+  const handle = useRef<HTMLButtonElement | null>(null);
+
   return (
-    <li
-      ref={setNodeRef}
-      style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={cn("touch-manipulation", isDragging && "opacity-40")}
-      {...attributes}
-      {...listeners}
-      aria-roledescription="Draggable task"
-      onKeyDown={(e) => {
-        listeners?.onKeyDown?.(e);
-        if (e.key === "Enter" && !e.defaultPrevented) openTask(task.id);
-      }}
-      onClick={() => openTask(task.id)}
-    >
-      <TaskCard task={task} today={today} />
+    <li>
+      {/* The whole card drags with a pointer; keyboard dragging uses the handle so
+          Space/Enter on the title or menu never start a drag by accident. */}
+      <div
+        ref={setNodeRef}
+        style={{ transform: CSS.Translate.toString(transform), transition }}
+        className={cn("touch-manipulation", isDragging && "opacity-40")}
+        {...listeners}
+        onKeyDown={(e) => {
+          if (e.target === handle.current) listeners?.onKeyDown?.(e);
+        }}
+        onClick={(e) => {
+          if (!(e.target as HTMLElement).closest("button, a, [role=menuitem]")) openTask(task.id);
+        }}
+      >
+        <TaskCard
+          task={task}
+          today={today}
+          handleProps={{
+            ref: (node: HTMLButtonElement | null) => {
+              handle.current = node;
+              setActivatorNodeRef(node);
+            },
+            ...attributes,
+            "aria-roledescription": "Drag handle",
+            "aria-label": `Move ${task.title} between columns`,
+          }}
+        />
+      </div>
     </li>
   );
 }

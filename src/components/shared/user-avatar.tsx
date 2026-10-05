@@ -31,7 +31,7 @@ export function UserAvatar({
   return (
     <Avatar size={size} className={className}>
       {src && <AvatarImage src={src} alt="" />}
-      <AvatarFallback className={cn("font-medium", colorFor(label))} aria-label={label} title={label}>
+      <AvatarFallback role="img" className={cn("font-medium", colorFor(label))} aria-label={label} title={label}>
         <span aria-hidden className={size === "sm" ? "text-[10px]" : "text-xs"}>
           {initials(label)}
         </span>

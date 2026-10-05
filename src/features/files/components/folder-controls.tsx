@@ -113,7 +113,7 @@ export function FolderCard({ folder, canManage }: { folder: { id: string; name: 
 
   return (
     <div className="group relative flex items-center gap-3 rounded-xl border bg-card p-3 shadow-xs transition-colors hover:border-border-strong">
-      <span className="flex size-9 items-center justify-center rounded-md bg-warning-soft text-warning">
+      <span className="flex size-9 items-center justify-center rounded-md bg-warning-soft text-warning-foreground">
         <Folder className="size-4" aria-hidden />
       </span>
       <Link

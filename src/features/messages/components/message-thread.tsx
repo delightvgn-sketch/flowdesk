@@ -93,7 +93,7 @@ export function MessageThread({
               return (
                 <li key={m.id}>
                   {showDay && (
-                    <p className="my-3 text-center text-[11px] font-medium text-subtle-foreground">
+                    <p className="my-3 text-center text-[11px] font-medium text-muted-foreground">
                       <span className="rounded-full bg-muted px-2 py-0.5">{day}</span>
                     </p>
                   )}
