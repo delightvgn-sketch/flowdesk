@@ -14,16 +14,15 @@ import { toDocumentData } from "@/features/invoices/document-data";
 import { getInvoice } from "@/features/invoices/queries";
 import { dueLabel, formatDate, todayISO } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
-import { assertCan } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import { env } from "@/server/env";
 
 export const metadata: Metadata = { title: "Invoice" };
 
 export default async function InvoicePage({ params }: PageProps<"/invoices/[id]">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "invoice:view");
+  requirePagePermission(ctx, "invoice:view");
   const { id } = await params;
   const today = todayISO(ctx.workspace.timezone);
 

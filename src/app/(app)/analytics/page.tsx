@@ -15,9 +15,8 @@ import { getRevenueByMonth, getTaskTrend } from "@/features/dashboard/queries";
 import { PROJECT_STATUS_META } from "@/lib/constants";
 import { addDaysISO, dueLabel, todayISO } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
-import { assertCan } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import type { ProjectStatus } from "@/server/db/schema";
 
 export const metadata: Metadata = { title: "Analytics" };
@@ -39,7 +38,7 @@ const STATUS_BAR: Record<string, string> = {
 
 export default async function AnalyticsPage({ searchParams }: PageProps<"/analytics">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "analytics:view");
+  requirePagePermission(ctx, "analytics:view");
   const sp = await searchParams;
   const months = Number(RANGES.find((r) => r.value === param(sp.range))?.value ?? 6);
   const today = todayISO(ctx.workspace.timezone);

@@ -15,8 +15,7 @@ import { listPayments, unpaidInvoiceOptions } from "@/features/invoices/payments
 import { PAGE_SIZE, PAYMENT_METHODS, PAYMENT_METHOD_LABEL, PAYMENT_STATUSES, PAYMENT_STATUS_META } from "@/lib/constants";
 import { addDaysISO, formatDate, todayISO } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
-import { assertCan } from "@/lib/permissions";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import type { PaymentMethod, PaymentStatus } from "@/server/db/schema";
 
 export const metadata: Metadata = { title: "Payments" };
@@ -29,7 +28,7 @@ const PERIODS = [
 
 export default async function PaymentsPage({ searchParams }: PageProps<"/payments">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "payment:manage");
+  requirePagePermission(ctx, "payment:manage");
   const sp = await searchParams;
   const today = todayISO(ctx.workspace.timezone);
   const method = param(sp.method);

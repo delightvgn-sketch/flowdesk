@@ -6,8 +6,7 @@ import { clientOptions } from "@/features/clients/queries";
 import { InvoiceEditor } from "@/features/invoices/components/invoice-editor";
 import { addDaysISO, todayISO } from "@/lib/dates";
 import { formatInvoiceNumber } from "@/lib/invoice-math";
-import { assertCan } from "@/lib/permissions";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import { projects } from "@/server/db/schema";
 import { features } from "@/server/env";
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = { title: "New invoice" };
 
 export default async function NewInvoicePage({ searchParams }: PageProps<"/invoices/new">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "invoice:manage");
+  requirePagePermission(ctx, "invoice:manage");
   const sp = await searchParams;
   const today = todayISO(ctx.workspace.timezone);
 

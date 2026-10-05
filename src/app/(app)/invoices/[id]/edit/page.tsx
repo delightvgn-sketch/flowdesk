@@ -6,8 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { clientOptions } from "@/features/clients/queries";
 import { InvoiceEditor } from "@/features/invoices/components/invoice-editor";
 import { getInvoice } from "@/features/invoices/queries";
-import { assertCan } from "@/lib/permissions";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import { projects } from "@/server/db/schema";
 import { features } from "@/server/env";
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = { title: "Edit invoice" };
 
 export default async function EditInvoicePage({ params }: PageProps<"/invoices/[id]/edit">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "invoice:manage");
+  requirePagePermission(ctx, "invoice:manage");
   const { id } = await params;
 
   const data = await ctx.db(async (tx) => {

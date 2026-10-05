@@ -3,9 +3,10 @@ import "server-only";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { asc, eq, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 
+import { can, type Permission } from "@/lib/permissions";
 import { adminDb, withRls, type Tx } from "@/server/db";
 import { profiles, workspaceMembers, workspaces, type Profile, type Workspace, type WorkspaceRole } from "@/server/db/schema";
 
@@ -144,4 +145,12 @@ export async function requireClientContext(): Promise<AppContext & { clientId: s
   const ctx = await requireAppContext();
   if (ctx.role !== "CLIENT" || !ctx.clientId) redirect("/dashboard");
   return ctx as AppContext & { clientId: string };
+}
+
+/**
+ * Page-level permission check. Pages answer "not found" rather than revealing
+ * that a resource exists; actions use `assertCan`, which returns a clear error.
+ */
+export function requirePagePermission(ctx: AppContext, permission: Permission) {
+  if (!can(ctx.role, permission)) notFound();
 }

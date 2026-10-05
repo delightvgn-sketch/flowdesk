@@ -14,8 +14,8 @@ import { listClients, listClientTags, type ClientListFilters } from "@/features/
 import { CLIENT_STATUS_META, CLIENT_STATUSES, PAGE_SIZE } from "@/lib/constants";
 import { formatDate } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
-import { assertCan, can } from "@/lib/permissions";
-import { requireStaffContext } from "@/server/auth/session";
+import { can } from "@/lib/permissions";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import type { ClientStatus } from "@/server/db/schema";
 
 export const metadata: Metadata = { title: "Clients" };
@@ -29,7 +29,7 @@ const SORTS = [
 
 export default async function ClientsPage({ searchParams }: PageProps<"/clients">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "client:view");
+  requirePagePermission(ctx, "client:view");
   const sp = await searchParams;
 
   const status = param(sp.status);

@@ -3,15 +3,15 @@ import { and, asc, eq, gt, isNull, sql } from "drizzle-orm";
 
 import { clientOptions } from "@/features/clients/queries";
 import { TeamManager } from "@/features/settings/components/team-manager";
-import { assertCan, can } from "@/lib/permissions";
-import { requireStaffContext } from "@/server/auth/session";
+import { can } from "@/lib/permissions";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import { clients, profiles, workspaceInvitations, workspaceMembers } from "@/server/db/schema";
 
 export const metadata: Metadata = { title: "Team" };
 
 export default async function TeamSettingsPage() {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "team:view");
+  requirePagePermission(ctx, "team:view");
   const manage = can(ctx.role, "team:manage");
 
   const [members, invites, clientList] = await ctx.db((tx) =>

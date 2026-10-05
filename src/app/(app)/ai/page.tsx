@@ -11,9 +11,9 @@ import { ConversationList } from "@/features/ai/components/conversation-list";
 import { MeetingSummarizer } from "@/features/ai/components/meeting-summarizer";
 import { AiTaskGenerator } from "@/features/ai/components/task-generator";
 import { projectOptions } from "@/features/projects/queries";
-import { assertCan, can } from "@/lib/permissions";
+import { can } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import { aiConversations, aiMessages } from "@/server/db/schema";
 import { features } from "@/server/env";
 
@@ -27,7 +27,7 @@ const TABS = [
 
 export default async function AiPage({ searchParams }: PageProps<"/ai">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "ai:use");
+  requirePagePermission(ctx, "ai:use");
   const sp = await searchParams;
   const tab = TABS.find((t) => t.key === param(sp.tab))?.key ?? "chat";
   const enabled = features.ai();

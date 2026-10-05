@@ -49,6 +49,13 @@ describe.skipIf(!hasDb)("row level security", () => {
       ).rejects.toThrow();
     });
 
+    it("managers can create projects and clients and read them back (INSERT … RETURNING)", async () => {
+      const [project] = await as("admin", (tx) => tx.insert(s.projects).values({ workspaceId: f.wsA.id, name: "Returned" }).returning());
+      expect(project.name).toBe("Returned");
+      const [client] = await as("owner", (tx) => tx.insert(s.clients).values({ workspaceId: f.wsA.id, name: "Returned client" }).returning());
+      expect(client.name).toBe("Returned client");
+    });
+
     it("an unknown identity sees nothing at all", async () => {
       const rows = await withRls("user_does_not_exist", (tx) => tx.select().from(s.clients));
       expect(rows).toHaveLength(0);

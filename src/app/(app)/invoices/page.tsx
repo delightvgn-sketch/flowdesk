@@ -15,9 +15,8 @@ import { invoiceSummary, listInvoices, type InvoiceFilters } from "@/features/in
 import { INVOICE_STATUSES, INVOICE_STATUS_META, PAGE_SIZE } from "@/lib/constants";
 import { addDaysISO, dueLabel, formatDate, todayISO } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
-import { assertCan } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { requireStaffContext } from "@/server/auth/session";
+import { requirePagePermission, requireStaffContext } from "@/server/auth/session";
 import type { InvoiceStatus } from "@/server/db/schema";
 import { syncOverdueInvoices } from "@/server/services/invoices";
 
@@ -31,7 +30,7 @@ const PERIODS = [
 
 export default async function InvoicesPage({ searchParams }: PageProps<"/invoices">) {
   const ctx = await requireStaffContext();
-  assertCan(ctx.role, "invoice:view");
+  requirePagePermission(ctx, "invoice:view");
   const sp = await searchParams;
   const today = todayISO(ctx.workspace.timezone);
   const status = param(sp.status);
