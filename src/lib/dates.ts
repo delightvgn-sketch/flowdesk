@@ -58,3 +58,20 @@ export function dueLabel(date: DateString | null, today: DateString = todayISO()
   if (days <= 14) return { text: `Due in ${days}d`, overdue: false };
   return { text: `Due ${formatShortDate(date)}`, overdue: false };
 }
+
+/** Convert a wall-clock date + time in an IANA timezone to the matching UTC instant. */
+export function zonedTimeToUtc(date: DateString, time: string, timeZone: string): Date {
+  const guess = new Date(`${date}T${time}:00Z`);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(guess);
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  const asIfUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour") % 24, get("minute"));
+  return new Date(guess.getTime() - (asIfUtc - guess.getTime()));
+}

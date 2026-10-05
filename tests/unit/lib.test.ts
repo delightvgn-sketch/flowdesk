@@ -78,3 +78,17 @@ describe("permissions", () => {
     expect(canManageMember("MEMBER", "MEMBER")).toBe(false);
   });
 });
+
+describe("zonedTimeToUtc", () => {
+  it("converts Nairobi wall-clock time (UTC+3) to UTC", async () => {
+    const { zonedTimeToUtc } = await import("@/lib/dates");
+    expect(zonedTimeToUtc("2026-10-05", "10:00", "Africa/Nairobi").toISOString()).toBe("2026-10-05T07:00:00.000Z");
+    expect(zonedTimeToUtc("2026-10-05", "01:30", "Africa/Nairobi").toISOString()).toBe("2026-10-04T22:30:00.000Z");
+  });
+
+  it("handles DST zones", async () => {
+    const { zonedTimeToUtc } = await import("@/lib/dates");
+    expect(zonedTimeToUtc("2026-07-01", "09:00", "Europe/London").toISOString()).toBe("2026-07-01T08:00:00.000Z");
+    expect(zonedTimeToUtc("2026-12-01", "09:00", "Europe/London").toISOString()).toBe("2026-12-01T09:00:00.000Z");
+  });
+});
