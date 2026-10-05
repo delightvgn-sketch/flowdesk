@@ -58,7 +58,8 @@ export function AiChat({
   }, [messages]);
 
   useEffect(() => {
-    if (error) toast.error("FlowDesk AI couldn't answer that. Please try again.");
+    // The server sends a safe, human-readable reason (see friendlyAiError).
+    if (error) toast.error(error.message || "FlowDesk AI couldn't answer that. Please try again.");
   }, [error]);
 
   async function send(text: string) {

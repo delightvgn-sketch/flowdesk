@@ -18,6 +18,9 @@ export function friendlyAiError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;
   console.error("[flowdesk] AI error", error);
   const message = error instanceof Error ? error.message : "";
+  if (/credit card|customer_verification_required/i.test(message)) {
+    return "AI Gateway isn't activated for this Vercel team yet — add a payment method in the Vercel dashboard (AI → Gateway) to unlock the free credits.";
+  }
   if (/401|403|unauthori[sz]ed|api key/i.test(message)) return "The AI provider rejected the request. Check the AI Gateway key.";
   if (/429|rate/i.test(message)) return "FlowDesk AI is busy right now. Please try again in a moment.";
   return "FlowDesk AI couldn't complete that request. Please try again.";
