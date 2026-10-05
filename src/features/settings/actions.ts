@@ -11,6 +11,7 @@ import { assignableRoles, canManageMember } from "@/lib/permissions";
 import { idSchema, inviteSchema, memberRoleSchema, notificationPrefsSchema, profileSchema, workspaceSchema } from "@/lib/validation";
 import { createAction } from "@/server/actions/safe-action";
 import { WORKSPACE_COOKIE, type AppContext } from "@/server/auth/session";
+import type { Tx } from "@/server/db";
 import { clients, profiles, workspaceInvitations, workspaceMembers, workspaces } from "@/server/db/schema";
 import { env } from "@/server/env";
 import { NotFoundError, UserFacingError } from "@/server/errors";
@@ -48,7 +49,7 @@ export const deleteWorkspace = createAction(
 /* ----------------------------------- Team ----------------------------------- */
 
 /** Keep the shared demo usable: its seeded personas can't be removed or re-roled. */
-async function assertNotDemoPersona(tx: Parameters<Parameters<AppContext["db"]>[0]>[0], ctx: AppContext, profileId: string) {
+async function assertNotDemoPersona(tx: Tx, ctx: AppContext, profileId: string) {
   if (!ctx.workspace.isDemo) return;
   const profile = await tx.query.profiles.findFirst({ where: eq(profiles.id, profileId) });
   if (profile && Object.values(DEMO_PEOPLE).some((p) => p.email === profile.email.toLowerCase())) {
