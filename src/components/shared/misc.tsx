@@ -93,7 +93,7 @@ export function DetailRow({ label, children }: { label: string; children: React.
 
 export function Panel({ className, children, ...props }: React.ComponentProps<"section">) {
   return (
-    <section className={cn("rounded-xl border bg-card shadow-xs", className)} {...props}>
+    <section className={cn("min-w-0 rounded-xl border bg-card shadow-xs", className)} {...props}>
       {children}
     </section>
   );

@@ -54,7 +54,7 @@ export default async function PortalProjectPage({ params }: PageProps<"/portal/p
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           <Panel className="p-5">
             <div className="flex items-center gap-5">
               <ProgressRing value={p.progress} size={88} stroke={7} />

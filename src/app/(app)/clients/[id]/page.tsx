@@ -121,7 +121,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
 
       {tab === "overview" && (
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {finance && <StatCard label="Lifetime revenue" value={formatMoney(stats.revenue, { compact: stats.revenue >= 1_000_000 })} />}
               {finance && <StatCard label="Outstanding" value={formatMoney(stats.outstanding, { compact: stats.outstanding >= 1_000_000 })} tone={stats.overdue ? "danger" : "default"} hint={stats.overdue ? `${formatMoney(stats.overdue)} overdue` : undefined} />}
@@ -166,7 +166,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             </Panel>
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <Panel className="p-4 sm:p-5">
               <p className="mb-2 text-sm font-semibold">Details</p>
               <ul className="space-y-2.5 text-sm">

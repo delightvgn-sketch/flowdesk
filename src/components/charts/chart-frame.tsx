@@ -33,7 +33,7 @@ export function ChartFrame<T extends Record<string, unknown>>({
   const [view, setView] = useState<"chart" | "table">("chart");
 
   return (
-    <section className={cn("flex flex-col rounded-xl border bg-card p-4 shadow-xs sm:p-5", className)} aria-label={title}>
+    <section className={cn("flex min-w-0 flex-col rounded-xl border bg-card p-4 shadow-xs sm:p-5", className)} aria-label={title}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold tracking-tight">{title}</h2>

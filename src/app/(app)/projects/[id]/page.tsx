@@ -121,7 +121,7 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
 
       {tab === "overview" && (
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             <Panel className="p-4 sm:p-5">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                 <ProgressRing value={p.progress} size={84} stroke={7} />
@@ -161,7 +161,7 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
             </Panel>
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <Panel className="p-4 sm:p-5">
               <p className="mb-1 text-sm font-semibold">Details</p>
               <dl className="divide-y">

@@ -38,7 +38,7 @@ export function StatCard({
           />
         )}
       </div>
-      <p className="tabular mt-2 truncate text-2xl font-semibold tracking-tight">{value}</p>
+      <p className="tabular mt-2 text-lg leading-tight font-semibold tracking-tight break-words sm:text-2xl">{value}</p>
       {hint && <p className="mt-1 truncate text-xs text-muted-foreground">{hint}</p>}
     </>
   );
