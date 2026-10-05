@@ -38,7 +38,7 @@ export function AiChat({
   const router = useRouter();
   const idRef = useRef(conversationId);
   const [input, setInput] = useState("");
-  const bottom = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status, stop, error } = useChat({
     id: conversationId ?? "new",
@@ -52,7 +52,8 @@ export function AiChat({
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+    const el = scroller.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export function AiChat({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8" aria-live="polite">
+      <div ref={scroller} className="flex-1 overflow-y-auto px-4 py-6 sm:px-8" aria-live="polite">
         {messages.length === 0 ? (
           <div className="mx-auto flex max-w-xl flex-col items-center pt-6 text-center">
             <span className="flex size-11 items-center justify-center rounded-xl bg-brand-soft text-primary">
@@ -128,7 +129,6 @@ export function AiChat({
             )}
           </ol>
         )}
-        <div ref={bottom} />
       </div>
 
       <form

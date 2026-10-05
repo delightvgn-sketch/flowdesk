@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Lock, Send, Trash2 } from "lucide-react";
+import { Loader2, Lock, MessagesSquare, Send, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -14,7 +14,6 @@ import { deleteMessage, sendMessage } from "@/features/messages/actions";
 import { useAction } from "@/hooks/use-action";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import { cn } from "@/lib/utils";
-import { MessagesSquare } from "lucide-react";
 
 import type { MessageItem } from "../queries";
 
@@ -46,7 +45,7 @@ export function MessageThread({
   const router = useRouter();
   const [body, setBody] = useState("");
   const [internal, setInternal] = useState(false);
-  const bottom = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
   const send = useAction(sendMessage, {
     onSuccess: () => {
       setBody("");
@@ -57,7 +56,9 @@ export function MessageThread({
   const hasClientAudience = !!(projectId || clientId);
 
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: "end" });
+    // Scroll only the thread itself, never the page.
+    const el = scroller.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages.length]);
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export function MessageThread({
   let lastDay = "";
   return (
     <div className={cn("flex min-h-0 flex-col", className)}>
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite">
+      <div ref={scroller} className="flex-1 overflow-y-auto px-4 py-4 sm:px-5" aria-live="polite">
         {messages.length === 0 ? (
           <EmptyState icon={MessagesSquare} title={emptyText} compact className="border-0" />
         ) : (
@@ -126,7 +127,6 @@ export function MessageThread({
             })}
           </ol>
         )}
-        <div ref={bottom} />
       </div>
 
       <form
